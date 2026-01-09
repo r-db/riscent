@@ -8,7 +8,7 @@ import { neon, NeonQueryFunction } from '@neondatabase/serverless';
 // Create the SQL query function lazily to handle missing env during build
 let _sql: ReturnType<typeof neon> | null = null;
 
-function getSql() {
+function getSql(): ReturnType<typeof neon> {
   if (!_sql) {
     const connectionString = process.env.DATABASE_URL;
     if (!connectionString) {
@@ -19,17 +19,25 @@ function getSql() {
   return _sql;
 }
 
-// Export sql as a getter for template literal usage
-export const sql = new Proxy({} as ReturnType<typeof neon>, {
-  apply: (_, __, args) => {
-    const sqlFn = getSql();
-    return (sqlFn as unknown as (...args: unknown[]) => unknown)(...args);
-  },
-  get: (_, prop) => {
-    const sqlFn = getSql();
-    return (sqlFn as unknown as Record<string | symbol, unknown>)[prop];
-  },
-});
+// Export sql as a function that lazily initializes
+// This supports both tagged template literals and function calls
+export async function sql(
+  strings: TemplateStringsArray | string,
+  ...values: unknown[]
+): Promise<Record<string, unknown>[]> {
+  const sqlFn = getSql();
+  if (typeof strings === 'string') {
+    // Called as sql('query', [params])
+    const result = await (sqlFn as unknown as (q: string, p?: unknown[]) => Promise<unknown>)(
+      strings,
+      values[0] as unknown[]
+    );
+    return result as Record<string, unknown>[];
+  }
+  // Called as tagged template literal sql`query`
+  const result = await sqlFn(strings, ...values);
+  return result as Record<string, unknown>[];
+}
 
 // Neon supports both tagged template literals and parameterized queries
 // Cast to support both call signatures
