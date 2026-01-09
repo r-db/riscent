@@ -45,14 +45,15 @@ type QueryFn = NeonQueryFunction<false, false> & {
   (query: string, params?: unknown[]): Promise<Record<string, unknown>[]>;
 };
 
-// Type-safe query helper
+// Type-safe query helper using sql.query() for parameterized queries
 export async function query<T>(
   queryText: string,
   params: unknown[] = []
 ): Promise<T[]> {
   try {
-    const sqlFn = getSql() as QueryFn;
-    const result = await sqlFn(queryText, params);
+    const sqlFn = getSql();
+    // Use .query() method for parameterized queries (not tagged template literals)
+    const result = await (sqlFn as unknown as { query: (q: string, p: unknown[]) => Promise<unknown[]> }).query(queryText, params);
     return result as T[];
   } catch (error) {
     console.error('Database query error:', error);
@@ -75,8 +76,8 @@ export async function execute(
   params: unknown[] = []
 ): Promise<void> {
   try {
-    const sqlFn = getSql() as QueryFn;
-    await sqlFn(queryText, params);
+    const sqlFn = getSql();
+    await (sqlFn as unknown as { query: (q: string, p: unknown[]) => Promise<unknown[]> }).query(queryText, params);
   } catch (error) {
     console.error('Database execute error:', error);
     throw error;
@@ -88,20 +89,21 @@ export async function transaction<T>(
   queries: Array<{ query: string; params: unknown[] }>
 ): Promise<T[]> {
   const results: T[] = [];
-  const sqlFn = getSql() as QueryFn;
+  const sqlFn = getSql();
+  const queryFn = (sqlFn as unknown as { query: (q: string, p: unknown[]) => Promise<unknown[]> }).query;
 
   try {
-    await sqlFn('BEGIN', []);
+    await queryFn('BEGIN', []);
 
     for (const q of queries) {
-      const result = await sqlFn(q.query, q.params);
+      const result = await queryFn(q.query, q.params);
       results.push(result as T);
     }
 
-    await sqlFn('COMMIT', []);
+    await queryFn('COMMIT', []);
     return results;
   } catch (error) {
-    await sqlFn('ROLLBACK', []);
+    await queryFn('ROLLBACK', []);
     console.error('Transaction error:', error);
     throw error;
   }
