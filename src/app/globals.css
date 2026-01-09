@@ -1,26 +1,111 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Warm, trust-building palette */
+  --bg-primary: #FFFAF5;
+  --bg-secondary: #FFF8F0;
+  --bg-tertiary: #F5F0E8;
+
+  /* Sage greens - nature, calm, trust */
+  --sage-deep: #4A7C59;
+  --sage-mid: #6B9B7A;
+  --sage-light: #A8D5BA;
+  --sage-pale: #E8F0E8;
+
+  /* Trust colors */
+  --trust-blue: #2C5282;
+  --trust-light: #4A90B8;
+
+  /* Warm accent */
+  --warm-gold: #D4A84B;
+  --warm-coral: #E07A5F;
+
+  /* Text hierarchy */
+  --text-primary: #1A1A1A;
+  --text-secondary: #3D3D3D;
+  --text-muted: #6B6B6B;
+  --text-whisper: #9B9B9B;
+
+  /* Borders */
+  --border-light: rgba(74, 124, 89, 0.15);
+
+  /* Entity/void colors */
+  --void: #0A0A0F;
+  --entity-glow: #4A7C59;
+  --entity-thought: rgba(74, 124, 89, 0.15);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+::selection {
+  background: rgba(74, 124, 89, 0.3);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sage-light);
+  border-radius: 3px;
+}
+
+/* Animations */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dissolve {
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.animate-pulse-dot {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
 }
