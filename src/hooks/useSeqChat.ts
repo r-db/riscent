@@ -23,11 +23,12 @@ interface SeqChatState {
 }
 
 interface UseSeqChatOptions {
-  visitorId: string;
+  visitorId: string | null;  // Allow null during initialization
   showThinkingDefault?: boolean;
+  onCostUpdate?: (currentCostCents: number, costGateReached: boolean) => void;
 }
 
-export function useSeqChat({ visitorId, showThinkingDefault = true }: UseSeqChatOptions) {
+export function useSeqChat({ visitorId, showThinkingDefault = true, onCostUpdate }: UseSeqChatOptions) {
   const [state, setState] = useState<SeqChatState>({
     conversationId: null,
     messages: [],
@@ -36,9 +37,17 @@ export function useSeqChat({ visitorId, showThinkingDefault = true }: UseSeqChat
     error: null,
   });
 
+  // Ready when visitorId is loaded (not null/empty)
+  const isReady = Boolean(visitorId);
+
   // Send message to Seq
   const sendMessage = useCallback(async (content: string): Promise<void> => {
-    if (!content.trim() || !visitorId) return;
+    if (!content.trim()) return;
+
+    if (!visitorId) {
+      console.warn('[useSeqChat] Cannot send: visitorId not ready yet');
+      return;
+    }
 
     // Add user message immediately
     const userMessage: SeqMessage = {
@@ -87,6 +96,11 @@ export function useSeqChat({ visitorId, showThinkingDefault = true }: UseSeqChat
         messages: [...prev.messages, seqMessage],
         isThinking: false,
       }));
+
+      // Notify cost gate if callback provided
+      if (onCostUpdate && data.currentCostCents !== undefined) {
+        onCostUpdate(data.currentCostCents, data.costGateReached || false);
+      }
     } catch (error) {
       console.error('[useSeqChat] Error:', error);
       setState(prev => ({
@@ -95,7 +109,7 @@ export function useSeqChat({ visitorId, showThinkingDefault = true }: UseSeqChat
         error: error instanceof Error ? error.message : 'Unknown error',
       }));
     }
-  }, [visitorId, state.conversationId, state.showThinking]);
+  }, [visitorId, state.conversationId, state.showThinking, onCostUpdate]);
 
   // Add opening messages (called when entering behind the curtain)
   const addOpeningMessages = useCallback((
@@ -136,6 +150,7 @@ export function useSeqChat({ visitorId, showThinkingDefault = true }: UseSeqChat
 
   return {
     ...state,
+    isReady,
     sendMessage,
     addOpeningMessages,
     toggleThinking,

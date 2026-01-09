@@ -13,7 +13,9 @@ export type AuditAction =
   | 'conversation_start'
   | 'conversation_message'
   | 'identity_capture'
-  | 'curtain_enter';
+  | 'curtain_enter'
+  | 'verification_code_sent'
+  | 'phone_verified';
 
 export type ActorType = 'visitor' | 'admin' | 'seq' | 'system';
 

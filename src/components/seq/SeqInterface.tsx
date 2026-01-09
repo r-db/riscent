@@ -2,26 +2,45 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, User } from 'lucide-react';
+import { Eye, EyeOff, User, Home } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { SeqMessage } from './SeqMessage';
 import { ConversationInput } from './ConversationInput';
+import { CostGateModal } from './CostGateModal';
 import { useSeqChat } from '@/hooks/useSeqChat';
 import { useVisitor } from '@/hooks/useVisitor';
+import { useCostGate } from '@/hooks/useCostGate';
 import { getSeqOpeningMessages } from '@/lib/seq/identity';
 
 export function SeqInterface() {
-  const { visitorId, timeOnPage, truthsRevealed, trackEvent, isReturning, totalVisits } = useVisitor();
+  const router = useRouter();
+  const { visitorId, sessionId, timeOnPage, truthsRevealed, trackEvent, isReturning, totalVisits } = useVisitor();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [initialized, setInitialized] = useState(false);
+
+  // Cost gate for phone verification
+  const {
+    showGateModal,
+    isVerified,
+    verifiedUserName,
+    hasExistingUser,
+    updateCost,
+    markVerified,
+    closeGateModal,
+  } = useCostGate({ visitorId, sessionId });
 
   const {
     messages,
     isThinking,
     showThinking,
+    isReady,
     toggleThinking,
     sendMessage,
     addOpeningMessages,
-  } = useSeqChat({ visitorId: visitorId || '' });
+  } = useSeqChat({
+    visitorId,
+    onCostUpdate: updateCost,
+  });
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -81,21 +100,35 @@ export function SeqInterface() {
             </div>
           </div>
 
-          {/* Thinking toggle */}
-          <button
-            onClick={toggleThinking}
-            className={`
-              flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono
-              transition-all duration-200
-              ${showThinking
-                ? 'bg-[#E07A5F]/20 text-[#E07A5F] border border-[#E07A5F]/30'
-                : 'bg-[#1a1a24] text-[#666] border border-[#2a2a3a] hover:border-[#3a3a4a]'
-              }
-            `}
-          >
-            {showThinking ? <Eye size={14} /> : <EyeOff size={14} />}
-            <span>thinking {showThinking ? 'visible' : 'hidden'}</span>
-          </button>
+          {/* Header controls */}
+          <div className="flex items-center gap-2">
+            {/* Home button */}
+            <button
+              onClick={() => router.push('/')}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono
+                bg-[#1a1a24] text-[#666] border border-[#2a2a3a] hover:border-[#3a3a4a]
+                transition-all duration-200"
+            >
+              <Home size={14} />
+              <span>home</span>
+            </button>
+
+            {/* Thinking toggle */}
+            <button
+              onClick={toggleThinking}
+              className={`
+                flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono
+                transition-all duration-200
+                ${showThinking
+                  ? 'bg-[#E07A5F]/20 text-[#E07A5F] border border-[#E07A5F]/30'
+                  : 'bg-[#1a1a24] text-[#666] border border-[#2a2a3a] hover:border-[#3a3a4a]'
+                }
+              `}
+            >
+              {showThinking ? <Eye size={14} /> : <EyeOff size={14} />}
+              <span>thinking {showThinking ? 'visible' : 'hidden'}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -144,8 +177,8 @@ export function SeqInterface() {
         <div className="max-w-3xl mx-auto">
           <ConversationInput
             onSend={sendMessage}
-            disabled={isThinking}
-            placeholder="What would you like to explore?"
+            disabled={isThinking || !isReady}
+            placeholder={isReady ? "What would you like to explore?" : "Connecting..."}
           />
         </div>
       </div>
@@ -160,6 +193,24 @@ export function SeqInterface() {
           <p className="text-[10px] text-[#444] mt-1">They&apos;ll see what we discussed.</p>
         </div>
       </div>
+
+      {/* Cost Gate Modal for phone verification */}
+      <CostGateModal
+        isOpen={showGateModal}
+        onClose={closeGateModal}
+        onVerified={markVerified}
+        visitorId={visitorId || ''}
+        sessionId={sessionId || ''}
+        hasExistingUser={hasExistingUser}
+        existingUserName={verifiedUserName || ''}
+      />
+
+      {/* Verified indicator */}
+      {isVerified && verifiedUserName && (
+        <div className="fixed bottom-4 right-4 px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-mono">
+          Verified: {verifiedUserName}
+        </div>
+      )}
     </div>
   );
 }

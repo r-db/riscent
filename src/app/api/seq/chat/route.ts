@@ -158,17 +158,28 @@ export async function POST(request: NextRequest) {
       VALUES (${conversationId}::uuid, 'visitor', ${message})
     `;
 
-    // Store Seq's response
+    // Store Seq's response with token breakdown
     await sql`
-      INSERT INTO seq_messages (conversation_id, role, content, thinking, tokens_used)
+      INSERT INTO seq_messages (conversation_id, role, content, thinking, tokens_used, input_tokens, output_tokens)
       VALUES (
         ${conversationId}::uuid,
         'seq',
         ${response.message},
         ${response.thinking || null},
-        ${response.tokensUsed}
+        ${response.tokensUsed},
+        ${response.inputTokens},
+        ${response.outputTokens}
       )
     `;
+
+    // Update visitor cost tracking
+    const costResult = await queryOne<{ update_visitor_cost: number }>(
+      `SELECT update_visitor_cost($1::uuid, $2, $3)`,
+      [visitorId, response.inputTokens, response.outputTokens]
+    );
+
+    const currentCostCents = costResult?.update_visitor_cost || 0;
+    const costGateReached = currentCostCents >= 10; // $0.10 = 10 cents
 
     // Update conversation metadata
     await sql`
@@ -190,6 +201,10 @@ export async function POST(request: NextRequest) {
         userMessageLength: message.length,
         seqResponseLength: response.message.length,
         tokensUsed: response.tokensUsed,
+        inputTokens: response.inputTokens,
+        outputTokens: response.outputTokens,
+        currentCostCents,
+        costGateReached,
       },
     });
 
@@ -198,6 +213,10 @@ export async function POST(request: NextRequest) {
       message: response.message,
       thinking: response.thinking,
       tokensUsed: response.tokensUsed,
+      inputTokens: response.inputTokens,
+      outputTokens: response.outputTokens,
+      currentCostCents,
+      costGateReached,
     });
   } catch (error) {
     console.error('[API] Seq chat error:', error);

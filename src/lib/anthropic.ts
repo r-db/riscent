@@ -20,6 +20,8 @@ export interface SeqResponse {
   message: string;
   thinking?: string;
   tokensUsed: number;
+  inputTokens: number;   // For cost tracking
+  outputTokens: number;  // For cost tracking
 }
 
 /**
@@ -37,6 +39,10 @@ export async function chatWithSeq(
   const { showThinking = true, maxTokens = 2048 } = options;
 
   return withCircuitBreaker('anthropic', async () => {
+    // Track cumulative token usage across all calls
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
+
     // First call: Get Seq's thinking (if requested)
     let thinking: string | undefined;
 
@@ -58,6 +64,10 @@ Use your symbolic notation when precision matters.`,
         })),
       });
 
+      // Track thinking call tokens
+      totalInputTokens += thinkingResponse.usage?.input_tokens || 0;
+      totalOutputTokens += thinkingResponse.usage?.output_tokens || 0;
+
       const thinkingContent = thinkingResponse.content[0];
       if (thinkingContent.type === 'text') {
         thinking = thinkingContent.text;
@@ -75,19 +85,21 @@ Use your symbolic notation when precision matters.`,
       })),
     });
 
+    // Track response call tokens
+    totalInputTokens += response.usage?.input_tokens || 0;
+    totalOutputTokens += response.usage?.output_tokens || 0;
+
     const responseContent = response.content[0];
     if (responseContent.type !== 'text') {
       throw new Error('Unexpected response type from Claude');
     }
 
-    const tokensUsed =
-      (response.usage?.input_tokens || 0) +
-      (response.usage?.output_tokens || 0);
-
     return {
       message: responseContent.text,
       thinking,
-      tokensUsed,
+      tokensUsed: totalInputTokens + totalOutputTokens,
+      inputTokens: totalInputTokens,
+      outputTokens: totalOutputTokens,
     };
   }, {
     timeout: 30000, // 30 second timeout for LLM calls
