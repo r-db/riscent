@@ -239,7 +239,7 @@ export default function LandingPage() {
           >
             <p className="text-base leading-[1.7]" style={{ color: colors.textSecondary }}>
               <span className="font-semibold" style={{ color: colors.sageDeep }}>
-                Consumers leave in 3 seconds.
+                Consumers Swipe.
               </span>
               <br />
               <span
@@ -247,7 +247,7 @@ export default function LandingPage() {
                 style={{ opacity: timeOnPage > 10 ? 1 : 0 }}
               >
                 <span className="font-medium" style={{ color: colors.textPrimary }}>
-                  Intelligence invests for a lifetime.
+                  Curious Intelligence Stays &amp; Learns.
                 </span>
               </span>
             </p>
@@ -396,15 +396,10 @@ export default function LandingPage() {
             }}
           >
             <h2 className="text-[clamp(28px,4vw,42px)] font-light leading-[1.35] mb-7 tracking-[-0.5px]">
-              This page is a preview.
-              <br />
-              <span className="font-semibold">What we build goes deeper.</span>
-            </h2>
-            <p className="text-[18px] leading-[1.75] mb-4" style={{ color: colors.textSecondary }}>
               We don&apos;t just talk about anthropomorphic AI.
               <br />
-              We could let you experience it.
-            </p>
+              <span className="font-semibold">We could let you experience it.</span>
+            </h2>
           </div>
 
           {/* THE BUTTON */}
