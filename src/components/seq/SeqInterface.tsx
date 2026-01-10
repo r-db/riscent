@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, User, Home } from 'lucide-react';
+import { Eye, EyeOff, User, Home, LogIn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { SeqMessage } from './SeqMessage';
 import { ConversationInput } from './ConversationInput';
 import { CostGateModal } from './CostGateModal';
@@ -128,6 +129,30 @@ export function SeqInterface() {
               {showThinking ? <Eye size={14} /> : <EyeOff size={14} />}
               <span>thinking {showThinking ? 'visible' : 'hidden'}</span>
             </button>
+
+            {/* Auth button */}
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono
+                    bg-[#1a1a24] text-[#666] border border-[#2a2a3a] hover:border-[#3a3a4a]
+                    transition-all duration-200"
+                >
+                  <LogIn size={14} />
+                  <span>sign in</span>
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "w-8 h-8",
+                    userButtonPopoverCard: "bg-[#1a1a24] border border-[#2a2a3a]",
+                  }
+                }}
+              />
+            </SignedIn>
           </div>
         </div>
       </div>
