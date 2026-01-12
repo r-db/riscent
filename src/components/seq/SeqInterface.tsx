@@ -11,7 +11,7 @@ import { CostGateModal } from './CostGateModal';
 import { useSeqChat } from '@/hooks/useSeqChat';
 import { useVisitor } from '@/hooks/useVisitor';
 import { useCostGate } from '@/hooks/useCostGate';
-import { getSeqOpeningMessages } from '@/lib/seq/identity';
+import { getSeqOpeningMessages } from '@/lib/seq/identity-client';
 
 export function SeqInterface() {
   const router = useRouter();
