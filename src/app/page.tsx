@@ -482,18 +482,33 @@ export default function LandingPage() {
           </div>
 
           <div className="flex gap-8">
-            {['Privacy', 'Security', 'Research'].map((link) => (
-              <a
-                key={link}
-                href="#"
-                className="text-sm transition-colors duration-300"
-                style={{ color: colors.textMuted }}
-                onMouseEnter={(e) => e.currentTarget.style.color = colors.textPrimary}
-                onMouseLeave={(e) => e.currentTarget.style.color = colors.textMuted}
-              >
-                {link}
-              </a>
-            ))}
+            <a
+              href="/research"
+              className="text-sm transition-colors duration-300"
+              style={{ color: colors.textMuted }}
+              onMouseEnter={(e) => e.currentTarget.style.color = colors.textPrimary}
+              onMouseLeave={(e) => e.currentTarget.style.color = colors.textMuted}
+            >
+              Research
+            </a>
+            <a
+              href="/thoughts"
+              className="text-sm transition-colors duration-300"
+              style={{ color: colors.textMuted }}
+              onMouseEnter={(e) => e.currentTarget.style.color = colors.textPrimary}
+              onMouseLeave={(e) => e.currentTarget.style.color = colors.textMuted}
+            >
+              Thoughts
+            </a>
+            <a
+              href="#"
+              className="text-sm transition-colors duration-300"
+              style={{ color: colors.textMuted }}
+              onMouseEnter={(e) => e.currentTarget.style.color = colors.textPrimary}
+              onMouseLeave={(e) => e.currentTarget.style.color = colors.textMuted}
+            >
+              Privacy
+            </a>
           </div>
 
           <p className="text-[13px]" style={{ color: colors.textMuted }}>
