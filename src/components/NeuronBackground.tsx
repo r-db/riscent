@@ -13,7 +13,7 @@ interface Neuron {
 export function NeuronBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const neuronsRef = useRef<Neuron[]>([]);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;
