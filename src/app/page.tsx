@@ -59,7 +59,7 @@ export default function LandingPage() {
     isLoading,
   } = useVisitor();
 
-  const [phase, setPhase] = useState(0);
+  const [phase, setPhase] = useState(2);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [breathPhase, setBreathPhase] = useState(0);
@@ -79,10 +79,10 @@ export default function LandingPage() {
 
   // Phase progression based on time
   useEffect(() => {
-    if (timeOnPage >= 2 && phase === 0) setPhase(1);
-    if (timeOnPage >= 5 && phase === 1) setPhase(2);
-    if (timeOnPage >= 8 && phase === 2) setPhase(3);
-    if (timeOnPage >= 12 && phase === 3) setPhase(4);
+    if (timeOnPage >= 0.5 && phase === 0) setPhase(1);
+    if (timeOnPage >= 1 && phase === 1) setPhase(2);
+    if (timeOnPage >= 3 && phase === 2) setPhase(3);
+    if (timeOnPage >= 6 && phase === 3) setPhase(4);
     if (hasScrolled && phase >= 2) setPhase(Math.max(phase, 4));
   }, [timeOnPage, hasScrolled, phase]);
 
@@ -205,7 +205,7 @@ export default function LandingPage() {
 
           {/* The question */}
           <div
-            className="text-center transition-all duration-1000"
+            className="text-center transition-all duration-300"
             style={{
               opacity: phase >= 2 ? 1 : 0,
               transform: phase >= 2 ? 'translateY(0)' : 'translateY(20px)',
