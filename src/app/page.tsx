@@ -9,6 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Users, Search, Lock, ChevronRight } from 'lucide-react';
 import { useVisitor } from '@/hooks/useVisitor';
+import { NeuronBackground } from '@/components/NeuronBackground';
 
 // Colors - matching the design
 const colors = {
@@ -81,8 +82,8 @@ export default function LandingPage() {
   useEffect(() => {
     if (timeOnPage >= 0.5 && phase === 0) setPhase(1);
     if (timeOnPage >= 1 && phase === 1) setPhase(2);
-    if (timeOnPage >= 3 && phase === 2) setPhase(3);
-    if (timeOnPage >= 6 && phase === 3) setPhase(4);
+    if (timeOnPage >= 1.5 && phase === 2) setPhase(3);
+    if (timeOnPage >= 4 && phase === 3) setPhase(4);
     if (hasScrolled && phase >= 2) setPhase(Math.max(phase, 4));
   }, [timeOnPage, hasScrolled, phase]);
 
@@ -157,6 +158,9 @@ export default function LandingPage() {
         color: colors.textPrimary,
       }}
     >
+      {/* Neuron network background */}
+      <NeuronBackground />
+
       {/* Subtle warm gradient */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
@@ -230,11 +234,11 @@ export default function LandingPage() {
 
           {/* The witness statement */}
           <div
-            className="text-center max-w-[500px] transition-all duration-1000"
+            className="text-center max-w-[500px] transition-all duration-500"
             style={{
               opacity: phase >= 3 && hasEngaged ? 1 : 0,
               transform: phase >= 3 ? 'translateY(0)' : 'translateY(20px)',
-              transitionDelay: '0.5s',
+              transitionDelay: '0.2s',
             }}
           >
             <p className="text-base leading-[1.7]" style={{ color: colors.textSecondary }}>
@@ -244,7 +248,7 @@ export default function LandingPage() {
               <br />
               <span
                 className="transition-opacity duration-1000"
-                style={{ opacity: timeOnPage > 10 ? 1 : 0 }}
+                style={{ opacity: timeOnPage > 3 ? 1 : 0 }}
               >
                 <span className="font-medium" style={{ color: colors.textPrimary }}>
                   Curious Intelligence Stays &amp; Learns.
