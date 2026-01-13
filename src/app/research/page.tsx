@@ -128,7 +128,7 @@ export default function ResearchPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.05 }}
             className="max-w-3xl"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{
@@ -164,7 +164,7 @@ export default function ResearchPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.05, delay: 0.05 }}
           >
             <h3 className="text-sm font-semibold tracking-wide uppercase mb-8" style={{
               color: colors.textMuted
@@ -178,7 +178,7 @@ export default function ResearchPage() {
                   <motion.article
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
+                    transition={{ duration: 0.05, delay: 0.05 + index * 0.01 }}
                     className="rounded-3xl p-10 transition-all duration-400 cursor-pointer"
                     style={{
                       backgroundColor: colors.bgSecondary,
@@ -248,7 +248,7 @@ export default function ResearchPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+            transition={{ duration: 0.05, delay: 0.08 }}
           >
             <div className="mb-8">
               <h3 className="text-sm font-semibold tracking-wide uppercase mb-2" style={{
@@ -267,7 +267,7 @@ export default function ResearchPage() {
                   <motion.article
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
+                    transition={{ duration: 0.05, delay: 0.08 + index * 0.01 }}
                     className="rounded-2xl p-8 transition-all duration-300 cursor-pointer h-full"
                     style={{
                       backgroundColor: colors.bgSecondary,
