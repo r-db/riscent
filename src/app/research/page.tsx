@@ -125,12 +125,7 @@ export default function ResearchPage() {
       {/* Hero Section */}
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.05 }}
-            className="max-w-3xl"
-          >
+          <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{
               backgroundColor: colors.sagePale
             }}>
@@ -154,18 +149,14 @@ export default function ResearchPage() {
               We publish research at the intersection of consciousness, design, and artificial intelligence.
               Our work focuses on making AI systems transparent, intentional, and genuinely trustworthy.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Main Research Topics - 3 Core Areas */}
       <section className="py-12 px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.05, delay: 0.05 }}
-          >
+          <div>
             <h3 className="text-sm font-semibold tracking-wide uppercase mb-8" style={{
               color: colors.textMuted
             }}>
@@ -175,10 +166,7 @@ export default function ResearchPage() {
             <div className="grid md:grid-cols-1 gap-6">
               {mainResearchTopics.map((topic, index) => (
                 <Link key={topic.slug} href={`/research/${topic.slug}`}>
-                  <motion.article
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.05, delay: 0.05 + index * 0.01 }}
+                  <article
                     className="rounded-3xl p-10 transition-all duration-400 cursor-pointer"
                     style={{
                       backgroundColor: colors.bgSecondary,
@@ -234,22 +222,18 @@ export default function ResearchPage() {
                         </div>
                       </div>
                     </div>
-                  </motion.article>
+                  </article>
                 </Link>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Interesting Finds - Articles not in main topics */}
       <section className="py-12 px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.05, delay: 0.08 }}
-          >
+          <div>
             <div className="mb-8">
               <h3 className="text-sm font-semibold tracking-wide uppercase mb-2" style={{
                 color: colors.textMuted
@@ -264,10 +248,7 @@ export default function ResearchPage() {
             <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
               {interestingFinds.map((article, index) => (
                 <Link key={article.slug} href={`/research/${article.slug}`}>
-                  <motion.article
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.05, delay: 0.08 + index * 0.01 }}
+                  <article
                     className="rounded-2xl p-8 transition-all duration-300 cursor-pointer h-full"
                     style={{
                       backgroundColor: colors.bgSecondary,
@@ -302,11 +283,11 @@ export default function ResearchPage() {
                       <span>•</span>
                       <span>{article.readTime}</span>
                     </div>
-                  </motion.article>
+                  </article>
                 </Link>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
