@@ -33,20 +33,20 @@ const colors = {
 
 const truths = [
   {
-    title: "We don't have all the answers.",
-    body: "But we know exactly which questions matter. Anthropomorphic AI isn't about making machines human—it's about making them honest about what they're not.",
+    title: "We built one of the hardest AI products in healthcare solo.",
+    body: "Voice receptionist. Patient portal. Multi-tenant CRM. HIPAA-compliant. 415 API routes. ~700K lines of code. Five months. Under $10,000 of capital. At our first customer it's handled 1,710 calls with zero missed. English and Spanish. 24/7. That's the portfolio, not the pitch.",
     Icon: Users,
     color: colors.trustBlue,
   },
   {
-    title: "Transparency has a cost.",
-    body: "Mechanistic interpretability slows things down. It requires resources most skip. We believe that cost is the price of trust.",
+    title: "We don't do AI strategy decks.",
+    body: "We build working systems in regulated verticals and hand them to you. Voice agents, chat agents, memory systems, agent-native infrastructure. If you can explain what winning looks like in one sentence, we can scope it in one week and ship it in weeks, not quarters.",
     Icon: Search,
     color: colors.sageDeep,
   },
   {
-    title: "Security is never finished.",
-    body: "Every system we build will eventually be tested. We design for the breach we haven't imagined yet.",
+    title: "The model is not the moat.",
+    body: "Frontier models improve every week — nobody keeps an advantage on raw intelligence. The real edge is the architecture around the model: fact-check critics, HIPAA audit trails, memory that persists, agent-native APIs, fallback logic for when the LLM is wrong. That's what we build, and that's what you own.",
     Icon: Lock,
     color: colors.warmCoral,
   },
@@ -219,22 +219,21 @@ export default function LandingPage() {
               className="text-[13px] tracking-[5px] uppercase mb-7 font-medium"
               style={{ color: colors.textMuted }}
             >
-              {phase >= 2 ? 'A question' : ''}
+              {phase >= 2 ? 'AI Consulting — Healthcare First' : ''}
             </p>
 
             <h1 className="text-[clamp(32px,5vw,58px)] font-light tracking-[-1.5px] leading-[1.25] max-w-[820px]">
-              What would you trust
+              We built a HIPAA-compliant AI platform solo.
               <br />
               <span className="font-semibold" style={{ color: colors.sageDeep }}>
-                to be conscious
+                In five months. For under $10,000.
               </span>
-              ?
             </h1>
           </div>
 
           {/* The witness statement */}
           <div
-            className="text-center max-w-[500px] transition-all duration-500"
+            className="text-center max-w-[540px] transition-all duration-500"
             style={{
               opacity: phase >= 3 && hasEngaged ? 1 : 0,
               transform: phase >= 3 ? 'translateY(0)' : 'translateY(20px)',
@@ -243,7 +242,7 @@ export default function LandingPage() {
           >
             <p className="text-base leading-[1.7]" style={{ color: colors.textSecondary }}>
               <span className="font-semibold" style={{ color: colors.sageDeep }}>
-                Consumers Swipe.
+                1,710 calls handled. Zero missed.
               </span>
               <br />
               <span
@@ -251,7 +250,7 @@ export default function LandingPage() {
                 style={{ opacity: timeOnPage > 3 ? 1 : 0 }}
               >
                 <span className="font-medium" style={{ color: colors.textPrimary }}>
-                  Curious Intelligence Stays &amp; Learns.
+                  A voice AI in two languages, a patient portal with 80% adoption, five vendors replaced. We&apos;re available to build yours.
                 </span>
               </span>
             </p>
@@ -306,10 +305,10 @@ export default function LandingPage() {
             </div>
 
             <h2 className="text-[clamp(28px,4vw,44px)] font-light leading-[1.35] mb-5">
-              We could tell you we&apos;re the best.
+              Three things about how we build.
               <br />
               <span style={{ color: colors.textMuted }}>
-                Instead, we&apos;ll tell you what&apos;s true.
+                None of them are the model.
               </span>
             </h2>
           </div>
@@ -400,9 +399,9 @@ export default function LandingPage() {
             }}
           >
             <h2 className="text-[clamp(28px,4vw,42px)] font-light leading-[1.35] mb-7 tracking-[-0.5px]">
-              We don&apos;t just talk about anthropomorphic AI.
+              Tell us what you&apos;re trying to ship.
               <br />
-              <span className="font-semibold">We could let you experience it.</span>
+              <span className="font-semibold">15 minutes. No pitch deck.</span>
             </h2>
           </div>
 
@@ -434,30 +433,38 @@ export default function LandingPage() {
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              Peek behind the curtain
+              Scope a project
               <ChevronRight size={20} />
             </button>
 
             <p className="mt-6 text-sm" style={{ color: colors.textMuted }}>
-              This isn&apos;t a demo request. It&apos;s an introduction.
+              Reply within 24 hours with two specific 15-minute slots. No calendar dance.
             </p>
           </div>
 
-          {/* Time acknowledgment */}
-          <p
-            className="mt-20 text-sm leading-[1.6] transition-opacity duration-1000"
+          {/* Time acknowledgment — replaced with how-we-engage */}
+          <div
+            className="mt-20 transition-opacity duration-1000 text-left max-w-[560px] mx-auto"
             style={{
-              color: colors.textMuted,
               opacity: hasScrolled ? 1 : 0,
               transitionDelay: '0.8s',
             }}
           >
-            You&apos;ve invested {timeOnPage} seconds here.
-            <br />
-            <span style={{ color: colors.sageDeep }}>
-              That attention is rare. We don&apos;t waste it.
-            </span>
-          </p>
+            <p className="text-[13px] tracking-[2px] uppercase mb-4 font-semibold" style={{ color: colors.sageDeep }}>
+              Three ways to work with us
+            </p>
+            <ul className="space-y-3 text-[15px] leading-[1.6]" style={{ color: colors.textSecondary }}>
+              <li>
+                <span className="font-semibold" style={{ color: colors.textPrimary }}>Build + transfer.</span> $15K-$150K fixed scope. We ship it, you own it.
+              </li>
+              <li>
+                <span className="font-semibold" style={{ color: colors.textPrimary }}>Embedded advisory.</span> $5K-$15K/month. Architecture reviews, spec writing, pair coding.
+              </li>
+              <li>
+                <span className="font-semibold" style={{ color: colors.textPrimary }}>Strategic deep dive.</span> $7,500 flat. One week heads-down. You get a ~30-page memo, architecture diagrams, and a working proof-of-concept.
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 
