@@ -250,7 +250,7 @@ export default function LandingPage() {
               letterSpacing: '-0.01em',
             }}
           >
-            DM me on LinkedIn
+            Shoot an email
           </a>
           <button
             onClick={() => handleCTA('code')}
