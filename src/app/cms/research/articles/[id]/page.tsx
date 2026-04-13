@@ -126,7 +126,7 @@ export default function EditArticlePage() {
           meta_title: article.meta_title || '',
           meta_description: article.meta_description || '',
         }}
-        articleId={article.slug}
+        articleSlug={article.slug}
         isEdit
       />
     </div>

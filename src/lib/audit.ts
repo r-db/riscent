@@ -5,17 +5,7 @@
 
 import { sql } from './db';
 
-export type AuditAction =
-  | 'create'
-  | 'update'
-  | 'delete'
-  | 'login'
-  | 'conversation_start'
-  | 'conversation_message'
-  | 'identity_capture'
-  | 'curtain_enter'
-  | 'verification_code_sent'
-  | 'phone_verified';
+export type AuditAction = string;
 
 export type ActorType = 'visitor' | 'admin' | 'seq' | 'system';
 
