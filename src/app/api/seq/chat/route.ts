@@ -322,7 +322,7 @@ export async function POST(request: NextRequest) {
       action: 'conversation_message',
       entityType: 'seq_conversation',
       entityId: conversationId,
-      actorType: dbUser ? 'user' : 'visitor',
+      actorType: dbUser ? 'admin' : 'visitor',
       actorId: dbUser ? dbUser.user_id : visitorId,
       metadata: {
         userMessageLength: message.length,
