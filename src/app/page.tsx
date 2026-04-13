@@ -1,868 +1,322 @@
 'use client';
 
-/**
- * Riscent Landing Page — v3
- *
- * Structural rewrite for Dr. Raj primary avatar (stuck healthtech founder).
- * Dark mode aesthetic. Code visible. Failure-mode list up front.
- * No breathing animations. No sage palette. No warm trust-building.
- *
- * Register: Ryan's Sales DNA (co-conspirator + specificity + inevitability).
- * Voice source: ~/.claude/projects/-Users-riscentrdb-nous/memory/project_ryan_sales_dna.md
- * System source: ~/Desktop/IB365_DOCS/direction/VOICE_AND_VISUAL_SYSTEM.md
- * Avatars: ~/Desktop/IB365_DOCS/direction/RISCENT_AVATARS.md
- */
-
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useVisitor } from '@/hooks/useVisitor';
 
-// Dark-mode palette for technical buyers.
-// Dr. Raj reads at night. Marcus reads on a laptop in an office.
-// Both tolerate dark; neither tolerates decorative pastels.
-const colors = {
+/* ── PALETTE ── */
+const C = {
   bg: '#0b0e14',
   bgElev: '#111521',
-  bgElev2: '#161b29',
   border: '#1e2535',
-  borderAccent: '#2a3347',
-  textPrimary: '#e6e8ed',
-  textSecondary: '#a6adbb',
-  textMuted: '#6e7689',
-  accent: '#4f8cff',      // electric blue — code link, CTA
-  accentDim: '#3a6dcc',
-  accent2: '#5fd6a3',     // green — proof/verified
-  warn: '#f0b45b',        // amber — the failure-mode warnings
-  code: '#f2f5ff',
+  text: '#e6e8ed',
+  text2: '#a6adbb',
+  muted: '#6e7689',
+  accent: '#4f8cff',
+  green: '#5fd6a3',
+  warn: '#f0b45b',
 };
 
-const failureModes = [
+/* ── HOOKS ── */
+function useReveal(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
+}
+
+function useCountUp(target: number, active: boolean, ms = 1200, delay = 0) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    const t = setTimeout(() => {
+      const start = performance.now();
+      const tick = () => {
+        const p = Math.min((performance.now() - start) / ms, 1);
+        setVal(Math.round(target * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, delay);
+    return () => clearTimeout(t);
+  }, [active, target, ms, delay]);
+  return val;
+}
+
+/* ── FEARS ── */
+const fears = [
   {
-    bug: 'Voice agent hallucinates on hyphenated last names',
-    fix: 'Deterministic name-parser layer in front of the LLM. Never fixed by prompt-engineering alone.',
+    pain: "Your nephew's friend built it with Make.com. Your customer data is in 6 tools you've never heard of.",
+    fix: 'I build one system. Your data stays in one place. You own it.',
   },
   {
-    bug: 'Session state poisoned across tenants',
-    fix: 'Per-request SQLAlchemy session scoping. Missing NOT NULL columns silently corrupt the shared session. I have the scar tissue.',
+    pain: 'The agency quoted $120K and 6 months. You got a slide deck.',
+    fix: 'Fixed price. Fixed timeline. Working system or you don\'t pay.',
   },
   {
-    bug: 'Tool-call schemas fail because the LLM returns wrong types',
-    fix: 'Strict JSON-schema validation + retry-with-correction loop. Keep tool params to ≤4 strings. No enums, no booleans.',
+    pain: 'Your competitor hired an "AI company." Eight months later, nothing works.',
+    fix: 'I ship in weeks, not quarters. You see it working before you pay the second invoice.',
   },
   {
-    bug: 'HIPAA is "we signed a BAA with OpenAI"',
-    fix: 'That is not HIPAA. You need row-level security, audit logs, encryption at rest, a real BAA chain, and a minimum-necessary data flow. I\'ve built it.',
-  },
-  {
-    bug: 'EHR integration assumed FHIR would just work',
-    fix: 'It doesn\'t. Most real integrations are HL7 v2 over SFTP with a quarterly phone call to the vendor\'s integration team. I\'ve built this plumbing for Tebra, Elation, and custom EHRs.',
-  },
-  {
-    bug: 'ElevenLabs headers contain nullable dynamic variables',
-    fix: 'That crashes production the first time a variable is missing. Move them to the body payload. Kept one production outage going for 3 hours once. Never again.',
+    pain: "You're paying for 4 tools that don't talk to each other. Your staff copies data between them.",
+    fix: 'One platform. Everything connected. Staff does real work instead of data entry.',
   },
 ];
 
-const engagements = [
+/* ── OUTCOMES ── */
+const outcomes = [
+  { id: 'lines', label: 'lines of code', sub: 'One person. One year.' },
+  { id: 'val', label: 'valuation — one client', sub: 'From $60K seed investment.' },
+  { id: 'proj', label: 'projected at 1,000 clients', sub: 'Same system. Same infrastructure.' },
+  { id: 'calls', label: 'calls handled', sub: 'Zero missed. Two languages. 24/7.' },
+];
+
+/* ── TIERS ── */
+const tiers = [
   {
-    name: 'Strategic Deep Dive',
+    name: 'Figure out what\'s broken',
     price: '$7,500',
-    duration: '1 week',
-    what: 'I embed with you and the team. End of week: a written diagnostic — what\'s broken, what to ship next, what to kill — plus a working proof-of-concept for the critical piece. Fixed fee. No scope creep.',
-    who: 'Founders who need clarity fast. Investor demo in 3 weeks.',
+    time: '1 week',
+    what: 'I sit with you and your team for a week. At the end you get a written diagnosis: what to build, what to kill, what to fix — and a working proof that the fix works.',
+    who: 'You need answers before you spend money.',
   },
   {
-    name: 'Build + Transfer',
+    name: 'Build it and hand it over',
     price: '$15K – $150K',
-    duration: '2 – 12 weeks',
-    what: 'I build the working production system, transfer the code to your team on day 30, stay on-call for 30 more days. You own the repo. Fixed scope. One invoice.',
-    who: 'Teams with a clear mandate who need to ship, not strategize.',
+    time: '2 – 12 weeks',
+    what: 'I build the working system, transfer everything to you on day 30, and stay on-call for another 30 days. You own the code. One invoice. No surprises.',
+    who: 'You know what you need. You need someone who can ship it.',
   },
   {
-    name: 'Embedded Advisory',
+    name: 'Stay and run it',
     price: '$5K – $15K / mo',
-    duration: 'Ongoing',
-    what: 'Fractional technical leadership. Architecture reviews, specs, hiring, pair-coding, Slack Connect. 10 – 20 hrs/week.',
-    who: 'Funded startups without a technical co-founder yet.',
+    time: 'Ongoing',
+    what: 'I stay embedded with your team. Architecture, hiring, reviews, direct access. 10–20 hours a week of someone who has done this before.',
+    who: 'You need a technical leader without the full-time salary.',
   },
 ];
 
+/* ── DONT LIST ── */
+const donts = [
+  'Chatbots that annoy your customers',
+  'AI that sounds like a robot',
+  'Dashboards nobody looks at',
+  'Consultants who send a PDF and disappear',
+  'Per-hour billing that punishes you for asking questions',
+  'Open-ended contracts with no deliverable',
+  'Subcontracting to juniors you never meet',
+  'Slide decks instead of working software',
+];
+
+/* ── ANIMATION STYLE ── */
+const anim = (visible: boolean, delay = 0): React.CSSProperties => ({
+  opacity: visible ? 1 : 0,
+  transform: visible ? 'translateY(0)' : 'translateY(16px)',
+  transition: `all 0.7s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
+});
+
+/* ════════════════════════════════════════════════ */
 export default function LandingPage() {
   const router = useRouter();
-  const { trackEvent } = useVisitor();
+  const hero = useReveal(0.1);
+  const fear = useReveal(0.1);
+  const proof = useReveal(0.1);
+  const work = useReveal(0.1);
+  const dont = useReveal(0.1);
+  const close = useReveal(0.1);
 
-  const handleCTA = (which: string) => {
-    trackEvent('curtain_peek', { which });
-    // For now, route to the existing behind-the-curtain flow; Praxis can wire up a
-    // contact/Slack flow later.
-    setTimeout(() => router.push('/behind-the-curtain'), 100);
-  };
+  const cCalls = useCountUp(1710, proof.visible, 1200, 800);
 
   return (
-    <main
-      style={{
-        backgroundColor: colors.bg,
-        color: colors.textPrimary,
-        minHeight: '100vh',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Text", Inter, sans-serif',
-        fontSize: '16px',
-        lineHeight: 1.6,
-      }}
-    >
-      {/* TOP BAR — minimal, phone visible */}
-      <header
-        style={{
-          borderBottom: `1px solid ${colors.border}`,
-          padding: '16px 24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          maxWidth: 1180,
-          margin: '0 auto',
-        }}
-      >
+    <main style={{ background: C.bg, color: C.text, minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif', fontSize: 16, lineHeight: 1.6 }}>
+
+      {/* ANIMATIONS */}
+      <style>{`
+        @keyframes dotPulse { 0%,100% { opacity: 1; box-shadow: 0 0 8px #5fd6a380; } 50% { opacity: 0.5; box-shadow: 0 0 20px #5fd6a360; } }
+        @keyframes borderShift { 0%,100% { border-color: #1e2535; } 50% { border-color: #2a3a55; } }
+        @keyframes glowPulse { 0%,100% { box-shadow: 0 0 0 rgba(79,140,255,0); } 50% { box-shadow: 0 0 24px rgba(79,140,255,0.06); } }
+        .rc-card { transition: all 0.3s ease; }
+        .rc-card:hover { border-color: #2a3a55 !important; box-shadow: 0 0 20px rgba(79,140,255,0.05); }
+        @media (max-width: 768px) {
+          .rc-grid-2 { grid-template-columns: 1fr !important; }
+          .rc-grid-3 { grid-template-columns: 1fr !important; }
+          .rc-grid-4 { grid-template-columns: 1fr !important; }
+          .rc-section { padding-left: 16px !important; padding-right: 16px !important; }
+          .rc-hero-h1 { font-size: 32px !important; }
+          .rc-cta-row { flex-direction: column !important; }
+          .rc-cta-row a, .rc-cta-row button { width: 100% !important; text-align: center !important; justify-content: center !important; }
+          .rc-footer { flex-direction: column !important; text-align: center !important; gap: 12px !important; }
+        }
+      `}</style>
+
+      {/* ── NAV ── */}
+      <header className="rc-section" style={{ borderBottom: `1px solid ${C.border}`, padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              background: colors.accent2,
-              boxShadow: `0 0 12px ${colors.accent2}80`,
-            }}
-          />
-          <span style={{ fontWeight: 700, letterSpacing: '-0.01em', fontSize: 16 }}>
-            RISCENT
-          </span>
-          <span style={{ color: colors.textMuted, fontSize: 13, marginLeft: 4 }}>
-            / AI consulting — healthcare first
-          </span>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: C.green, animation: 'dotPulse 3s ease-in-out infinite' }} />
+          <span style={{ fontWeight: 700, letterSpacing: '-0.01em', fontSize: 16 }}>RISCENT</span>
         </div>
-        <a
-          href="mailto:ryan@riscent.com"
-          style={{
-            color: colors.textSecondary,
-            textDecoration: 'none',
-            fontSize: 14,
-            fontWeight: 500,
-          }}
-        >
+        <a href="mailto:ryan@riscent.com" style={{ color: C.text2, textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
           ryan@riscent.com
         </a>
       </header>
 
-      {/* HERO — Dr. Raj opens here */}
-      <section
-        style={{
-          maxWidth: 1180,
-          margin: '0 auto',
-          padding: '72px 24px 56px',
-        }}
-      >
-        <div
-          style={{
-            display: 'inline-block',
-            padding: '6px 12px',
-            borderRadius: 6,
-            background: `${colors.accent}14`,
-            border: `1px solid ${colors.accent}33`,
-            color: colors.accent,
-            fontSize: 12,
-            fontWeight: 600,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-            marginBottom: 24,
-          }}
-        >
-          Shipped, not pitched.
-        </div>
-
-        <h1
-          style={{
-            fontSize: 'clamp(34px, 5vw, 56px)',
-            lineHeight: 1.1,
-            letterSpacing: '-0.02em',
-            fontWeight: 700,
-            marginBottom: 24,
-            maxWidth: 920,
-          }}
-        >
-          Your AI works in the demo.
-          <br />
-          <span style={{ color: colors.textMuted }}>It won&apos;t survive production.</span>
-          <br />
-          I shipped one of the hardest ones.
+      {/* ── HERO ── */}
+      <section ref={hero.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px 64px' }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: C.accent, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 20, ...anim(hero.visible) }}>
+          You don&apos;t need another AI pitch.
+        </p>
+        <h1 className="rc-hero-h1" style={{ fontSize: 'clamp(36px, 5vw, 56px)', lineHeight: 1.08, letterSpacing: '-0.025em', fontWeight: 700, marginBottom: 28, maxWidth: 800, ...anim(hero.visible, 0.1) }}>
+          You need someone who&apos;s <em style={{ fontStyle: 'normal', color: C.green }}>built it</em>,<br />
+          not someone who&apos;s <em style={{ fontStyle: 'normal', color: C.muted }}>selling it</em>.
         </h1>
-
-        <p
-          style={{
-            fontSize: 19,
-            lineHeight: 1.55,
-            color: colors.textSecondary,
-            maxWidth: 760,
-            marginBottom: 36,
-          }}
-        >
-          Let&apos;s be honest — <strong style={{ color: colors.textPrimary }}>if everything was working you wouldn&apos;t be on this page.</strong>{' '}
-          88% of AI proofs-of-concept never reach production.{' '}
-          <a
-            href="https://www.healthtechdigital.com/the-ai-implementation-gap-why-80-of-healthcare-ai-projects-fail-to-scale-beyond-pilot-phase/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: colors.textMuted, textDecoration: 'underline' }}
-          >
-            In healthcare, 80% never scale past pilot.
-          </a>{' '}
-          I built a HIPAA-compliant voice receptionist + patient portal + multi-tenant CRM{' '}
-          <strong style={{ color: colors.textPrimary }}>solo, in five months, for under $10,000</strong>.
-          It runs in production today. First customer has handled{' '}
-          <strong style={{ color: colors.accent2 }}>1,710 calls with zero missed</strong> in 60 days.
-          English and Spanish. 24/7.
+        <p style={{ fontSize: 19, lineHeight: 1.6, color: C.text2, maxWidth: 680, marginBottom: 28, ...anim(hero.visible, 0.2) }}>
+          I&apos;m Ryan. 20 years in sales, engineering, and business development. Last year I went all in — 80-hour weeks — and built a HIPAA-compliant medical platform from scratch. Over a million lines of code. Voice agents in two languages. Patient portal. CRM. Marketing systems. Automations. SIP trunking. Data infrastructure. Everything.
         </p>
-
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 48 }}>
-          <button
-            onClick={() => handleCTA('primary')}
-            style={{
-              background: colors.accent,
-              color: colors.bg,
-              border: 'none',
-              padding: '14px 22px',
-              borderRadius: 8,
-              fontSize: 15,
-              fontWeight: 600,
-              cursor: 'pointer',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            Scope a project →
+        <p style={{ fontSize: 19, lineHeight: 1.6, color: C.text, fontWeight: 600, maxWidth: 680, marginBottom: 28, ...anim(hero.visible, 0.3) }}>
+          One client. $1.6 million valuation. $60K seed investment.<br />
+          One thousand clients. $50 million. Same system.
+        </p>
+        <p style={{ fontSize: 17, lineHeight: 1.6, color: C.text2, maxWidth: 680, marginBottom: 40, ...anim(hero.visible, 0.35) }}>
+          That&apos;s not a pitch. That&apos;s what I built last year. If your business needs AI that actually works — not a demo, not a deck, not a 23-year-old with a no-code tool — I&apos;m the person who builds it.
+        </p>
+        <div className="rc-cta-row" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', ...anim(hero.visible, 0.4) }}>
+          <button onClick={() => router.push('/behind-the-curtain')} style={{ background: C.accent, color: C.bg, border: 'none', padding: '16px 28px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer' }}>
+            Tell me what&apos;s broken →
           </button>
-          <a
-            href="mailto:ryan@riscent.com?subject=Quick%20question"
-            style={{
-              background: 'transparent',
-              color: colors.textPrimary,
-              border: `1px solid ${colors.border}`,
-              padding: '14px 22px',
-              borderRadius: 8,
-              fontSize: 15,
-              fontWeight: 600,
-              textDecoration: 'none',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            Shoot an email
+          <a href="mailto:ryan@riscent.com?subject=Quick%20question" style={{ background: 'transparent', color: C.text, border: `1px solid ${C.border}`, padding: '16px 28px', borderRadius: 8, fontSize: 16, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+            ryan@riscent.com
           </a>
-          <button
-            onClick={() => handleCTA('code')}
-            style={{
-              background: 'transparent',
-              color: colors.textMuted,
-              border: `1px solid ${colors.border}`,
-              padding: '14px 22px',
-              borderRadius: 8,
-              fontSize: 15,
-              fontWeight: 500,
-              cursor: 'pointer',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            See the code
-          </button>
-        </div>
-
-        {/* Code block — the trust anchor Dr. Raj needs in the first fold */}
-        <div
-          style={{
-            background: colors.bgElev,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 12,
-            overflow: 'hidden',
-            maxWidth: 920,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              gap: 6,
-              padding: '12px 16px',
-              borderBottom: `1px solid ${colors.border}`,
-              background: colors.bgElev2,
-              alignItems: 'center',
-            }}
-          >
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f56' }} />
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ffbd2e' }} />
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#27c93f' }} />
-            <span
-              style={{
-                marginLeft: 12,
-                fontSize: 12,
-                color: colors.textMuted,
-                fontFamily: 'ui-monospace, "SF Mono", Consolas, monospace',
-              }}
-            >
-              crm-block-theory/backend/blocks/elevenlabs/block.py
-            </span>
-          </div>
-          <pre
-            style={{
-              margin: 0,
-              padding: '20px 24px',
-              fontFamily: 'ui-monospace, "SF Mono", Consolas, monospace',
-              fontSize: 13,
-              lineHeight: 1.65,
-              color: colors.code,
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-            }}
-          >
-{`# Aveena — the voice agent that runs in production
-async def handle_incoming_call(call: IncomingCall) -> CallOutcome:
-    tenant = await get_tenant_by_dnis(call.to)         # multi-tenant lookup
-    ctx = await load_tenant_context(tenant.id)         # RLS, BAA, audit
-    if is_emergency(call.transcript):
-        return await transfer_to_oncall(tenant)        # humans stay in the loop
-    intent = await classify_intent(call, ctx)          # deterministic > vibes
-    handler = INTENT_HANDLERS[intent]                  # strict tool schemas
-    result = await handler.execute(call, ctx)          # fact-check critic wraps this
-    await log_hipaa_audit(tenant, call, result)        # every action, every tenant
-    return result
-
-# 415 routes. 700K lines. Solo. 5 months. <$10K.
-# That is not a pitch. That is the repo.`}
-          </pre>
         </div>
       </section>
 
-      {/* FAILURE MODES — the specificity move */}
-      <section
-        style={{
-          maxWidth: 1180,
-          margin: '0 auto',
-          padding: '56px 24px',
-          borderTop: `1px solid ${colors.border}`,
-        }}
-      >
-        <div style={{ marginBottom: 40, maxWidth: 720 }}>
-          <div
-            style={{
-              color: colors.warn,
-              fontSize: 12,
-              fontWeight: 600,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              marginBottom: 10,
-            }}
-          >
-            You and I both know what&apos;s actually broken
-          </div>
-          <h2
-            style={{
-              fontSize: 'clamp(26px, 3.5vw, 36px)',
-              lineHeight: 1.15,
-              letterSpacing: '-0.015em',
-              fontWeight: 700,
-              marginBottom: 14,
-            }}
-          >
-            I&apos;ve shipped the fix for the thing you haven&apos;t described yet.
-          </h2>
-          <p
-            style={{
-              fontSize: 17,
-              lineHeight: 1.6,
-              color: colors.textSecondary,
-            }}
-          >
-            If you recognize any of these, we should talk. If you recognize more than two, we
-            should talk today.
-          </p>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 16,
-          }}
-        >
-          {failureModes.map((fm) => (
-            <div
-              key={fm.bug}
-              style={{
-                background: colors.bgElev,
-                border: `1px solid ${colors.border}`,
-                borderLeft: `3px solid ${colors.warn}`,
-                borderRadius: 8,
-                padding: '18px 20px',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  color: colors.warn,
-                  marginBottom: 8,
-                }}
-              >
-                Bug in production
-              </div>
-              <div
-                style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  lineHeight: 1.4,
-                  color: colors.textPrimary,
-                  marginBottom: 10,
-                }}
-              >
-                {fm.bug}
-              </div>
-              <div
-                style={{
-                  fontSize: 13,
-                  lineHeight: 1.55,
-                  color: colors.textSecondary,
-                }}
-              >
-                <span style={{ color: colors.accent2, fontWeight: 600 }}>FIX: </span>
-                {fm.fix}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CASE STUDY — Advanced Psychiatry */}
-      <section
-        style={{
-          maxWidth: 1180,
-          margin: '0 auto',
-          padding: '56px 24px',
-          borderTop: `1px solid ${colors.border}`,
-        }}
-      >
-        <div
-          style={{
-            color: colors.textMuted,
-            fontSize: 12,
-            fontWeight: 600,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            marginBottom: 12,
-          }}
-        >
-          The proof, not the deck
-        </div>
-        <h2
-          style={{
-            fontSize: 'clamp(26px, 3.5vw, 36px)',
-            lineHeight: 1.15,
-            letterSpacing: '-0.015em',
-            fontWeight: 700,
-            marginBottom: 28,
-            maxWidth: 860,
-          }}
-        >
-          1,710 calls. Zero missed. 32x growth. 60 days.
+      {/* ── THE FEAR ── */}
+      <section ref={fear.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px', borderTop: `1px solid ${C.border}` }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: C.warn, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 12, ...anim(fear.visible) }}>
+          Sound familiar?
+        </p>
+        <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', lineHeight: 1.15, letterSpacing: '-0.015em', fontWeight: 700, marginBottom: 36, maxWidth: 700, ...anim(fear.visible, 0.1) }}>
+          You&apos;ve been burned. I get it.
         </h2>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 16,
-            marginBottom: 28,
-          }}
-        >
-          {[
-            { big: '1,710', small: 'calls handled' },
-            { big: '0', small: 'missed' },
-            { big: '32×', small: 'growth (2 months)' },
-            { big: '80%', small: 'portal adoption (industry: 15%)' },
-          ].map((stat) => (
-            <div
-              key={stat.small}
-              style={{
-                background: colors.bgElev,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 10,
-                padding: '20px 22px',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 36,
-                  fontWeight: 700,
-                  color: colors.accent2,
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1,
-                  marginBottom: 6,
-                }}
-              >
-                {stat.big}
-              </div>
-              <div style={{ fontSize: 13, color: colors.textSecondary }}>{stat.small}</div>
+        <div className="rc-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          {fears.map((f, i) => (
+            <div key={i} className="rc-card" style={{ background: C.bgElev, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.warn}`, borderRadius: 10, padding: '22px 24px', animation: 'borderShift 6s ease-in-out infinite', animationDelay: `${i * 0.5}s`, ...anim(fear.visible, 0.15 + i * 0.1) }}>
+              <p style={{ fontSize: 16, fontWeight: 600, color: C.text, lineHeight: 1.45, marginBottom: 14 }}>
+                {f.pain}
+              </p>
+              <p style={{ fontSize: 15, color: C.text2, lineHeight: 1.5 }}>
+                <span style={{ color: C.green, fontWeight: 600 }}>Instead: </span>{f.fix}
+              </p>
             </div>
           ))}
         </div>
+      </section>
 
-        <p style={{ color: colors.textSecondary, fontSize: 15, maxWidth: 780 }}>
-          Advanced Psychiatry, Las Vegas. 5 providers. Before us: a human receptionist, an
-          answering service, a patient portal nobody used, a scheduling tool that didn&apos;t talk
-          to anything, and an EHR that swallowed data and returned nothing. In 60 days I
-          shipped a voice receptionist in two languages, a passwordless patient portal, a
-          multi-tenant CRM tying calls/appointments/provider-status together, and
-          HIPAA-compliant infrastructure with BAA. Staff stopped quitting. Owner stopped
-          working Saturdays.
+      {/* ── PROOF ── */}
+      <section ref={proof.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px', borderTop: `1px solid ${C.border}` }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: C.muted, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 12, ...anim(proof.visible) }}>
+          What it looks like when it works
+        </p>
+        <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', lineHeight: 1.15, letterSpacing: '-0.015em', fontWeight: 700, marginBottom: 36, maxWidth: 800, ...anim(proof.visible, 0.1) }}>
+          Built for one. Architected for a thousand.
+        </h2>
+        <div className="rc-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+          {outcomes.map((o, i) => (
+            <div key={o.label} className="rc-card" style={{ background: C.bgElev, border: `1px solid ${C.border}`, borderRadius: 10, padding: '24px', animation: 'glowPulse 4s ease-in-out infinite', animationDelay: `${i * 0.8}s`, ...anim(proof.visible, 0.15 + i * 0.1) }}>
+              <div style={{ fontSize: 40, fontWeight: 700, color: o.id === 'proj' ? C.accent : C.green, letterSpacing: '-0.02em', lineHeight: 1, marginBottom: 6 }}>
+                {o.id === 'lines' ? '1M+' : o.id === 'val' ? '$1.6M' : o.id === 'proj' ? '$50M+' : cCalls.toLocaleString()}
+              </div>
+              <div style={{ fontSize: 15, color: C.text, fontWeight: 500, marginBottom: 4 }}>{o.label}</div>
+              <div style={{ fontSize: 14, color: C.muted }}>{o.sub}</div>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: 17, lineHeight: 1.65, color: C.text2, maxWidth: 740, ...anim(proof.visible, 0.5) }}>
+          Advanced Psychiatry had 5 providers, an answering service that missed a third of calls, a patient portal nobody used, and staff burning out from phone duty. I replaced all of it — voice agents in English and Spanish, passwordless patient portal, multi-provider CRM, automated scheduling, telehealth integration, provider status system, HIPAA-compliant infrastructure with BAA. 415 API routes. Built, deployed, and running in production. Their patients book at midnight. Their staff does clinical work. The owner took a Saturday off for the first time in two years.
         </p>
       </section>
 
-      {/* ENGAGEMENT TIERS */}
-      <section
-        style={{
-          maxWidth: 1180,
-          margin: '0 auto',
-          padding: '56px 24px',
-          borderTop: `1px solid ${colors.border}`,
-        }}
-      >
-        <div
-          style={{
-            color: colors.textMuted,
-            fontSize: 12,
-            fontWeight: 600,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            marginBottom: 12,
-          }}
-        >
-          Three ways to work with me
-        </div>
-        <h2
-          style={{
-            fontSize: 'clamp(26px, 3.5vw, 36px)',
-            lineHeight: 1.15,
-            letterSpacing: '-0.015em',
-            fontWeight: 700,
-            marginBottom: 32,
-            maxWidth: 720,
-          }}
-        >
-          Fixed scope. Fixed price. You own everything on day 30.
+      {/* ── HOW I WORK ── */}
+      <section ref={work.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px', borderTop: `1px solid ${C.border}` }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: C.muted, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 12, ...anim(work.visible) }}>
+          Three ways to work together
+        </p>
+        <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', lineHeight: 1.15, letterSpacing: '-0.015em', fontWeight: 700, marginBottom: 36, maxWidth: 700, ...anim(work.visible, 0.1) }}>
+          You know the price before we start.
         </h2>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: 18,
-          }}
-        >
-          {engagements.map((e) => (
-            <div
-              key={e.name}
-              style={{
-                background: colors.bgElev,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 10,
-                padding: '24px',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 12,
-                  color: colors.textMuted,
-                  fontWeight: 600,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  marginBottom: 8,
-                }}
-              >
-                {e.duration}
-              </div>
-              <div
-                style={{
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: colors.textPrimary,
-                  marginBottom: 6,
-                }}
-              >
-                {e.name}
-              </div>
-              <div
-                style={{
-                  fontSize: 24,
-                  fontWeight: 700,
-                  color: colors.accent,
-                  marginBottom: 14,
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                {e.price}
-              </div>
-              <div
-                style={{
-                  fontSize: 14,
-                  lineHeight: 1.55,
-                  color: colors.textSecondary,
-                  marginBottom: 14,
-                }}
-              >
-                {e.what}
-              </div>
-              <div
-                style={{
-                  fontSize: 12,
-                  color: colors.textMuted,
-                  paddingTop: 14,
-                  borderTop: `1px solid ${colors.border}`,
-                }}
-              >
-                <strong style={{ color: colors.textSecondary }}>Who it&apos;s for: </strong>
-                {e.who}
+        <div className="rc-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+          {tiers.map((t, i) => (
+            <div key={t.name} className="rc-card" style={{ background: C.bgElev, border: `1px solid ${C.border}`, borderRadius: 10, padding: '28px 24px', ...anim(work.visible, 0.15 + i * 0.12) }}>
+              <div style={{ fontSize: 13, color: C.muted, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>{t.time}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 6 }}>{t.name}</div>
+              <div style={{ fontSize: 26, fontWeight: 700, color: C.accent, marginBottom: 16, letterSpacing: '-0.01em' }}>{t.price}</div>
+              <p style={{ fontSize: 15, lineHeight: 1.55, color: C.text2, marginBottom: 16 }}>{t.what}</p>
+              <div style={{ fontSize: 14, color: C.muted, paddingTop: 14, borderTop: `1px solid ${C.border}` }}>
+                <strong style={{ color: C.text2 }}>Best for: </strong>{t.who}
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* WHAT I DON'T DO — the transparency layer */}
-      <section
-        style={{
-          maxWidth: 1180,
-          margin: '0 auto',
-          padding: '56px 24px',
-          borderTop: `1px solid ${colors.border}`,
-        }}
-      >
-        <div
-          style={{
-            color: colors.textMuted,
-            fontSize: 12,
-            fontWeight: 600,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            marginBottom: 12,
-          }}
-        >
-          What I don&apos;t do
-        </div>
-        <h2
-          style={{
-            fontSize: 'clamp(24px, 3vw, 32px)',
-            lineHeight: 1.2,
-            letterSpacing: '-0.01em',
-            fontWeight: 700,
-            marginBottom: 20,
-            maxWidth: 760,
-          }}
-        >
-          I know you understand this — but I want to be clear.
+      {/* ── WHAT I DON'T DO ── */}
+      <section ref={dont.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px', borderTop: `1px solid ${C.border}` }}>
+        <h2 style={{ fontSize: 'clamp(24px, 3vw, 32px)', lineHeight: 1.2, letterSpacing: '-0.01em', fontWeight: 700, marginBottom: 24, maxWidth: 700, ...anim(dont.visible) }}>
+          What I don&apos;t do.
         </h2>
-        <ul
-          style={{
-            listStyle: 'none',
-            padding: 0,
-            margin: 0,
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: 12,
-            color: colors.textSecondary,
-            fontSize: 15,
-            lineHeight: 1.6,
-          }}
-        >
-          {[
-            'AI strategy decks',
-            'Zapier integrations',
-            '"AI readiness assessments"',
-            'Four-workshop discovery phases',
-            'Retainers without deliverables',
-            'Projects where nobody on your side can explain what winning looks like',
-            'Per-hour billing',
-            'Open-ended contracts',
-            'Subcontracting to juniors',
-          ].map((item) => (
-            <li
-              key={item}
-              style={{
-                background: colors.bgElev,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 6,
-                padding: '14px 16px',
-              }}
-            >
-              <span style={{ color: colors.warn, marginRight: 8 }}>✗</span>
-              {item}
-            </li>
+        <div className="rc-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+          {donts.map((d, i) => (
+            <div key={d} className="rc-card" style={{ background: C.bgElev, border: `1px solid ${C.border}`, borderRadius: 8, padding: '16px 18px', fontSize: 15, color: C.text2, ...anim(dont.visible, 0.05 + i * 0.06) }}>
+              <span style={{ color: C.warn, marginRight: 10 }}>✗</span>{d}
+            </div>
           ))}
-        </ul>
-        <p
-          style={{
-            fontSize: 14,
-            color: colors.textMuted,
-            marginTop: 20,
-            maxWidth: 720,
-            fontStyle: 'italic',
-          }}
-        >
-          If you&apos;re looking for any of those, there are good firms that do them. I&apos;m
-          not those firms. I&apos;m the person you call when you need something shipped.
+        </div>
+        <p style={{ fontSize: 15, color: C.muted, maxWidth: 680, fontStyle: 'italic', ...anim(dont.visible, 0.5) }}>
+          If you need any of those, there are firms that do them well. I&apos;m the person you call when you need something that works.
         </p>
       </section>
 
-      {/* INEVITABILITY CLOSE */}
-      <section
-        style={{
-          maxWidth: 1180,
-          margin: '0 auto',
-          padding: '72px 24px',
-          borderTop: `1px solid ${colors.border}`,
-        }}
-      >
-        <div style={{ maxWidth: 800 }}>
-          <div
-            style={{
-              color: colors.accent,
-              fontSize: 12,
-              fontWeight: 600,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              marginBottom: 12,
-            }}
-          >
-            The new expectation
-          </div>
-          <h2
-            style={{
-              fontSize: 'clamp(26px, 3.5vw, 36px)',
-              lineHeight: 1.2,
-              letterSpacing: '-0.015em',
-              fontWeight: 700,
-              marginBottom: 20,
-            }}
-          >
-            The internet wasn&apos;t always around either.
+      {/* ── CLOSE ── */}
+      <section ref={close.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px', borderTop: `1px solid ${C.border}` }}>
+        <div style={{ maxWidth: 740 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: C.accent, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 12, ...anim(close.visible) }}>
+            The real question
+          </p>
+          <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', lineHeight: 1.2, letterSpacing: '-0.015em', fontWeight: 700, marginBottom: 24, ...anim(close.visible, 0.1) }}>
+            The question isn&apos;t whether your business gets AI.<br />
+            It&apos;s whether you get it from someone who&apos;s built it — or someone who&apos;s selling it.
           </h2>
-          <p
-            style={{
-              fontSize: 17,
-              lineHeight: 1.65,
-              color: colors.textSecondary,
-              marginBottom: 18,
-            }}
-          >
-            It wasn&apos;t that long ago people were afraid to bank online. Now a bank that
-            doesn&apos;t offer mobile deposit feels broken. Amazon didn&apos;t sell anyone a
-            feature — they convinced all of us we deserved free two-day shipping. Today, you
-            can feel it when a store doesn&apos;t have it.
+          <p style={{ fontSize: 17, lineHeight: 1.65, color: C.text2, marginBottom: 36, ...anim(close.visible, 0.2) }}>
+            Twenty years ago, people were afraid to bank online. Now a bank without an app feels broken. The same shift is happening to your industry right now. The businesses that move first don&apos;t just save money — they become the ones everyone else is trying to catch up to.
           </p>
-          <p
-            style={{
-              fontSize: 17,
-              lineHeight: 1.65,
-              color: colors.textPrimary,
-              fontWeight: 600,
-              marginBottom: 28,
-            }}
-          >
-            Healthcare AI is at that inflection point right now. Your patients already expect
-            a call picked up in two seconds, a portal that opens on their phone at 11 PM, a
-            scheduling system that knows what time their kid&apos;s next appointment is. They
-            will get it from someone. The only question is whether that someone is you or the
-            practice down the street.
-          </p>
-
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <button
-              onClick={() => handleCTA('final')}
-              style={{
-                background: colors.accent,
-                color: colors.bg,
-                border: 'none',
-                padding: '16px 26px',
-                borderRadius: 8,
-                fontSize: 16,
-                fontWeight: 700,
-                cursor: 'pointer',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Tell me what you&apos;re trying to ship →
+          <div className="rc-cta-row" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20, ...anim(close.visible, 0.3) }}>
+            <button onClick={() => router.push('/behind-the-curtain')} style={{ background: C.accent, color: C.bg, border: 'none', padding: '18px 32px', borderRadius: 8, fontSize: 17, fontWeight: 700, cursor: 'pointer' }}>
+              Tell me what you&apos;re building →
             </button>
-            <a
-              href="mailto:ryan@riscent.com?subject=Quick%20question"
-              style={{
-                background: 'transparent',
-                color: colors.textPrimary,
-                border: `1px solid ${colors.border}`,
-                padding: '16px 26px',
-                borderRadius: 8,
-                fontSize: 16,
-                fontWeight: 600,
-                textDecoration: 'none',
-                letterSpacing: '-0.01em',
-              }}
-            >
+            <a href="mailto:ryan@riscent.com?subject=Quick%20question" style={{ background: 'transparent', color: C.text, border: `1px solid ${C.border}`, padding: '18px 32px', borderRadius: 8, fontSize: 17, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
               ryan@riscent.com
             </a>
           </div>
-          <p
-            style={{
-              fontSize: 13,
-              color: colors.textMuted,
-              marginTop: 16,
-            }}
-          >
-            Reply within 24 hours with two 15-minute slots. No calendly dance. No pitch deck.
-            No discovery phase. Just whether I can help.
+          <p style={{ fontSize: 14, color: C.muted, ...anim(close.visible, 0.4) }}>
+            I reply within 24 hours. No pitch deck. No discovery phase. Just whether I can help.
           </p>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer
-        style={{
-          borderTop: `1px solid ${colors.border}`,
-          padding: '28px 24px',
-          maxWidth: 1180,
-          margin: '0 auto',
-          color: colors.textMuted,
-          fontSize: 13,
-          display: 'flex',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 16,
-        }}
-      >
+      {/* ── FOOTER ── */}
+      <footer className="rc-footer rc-section" style={{ borderTop: `1px solid ${C.border}`, padding: '28px 24px', maxWidth: 1100, margin: '0 auto', color: C.muted, fontSize: 13, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <div style={{ fontWeight: 700, color: colors.textSecondary, marginBottom: 4 }}>
-            RISCENT / Riscen Software Labs
-          </div>
-          <div>
-            Built with Claude · Deployed on Vercel · Hosted on Railway · Backed by Neon · Zero
-            venture capital.
-          </div>
+          <div style={{ fontWeight: 700, color: C.text2, marginBottom: 4 }}>RISCENT / Riscen Software Labs</div>
+          <div>$1.6M from one client. $50M+ from a thousand. One person built it.</div>
         </div>
         <div style={{ display: 'flex', gap: 24 }}>
-          <a href="/research" style={{ color: colors.textMuted, textDecoration: 'none' }}>
-            Research
-          </a>
-          <a href="/thoughts" style={{ color: colors.textMuted, textDecoration: 'none' }}>
-            Thoughts
-          </a>
-          <a
-            href="https://ib365.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: colors.textMuted, textDecoration: 'none' }}
-          >
-            IB365 (the product)
-          </a>
+          <a href="/docs" style={{ color: C.muted, textDecoration: 'none' }}>Documentation</a>
+          <a href="https://ib365.ai" target="_blank" rel="noopener noreferrer" style={{ color: C.muted, textDecoration: 'none' }}>IB365</a>
+          <a href="mailto:ryan@riscent.com" style={{ color: C.muted, textDecoration: 'none' }}>Contact</a>
         </div>
       </footer>
     </main>

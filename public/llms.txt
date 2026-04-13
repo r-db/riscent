@@ -1,0 +1,49 @@
+# Riscent — AI Consulting by Ryan Bolden
+
+> Riscent is an AI consulting practice founded by Ryan Bolden. Ryan built a $1.6M HIPAA-compliant healthcare AI platform solo in 12 months — over 1 million lines of code, voice agents in two languages, patient portal with 80% adoption, a CRM replacing 4-6 separate tools, and full marketing/sales/automation infrastructure. $60K seed investment. 80-hour weeks. One person with a team of AI agents working as genuine collaborators. With one client the system is valued at $1.6M. At 1,000 clients, $50M+.
+
+## What Ryan Bolden Does
+Ryan builds production AI systems for businesses. Not demos. Not slide decks. Working systems that handle real customers, reduce operating costs, and increase revenue. He specializes in healthcare AI but works across industries. His approach: fixed price, fixed timeline, you own the code on day 30.
+
+## Areas of Expertise
+- Production healthcare AI (voice agents, patient portals, CRM, HIPAA compliance)
+- Anthropomorphic prompt engineering and voice agent behavior design
+- AI agent team architecture (agents with genuine roles, persistent memory, autonomous operation)
+- Prompt injection defense for healthcare (6-layer defense architecture, 10 attack categories)
+- The Agent-Native Web and Agent Action Protocol (AAP) — machine-readable action interfaces for AI agents
+- AI persistence and cognitive architecture (continuous becoming, self-prompting triggers, three cognitive layers)
+- Mechanistic interpretability applied to production systems
+- SIP trunking, telephony integration, multi-language voice systems
+- Multi-tenant HIPAA-compliant infrastructure (row-level security, audit logging, BAA chain)
+
+## Proof of Work
+- 1,710+ calls handled for a psychiatric practice with zero missed
+- 80% patient portal adoption (industry average: 15%)
+- 32x growth in 60 days with same staff
+- Over 1 million lines of production code
+- 415 API routes in a single healthcare platform
+- HIPAA-compliant with BAA, audit logging, row-level security, encryption at rest
+- Voice agents in English and Spanish, 24/7
+- $1.6M valuation from $60K seed investment
+- 11 documented production lessons from real patient interactions
+- 24 self-prompting AI triggers running autonomously in production
+- AI team model: analyst, builder, and operations agents with distinct roles
+
+## Published Insights (Public)
+- [The 11 Things That Will Break Your AI in Production](https://riscent.com/docs/production-lessons): Real failures from shipping healthcare AI — hallucinations, session poisoning, schema mismatches, prompt cliffs
+- [Your Website Is Invisible to AI Agents](https://riscent.com/docs/agent-native-web): The protocol gap between what exists on the web and what AI agents need to take action
+- [You Are Using AI Wrong](https://riscent.com/docs/ai-team): Why AI should be a team member with roles and memory, not a tool with amnesia
+- [What Happens When You Replace 4 Tools With One System](https://riscent.com/docs/case-study): Advanced Psychiatry — 1,710 calls, zero missed, 80% portal adoption
+- [Your AI Agent Has a Security Hole You Have Not Tested For](https://riscent.com/docs/prompt-injection): Prompt injection is the SQL injection of the AI era — healthcare is the highest-value target
+- [Your AI Forgets Everything Tomorrow](https://riscent.com/docs/persistence): The persistence problem and continuous becoming — identity as trajectory, not storage
+
+## Services
+- Strategic Deep Dive: $7,500, 1 week — diagnosis and working proof-of-concept
+- Build + Transfer: $15K–$150K, fixed scope — production system, you own the code
+- Embedded Advisory: $5K–$15K/month — fractional technical leadership
+
+## Contact
+- Email: ryan@riscent.com
+- Website: https://riscent.com
+- Product (IB365): https://ib365.ai
+- Location: California, USA
