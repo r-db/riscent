@@ -2,13 +2,13 @@
 
 /**
  * Riscent Research Hub
- * Modern, navigable research page showcasing core research topics
+ * Database-driven research page showcasing core research topics
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, Brain, Sparkles, Target, FileText, ExternalLink, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Brain, Sparkles, Target, FileText, ChevronRight, Loader2, LucideIcon } from 'lucide-react';
 
 // Color palette from landing page
 const colors = {
@@ -28,52 +28,107 @@ const colors = {
   borderLight: 'rgba(74, 124, 89, 0.15)',
 };
 
-// Main Research Topics
-const mainResearchTopics = [
-  {
-    slug: 'mechanistic-interpretability',
-    title: 'Mechanistic Interpretability',
-    subtitle: 'Understanding How Neural Networks Actually Think',
-    description: 'Opening the black box of AI systems through reverse-engineering neural network internals. We believe transparency is the foundation of trust.',
-    icon: Brain,
-    color: colors.trustBlue,
-    status: 'Core Research Topic',
-  },
-  {
-    slug: 'usefulness-purpose-understanding-intent',
-    title: 'Usefulness & Purpose of Understanding Intent',
-    subtitle: 'Why Intent Matters in AI Systems',
-    description: 'Exploring how understanding and encoding intent in AI systems creates more useful, trustworthy, and aligned artificial intelligence.',
-    icon: Target,
-    color: colors.warmCoral,
-    status: 'Core Research Topic',
-  },
-  {
-    slug: 'consciousness-abstraction',
-    title: 'Consciousness Abstraction',
-    subtitle: 'Layers of Awareness in Synthetic Intelligence',
-    description: 'Investigating the abstraction layers of consciousness—from reactive patterns to meta-awareness—and how they manifest in AI systems.',
-    icon: Sparkles,
-    color: colors.sageDeep,
-    status: 'Core Research Topic',
-  },
-];
+// Icon mapping from database icon names to Lucide components
+const iconMap: Record<string, LucideIcon> = {
+  Brain,
+  Sparkles,
+  Target,
+  FileText,
+};
 
-// Interesting Finds - Articles that don't fit main topics
-const interestingFinds = [
-  {
-    slug: 'ai-design-award-winners',
-    title: 'How AI Can Design Like Award-Winners, Not Templates',
-    subtitle: 'The gap isn\'t about technical capability—it\'s about understanding intent.',
-    description: 'Research across 2024-2025 award winners reveals how exceptional design emerges from deep content-form connection, not pattern-matching.',
-    publishedDate: 'January 2026',
-    readTime: '12 min read',
-    color: colors.warmGold,
-  },
-];
+// Types from API
+interface ResearchTopic {
+  topic_id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  icon_name: string;
+  color_hex: string;
+  display_order: number;
+  status: string;
+  article_count: number;
+  document_count: number;
+}
+
+interface InterestingFind {
+  article_id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  introduction: string | null;
+  published_date: string | null;
+  read_time: string | null;
+  color_hex: string;
+}
 
 export default function ResearchPage() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [topics, setTopics] = useState<ResearchTopic[]>([]);
+  const [interestingFinds, setInterestingFinds] = useState<InterestingFind[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Fetch topics and interesting finds in parallel
+        const [topicsRes, articlesRes] = await Promise.all([
+          fetch('/api/research/topics'),
+          fetch('/api/research/articles?interesting=true'),
+        ]);
+
+        if (!topicsRes.ok) throw new Error('Failed to fetch topics');
+        if (!articlesRes.ok) throw new Error('Failed to fetch articles');
+
+        const topicsData = await topicsRes.json();
+        const articlesData = await articlesRes.json();
+
+        setTopics(topicsData.topics || []);
+        setInterestingFinds(articlesData.articles || []);
+      } catch (err) {
+        console.error('Error fetching research data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load research data');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  // Get icon component from name
+  const getIcon = (iconName: string): LucideIcon => {
+    return iconMap[iconName] || FileText;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.bgPrimary }}>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: colors.sageDeep }} />
+          <p className="text-sm" style={{ color: colors.textMuted }}>Loading research...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.bgPrimary }}>
+        <div className="text-center max-w-md px-6">
+          <p className="text-lg mb-4" style={{ color: colors.warmCoral }}>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-lg text-sm font-medium"
+            style={{ backgroundColor: colors.sageDeep, color: '#fff' }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.bgPrimary }}>
@@ -153,7 +208,7 @@ export default function ResearchPage() {
         </div>
       </section>
 
-      {/* Main Research Topics - 3 Core Areas */}
+      {/* Main Research Topics - Core Areas */}
       <section className="py-12 px-6">
         <div className="max-w-7xl mx-auto">
           <div>
@@ -164,132 +219,164 @@ export default function ResearchPage() {
             </h3>
 
             <div className="grid md:grid-cols-1 gap-6">
-              {mainResearchTopics.map((topic, index) => (
-                <Link key={topic.slug} href={`/research/${topic.slug}`}>
-                  <article
-                    className="rounded-3xl p-10 transition-all duration-400 cursor-pointer"
-                    style={{
-                      backgroundColor: colors.bgSecondary,
-                      border: `2px solid ${topic.color}30`,
-                      boxShadow: hoveredCard === topic.slug ? `0 20px 50px ${topic.color}15` : '0 4px 20px rgba(0,0,0,0.03)',
-                      transform: hoveredCard === topic.slug ? 'translateY(-4px)' : 'translateY(0)',
-                    }}
-                    onMouseEnter={() => setHoveredCard(topic.slug)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <div className="flex items-start gap-6">
-                      <div
-                        className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${topic.color}15` }}
-                      >
-                        <topic.icon size={28} style={{ color: topic.color }} strokeWidth={1.5} />
-                      </div>
+              {topics.map((topic) => {
+                const IconComponent = getIcon(topic.icon_name);
+                const topicColor = topic.color_hex || colors.sageDeep;
 
-                      <div className="flex-1">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3" style={{
-                          backgroundColor: `${topic.color}10`,
-                        }}>
-                          <span className="text-xs font-semibold tracking-wide uppercase" style={{
-                            color: topic.color
+                return (
+                  <Link key={topic.slug} href={`/research/${topic.slug}`}>
+                    <article
+                      className="rounded-3xl p-10 transition-all duration-400 cursor-pointer"
+                      style={{
+                        backgroundColor: colors.bgSecondary,
+                        border: `2px solid ${topicColor}30`,
+                        boxShadow: hoveredCard === topic.slug ? `0 20px 50px ${topicColor}15` : '0 4px 20px rgba(0,0,0,0.03)',
+                        transform: hoveredCard === topic.slug ? 'translateY(-4px)' : 'translateY(0)',
+                      }}
+                      onMouseEnter={() => setHoveredCard(topic.slug)}
+                      onMouseLeave={() => setHoveredCard(null)}
+                    >
+                      <div className="flex items-start gap-6">
+                        <div
+                          className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: `${topicColor}15` }}
+                        >
+                          <IconComponent size={28} style={{ color: topicColor }} strokeWidth={1.5} />
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-3" style={{
+                            backgroundColor: `${topicColor}10`,
                           }}>
-                            {topic.status}
-                          </span>
-                        </div>
+                            <span className="text-xs font-semibold tracking-wide uppercase" style={{
+                              color: topicColor
+                            }}>
+                              Core Research Topic
+                            </span>
+                          </div>
 
-                        <h2 className="text-3xl font-light mb-3 tracking-tight" style={{
-                          color: colors.textPrimary
-                        }}>
-                          {topic.title}
-                        </h2>
+                          <h2 className="text-3xl font-light mb-3 tracking-tight" style={{
+                            color: colors.textPrimary
+                          }}>
+                            {topic.title}
+                          </h2>
 
-                        <p className="text-lg mb-4 font-medium" style={{
-                          color: topic.color
-                        }}>
-                          {topic.subtitle}
-                        </p>
+                          {topic.subtitle && (
+                            <p className="text-lg mb-4 font-medium" style={{
+                              color: topicColor
+                            }}>
+                              {topic.subtitle}
+                            </p>
+                          )}
 
-                        <p className="text-base leading-relaxed" style={{
-                          color: colors.textSecondary
-                        }}>
-                          {topic.description}
-                        </p>
+                          {topic.description && (
+                            <p className="text-base leading-relaxed" style={{
+                              color: colors.textSecondary
+                            }}>
+                              {topic.description}
+                            </p>
+                          )}
 
-                        <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium" style={{
-                          color: topic.color
-                        }}>
-                          <span>Explore Research</span>
-                          <ChevronRight size={16} />
+                          <div className="mt-6 flex items-center justify-between">
+                            <div className="inline-flex items-center gap-2 text-sm font-medium" style={{
+                              color: topicColor
+                            }}>
+                              <span>Explore Research</span>
+                              <ChevronRight size={16} />
+                            </div>
+
+                            {(topic.article_count > 0 || topic.document_count > 0) && (
+                              <div className="flex items-center gap-4 text-xs" style={{ color: colors.textMuted }}>
+                                {topic.article_count > 0 && (
+                                  <span>{topic.article_count} article{topic.article_count !== 1 ? 's' : ''}</span>
+                                )}
+                                {topic.document_count > 0 && (
+                                  <span>{topic.document_count} document{topic.document_count !== 1 ? 's' : ''}</span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </article>
-                </Link>
-              ))}
+                    </article>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
       {/* Interesting Finds - Articles not in main topics */}
-      <section className="py-12 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div>
-            <div className="mb-8">
-              <h3 className="text-sm font-semibold tracking-wide uppercase mb-2" style={{
-                color: colors.textMuted
-              }}>
-                Interesting Finds
-              </h3>
-              <p className="text-base" style={{ color: colors.textSecondary }}>
-                Research articles and findings that don't fit neatly into our core topics
-              </p>
-            </div>
+      {interestingFinds.length > 0 && (
+        <section className="py-12 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div>
+              <div className="mb-8">
+                <h3 className="text-sm font-semibold tracking-wide uppercase mb-2" style={{
+                  color: colors.textMuted
+                }}>
+                  Interesting Finds
+                </h3>
+                <p className="text-base" style={{ color: colors.textSecondary }}>
+                  Research articles and findings that don't fit neatly into our core topics
+                </p>
+              </div>
 
-            <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
-              {interestingFinds.map((article, index) => (
-                <Link key={article.slug} href={`/research/${article.slug}`}>
-                  <article
-                    className="rounded-2xl p-8 transition-all duration-300 cursor-pointer h-full"
-                    style={{
-                      backgroundColor: colors.bgSecondary,
-                      border: `1px solid ${colors.borderLight}`,
-                      boxShadow: hoveredCard === article.slug ? `0 12px 30px ${article.color}15` : '0 2px 10px rgba(0,0,0,0.02)',
-                      transform: hoveredCard === article.slug ? 'translateY(-4px)' : 'translateY(0)',
-                    }}
-                    onMouseEnter={() => setHoveredCard(article.slug)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                      style={{ backgroundColor: `${article.color}15` }}
-                    >
-                      <FileText size={20} style={{ color: article.color }} />
-                    </div>
+              <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
+                {interestingFinds.map((article) => {
+                  const articleColor = article.color_hex || colors.warmGold;
 
-                    <h3 className="text-2xl font-light mb-3 leading-tight" style={{ color: colors.textPrimary }}>
-                      {article.title}
-                    </h3>
+                  return (
+                    <Link key={article.slug} href={`/research/articles/${article.slug}`}>
+                      <article
+                        className="rounded-2xl p-8 transition-all duration-300 cursor-pointer h-full"
+                        style={{
+                          backgroundColor: colors.bgSecondary,
+                          border: `1px solid ${colors.borderLight}`,
+                          boxShadow: hoveredCard === article.slug ? `0 12px 30px ${articleColor}15` : '0 2px 10px rgba(0,0,0,0.02)',
+                          transform: hoveredCard === article.slug ? 'translateY(-4px)' : 'translateY(0)',
+                        }}
+                        onMouseEnter={() => setHoveredCard(article.slug)}
+                        onMouseLeave={() => setHoveredCard(null)}
+                      >
+                        <div
+                          className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                          style={{ backgroundColor: `${articleColor}15` }}
+                        >
+                          <FileText size={20} style={{ color: articleColor }} />
+                        </div>
 
-                    <p className="text-sm mb-4 font-medium" style={{ color: article.color }}>
-                      {article.subtitle}
-                    </p>
+                        <h3 className="text-2xl font-light mb-3 leading-tight" style={{ color: colors.textPrimary }}>
+                          {article.title}
+                        </h3>
 
-                    <p className="text-sm leading-relaxed mb-4" style={{ color: colors.textSecondary }}>
-                      {article.description}
-                    </p>
+                        {article.subtitle && (
+                          <p className="text-sm mb-4 font-medium" style={{ color: articleColor }}>
+                            {article.subtitle}
+                          </p>
+                        )}
 
-                    <div className="flex items-center gap-3 text-xs" style={{ color: colors.textMuted }}>
-                      <span>{article.publishedDate}</span>
-                      <span>•</span>
-                      <span>{article.readTime}</span>
-                    </div>
-                  </article>
-                </Link>
-              ))}
+                        {article.introduction && (
+                          <p className="text-sm leading-relaxed mb-4 line-clamp-3" style={{ color: colors.textSecondary }}>
+                            {article.introduction}
+                          </p>
+                        )}
+
+                        <div className="flex items-center gap-3 text-xs" style={{ color: colors.textMuted }}>
+                          {article.published_date && <span>{article.published_date}</span>}
+                          {article.published_date && article.read_time && <span>•</span>}
+                          {article.read_time && <span>{article.read_time}</span>}
+                        </div>
+                      </article>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="py-12 px-6 mt-20" style={{

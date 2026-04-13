@@ -14,12 +14,19 @@ export interface SeqMessage {
   timestamp: Date;
 }
 
+interface IPLimitState {
+  reached: boolean;
+  currentCostCents: number;
+  limitCents: number;
+}
+
 interface SeqChatState {
   conversationId: string | null;
   messages: SeqMessage[];
   isThinking: boolean;
   showThinking: boolean;
   error: string | null;
+  ipLimit: IPLimitState;
 }
 
 interface UseSeqChatOptions {
@@ -35,6 +42,11 @@ export function useSeqChat({ visitorId, showThinkingDefault = true, onCostUpdate
     isThinking: false,
     showThinking: showThinkingDefault,
     error: null,
+    ipLimit: {
+      reached: false,
+      currentCostCents: 0,
+      limitCents: 30,
+    },
   });
 
   // Ready when visitorId is loaded (not null/empty)
@@ -76,11 +88,27 @@ export function useSeqChat({ visitorId, showThinkingDefault = true, onCostUpdate
         }),
       });
 
+      const data = await response.json();
+
+      // Handle 402 IP limit reached
+      if (response.status === 402 && data.error === 'cost_gate_reached') {
+        setState(prev => ({
+          ...prev,
+          isThinking: false,
+          // Remove the user message since we couldn't process it
+          messages: prev.messages.slice(0, -1),
+          ipLimit: {
+            reached: true,
+            currentCostCents: data.currentCostCents || 0,
+            limitCents: data.limitCents || 30,
+          },
+        }));
+        return;
+      }
+
       if (!response.ok) {
         throw new Error('Failed to get response from Seq');
       }
-
-      const data = await response.json();
 
       const seqMessage: SeqMessage = {
         id: `seq-${Date.now()}`,
@@ -145,8 +173,24 @@ export function useSeqChat({ visitorId, showThinkingDefault = true, onCostUpdate
       isThinking: false,
       showThinking: showThinkingDefault,
       error: null,
+      ipLimit: {
+        reached: false,
+        currentCostCents: 0,
+        limitCents: 30,
+      },
     });
   }, [showThinkingDefault]);
+
+  // Dismiss IP limit modal (user closed it without signing in)
+  const dismissIPLimit = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      ipLimit: {
+        ...prev.ipLimit,
+        reached: false,
+      },
+    }));
+  }, []);
 
   return {
     ...state,
@@ -155,5 +199,6 @@ export function useSeqChat({ visitorId, showThinkingDefault = true, onCostUpdate
     addOpeningMessages,
     toggleThinking,
     clearConversation,
+    dismissIPLimit,
   };
 }

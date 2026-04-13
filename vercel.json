@@ -7,6 +7,13 @@
       "maxDuration": 30
     }
   },
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "cms.riscent.com" }],
+      "destination": "/cms/:path*"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
