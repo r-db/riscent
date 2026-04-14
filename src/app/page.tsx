@@ -73,7 +73,7 @@ const outcomes = [
   { id: 'lines', label: 'lines of code', sub: 'One person. One year.' },
   { id: 'val', label: 'valuation — one client', sub: 'From $60K seed investment.' },
   { id: 'proj', label: 'projected at 1,000 clients', sub: 'Same system. Same infrastructure.' },
-  { id: 'calls', label: 'calls handled', sub: 'Zero missed. Two languages. 24/7.' },
+  { id: 'calls', label: 'calls in one month — one client', sub: 'Zero missed. Two languages. 24/7.' },
 ];
 
 /* ── TIERS ── */
