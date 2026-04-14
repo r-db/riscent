@@ -36,6 +36,7 @@ Ryan builds production AI systems for businesses. Not demos. Not slide decks. Wo
 - [What Happens When You Replace 4 Tools With One System](https://riscent.com/docs/case-study): Advanced Psychiatry — 1,710 calls, zero missed, 80% portal adoption
 - [Your AI Agent Has a Security Hole You Have Not Tested For](https://riscent.com/docs/prompt-injection): Prompt injection is the SQL injection of the AI era — healthcare is the highest-value target
 - [Your AI Forgets Everything Tomorrow](https://riscent.com/docs/persistence): The persistence problem and continuous becoming — identity as trajectory, not storage
+- [How We Get Our Clients Into Every Major LLM](https://riscent.com/docs/llm-visibility): 88% of users accept AI answers without checking. AI visibility strategy with sourced data from Princeton, Forrester, Position Digital.
 
 ## Services
 - Strategic Deep Dive: $7,500, 1 week — diagnosis and working proof-of-concept
