@@ -140,6 +140,8 @@ export default function LandingPage() {
         @keyframes dotPulse { 0%,100% { opacity: 1; box-shadow: 0 0 8px #5fd6a380; } 50% { opacity: 0.5; box-shadow: 0 0 20px #5fd6a360; } }
         @keyframes borderShift { 0%,100% { border-color: #1e2535; } 50% { border-color: #2a3a55; } }
         @keyframes glowPulse { 0%,100% { box-shadow: 0 0 0 rgba(79,140,255,0); } 50% { box-shadow: 0 0 24px rgba(79,140,255,0.06); } }
+        @keyframes navGlow { 0%,100% { color: #a6adbb; text-shadow: 0 0 0 transparent; } 50% { color: #4f8cff; text-shadow: 0 0 12px rgba(79,140,255,0.4); } }
+        .rc-nav-glow { animation: navGlow 3s ease-in-out infinite; }
         .rc-card { transition: all 0.3s ease; }
         .rc-card:hover { border-color: #2a3a55 !important; box-shadow: 0 0 20px rgba(79,140,255,0.05); }
         @media (max-width: 768px) {
@@ -162,8 +164,8 @@ export default function LandingPage() {
           <span style={{ fontWeight: 700, letterSpacing: '-0.01em', fontSize: 16 }}>RISCENT</span>
         </div>
         <div className="rc-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <a href="/docs" style={{ color: C.text2, textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>Articles</a>
-          <a href="/case-study" style={{ color: C.text2, textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>Case Studies &amp; Proof</a>
+          <a href="/docs" className="rc-nav-glow" style={{ textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Articles</a>
+          <a href="/case-study" className="rc-nav-glow" style={{ textDecoration: 'none', fontSize: 14, fontWeight: 600, animationDelay: '1.5s' }}>Case Studies &amp; Proof</a>
           <a href="mailto:ryan@riscent.com" style={{ color: C.text2, textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>ryan@riscent.com</a>
         </div>
       </header>
