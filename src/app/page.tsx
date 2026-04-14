@@ -151,6 +151,7 @@ export default function LandingPage() {
           .rc-cta-row { flex-direction: column !important; }
           .rc-cta-row a, .rc-cta-row button { width: 100% !important; text-align: center !important; justify-content: center !important; }
           .rc-footer { flex-direction: column !important; text-align: center !important; gap: 12px !important; }
+          .rc-nav-links { gap: 16px !important; font-size: 13px !important; }
         }
       `}</style>
 
@@ -160,9 +161,11 @@ export default function LandingPage() {
           <div style={{ width: 10, height: 10, borderRadius: '50%', background: C.green, animation: 'dotPulse 3s ease-in-out infinite' }} />
           <span style={{ fontWeight: 700, letterSpacing: '-0.01em', fontSize: 16 }}>RISCENT</span>
         </div>
-        <a href="mailto:ryan@riscent.com" style={{ color: C.text2, textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
-          ryan@riscent.com
-        </a>
+        <div className="rc-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <a href="/docs" style={{ color: C.text2, textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>Articles</a>
+          <a href="/case-study" style={{ color: C.text2, textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>Case Studies &amp; Proof</a>
+          <a href="mailto:ryan@riscent.com" style={{ color: C.text2, textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>ryan@riscent.com</a>
+        </div>
       </header>
 
       {/* ── HERO ── */}
@@ -314,7 +317,8 @@ export default function LandingPage() {
           <div>$1.6M from one client. $50M+ from a thousand. One person built it.</div>
         </div>
         <div style={{ display: 'flex', gap: 24 }}>
-          <a href="/docs" style={{ color: C.muted, textDecoration: 'none' }}>Documentation</a>
+          <a href="/docs" style={{ color: C.muted, textDecoration: 'none' }}>Articles</a>
+          <a href="/case-study" style={{ color: C.muted, textDecoration: 'none' }}>Case Studies</a>
           <a href="https://ib365.ai" target="_blank" rel="noopener noreferrer" style={{ color: C.muted, textDecoration: 'none' }}>IB365</a>
           <a href="mailto:ryan@riscent.com" style={{ color: C.muted, textDecoration: 'none' }}>Contact</a>
         </div>
