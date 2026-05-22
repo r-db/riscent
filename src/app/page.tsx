@@ -1,328 +1,541 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import {
+  ScrollReveal,
+  GradientSection,
+  StatRibbon,
+  FloatingCTA,
+  TabDemo,
+} from '@/components/ui/animated';
+import { Display, Label } from '@/components/ui/typography';
 
-/* ── PALETTE ── */
-const C = {
-  bg: '#0b0e14',
-  bgElev: '#111521',
-  border: '#1e2535',
-  text: '#e6e8ed',
-  text2: '#a6adbb',
-  muted: '#6e7689',
-  accent: '#4f8cff',
-  green: '#5fd6a3',
-  warn: '#f0b45b',
-};
+const EASE = [0.59, 0.06, 0.1, 1] as const;
 
-/* ── HOOKS ── */
-function useReveal(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+/* ── Hero product mock: simulated AI call UI ── */
+const mockMessages = [
+  { from: 'caller', text: 'Hi, I need to book a plumbing repair — pipe is leaking under the sink.' },
+  { from: 'ai', text: "I can get someone out tomorrow morning. Can I get your address?" },
+  { from: 'caller', text: '412 Sunset Drive' },
+  { from: 'ai', text: "Perfect. I have 9 AM open with Mike. Shall I confirm that?" },
+  { from: 'caller', text: 'Yes please!' },
+  { from: 'ai', text: "Booked! You'll get a confirmation text shortly. Anything else I can help with?" },
+];
+
+function HeroMock() {
+  const [visible, setVisible] = useState(1);
+
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, visible };
-}
-
-function useCountUp(target: number, active: boolean, ms = 1200, delay = 0) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (!active) return;
-    const t = setTimeout(() => {
-      const start = performance.now();
-      const tick = () => {
-        const p = Math.min((performance.now() - start) / ms, 1);
-        setVal(Math.round(target * (1 - Math.pow(1 - p, 3))));
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    }, delay);
+    if (visible >= mockMessages.length) return;
+    const t = setTimeout(() => setVisible(v => v + 1), 900 + visible * 300);
     return () => clearTimeout(t);
-  }, [active, target, ms, delay]);
-  return val;
-}
-
-/* ── FEARS ── */
-const fears = [
-  {
-    pain: "Your nephew's friend built it with Make.com. Your customer data is in 6 tools you've never heard of.",
-    fix: 'I build one system. Your data stays in one place. You own it.',
-  },
-  {
-    pain: 'The agency quoted $120K and 6 months. You got a slide deck.',
-    fix: 'Fixed price. Fixed timeline. Working system or you don\'t pay.',
-  },
-  {
-    pain: 'Your competitor hired an "AI company." Eight months later, nothing works.',
-    fix: 'I ship in weeks, not quarters. You see it working before you pay the second invoice.',
-  },
-  {
-    pain: "You're paying for 4 tools that don't talk to each other. Your staff copies data between them.",
-    fix: 'One platform. Everything connected. Staff does real work instead of data entry.',
-  },
-];
-
-/* ── OUTCOMES ── */
-const outcomes = [
-  { id: 'lines', label: 'lines of code', sub: 'One person. One year.' },
-  { id: 'val', label: 'valuation — one client', sub: 'From $60K seed investment.' },
-  { id: 'proj', label: 'projected at 1,000 clients', sub: 'Same system. Same infrastructure.' },
-  { id: 'calls', label: 'calls in one month — one client', sub: 'Zero missed. Two languages. 24/7.' },
-];
-
-/* ── TIERS ── */
-const tiers = [
-  {
-    name: 'Figure out what\'s broken',
-    price: '$7,500',
-    time: '1 week',
-    what: 'I sit with you and your team for a week. At the end you get a written diagnosis: what to build, what to kill, what to fix — and a working proof that the fix works.',
-    who: 'You need answers before you spend money.',
-  },
-  {
-    name: 'Build it and hand it over',
-    price: '$15K – $150K',
-    time: '2 – 12 weeks',
-    what: 'I build the working system, transfer everything to you on day 30, and stay on-call for another 30 days. You own the code. One invoice. No surprises.',
-    who: 'You know what you need. You need someone who can ship it.',
-  },
-  {
-    name: 'Stay and run it',
-    price: '$5K – $15K / mo',
-    time: 'Ongoing',
-    what: 'I stay embedded with your team. Architecture, hiring, reviews, direct access. 10–20 hours a week of someone who has done this before.',
-    who: 'You need a technical leader without the full-time salary.',
-  },
-];
-
-/* ── DONT LIST ── */
-const donts = [
-  'Chatbots that annoy your customers',
-  'AI that sounds like a robot',
-  'Dashboards nobody looks at',
-  'Consultants who send a PDF and disappear',
-  'Per-hour billing that punishes you for asking questions',
-  'Open-ended contracts with no deliverable',
-  'Subcontracting to juniors you never meet',
-  'Slide decks instead of working software',
-];
-
-/* ── ANIMATION STYLE ── */
-const anim = (visible: boolean, delay = 0): React.CSSProperties => ({
-  opacity: visible ? 1 : 0,
-  transform: visible ? 'translateY(0)' : 'translateY(16px)',
-  transition: `all 0.7s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
-});
-
-/* ════════════════════════════════════════════════ */
-export default function LandingPage() {
-  const router = useRouter();
-  const hero = useReveal(0.1);
-  const fear = useReveal(0.1);
-  const proof = useReveal(0.1);
-  const work = useReveal(0.1);
-  const dont = useReveal(0.1);
-  const close = useReveal(0.1);
-
-  const cCalls = useCountUp(1710, proof.visible, 1200, 800);
+  }, [visible]);
 
   return (
-    <main style={{ background: C.bg, color: C.text, minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif', fontSize: 16, lineHeight: 1.6 }}>
+    <div className="relative">
+      {/* Phone frame */}
+      <div className="rounded-[32px] overflow-hidden shadow-2xl border-4"
+        style={{ background: '#fff', borderColor: 'var(--border-light)', boxShadow: '0 40px 80px rgba(49,36,31,0.18), 0 0 0 1px rgba(49,36,31,0.06)' }}>
 
-      {/* ANIMATIONS */}
-      <style>{`
-        @keyframes dotPulse { 0%,100% { opacity: 1; box-shadow: 0 0 8px #5fd6a380; } 50% { opacity: 0.5; box-shadow: 0 0 20px #5fd6a360; } }
-        @keyframes borderShift { 0%,100% { border-color: #1e2535; } 50% { border-color: #2a3a55; } }
-        @keyframes glowPulse { 0%,100% { box-shadow: 0 0 0 rgba(79,140,255,0); } 50% { box-shadow: 0 0 24px rgba(79,140,255,0.06); } }
-        @keyframes navGlow { 0%,100% { color: #a6adbb; text-shadow: 0 0 0 transparent; } 50% { color: #4f8cff; text-shadow: 0 0 12px rgba(79,140,255,0.4); } }
-        .rc-nav-glow { animation: navGlow 3s ease-in-out infinite; }
-        .rc-card { transition: all 0.3s ease; }
-        .rc-card:hover { border-color: #2a3a55 !important; box-shadow: 0 0 20px rgba(79,140,255,0.05); }
-        @media (max-width: 768px) {
-          .rc-grid-2 { grid-template-columns: 1fr !important; }
-          .rc-grid-3 { grid-template-columns: 1fr !important; }
-          .rc-grid-4 { grid-template-columns: 1fr !important; }
-          .rc-section { padding-left: 16px !important; padding-right: 16px !important; }
-          .rc-hero-h1 { font-size: 32px !important; }
-          .rc-cta-row { flex-direction: column !important; }
-          .rc-cta-row a, .rc-cta-row button { width: 100% !important; text-align: center !important; justify-content: center !important; }
-          .rc-footer { flex-direction: column !important; text-align: center !important; gap: 12px !important; }
-          .rc-nav-links { gap: 16px !important; font-size: 13px !important; }
-        }
-      `}</style>
+        {/* Status bar */}
+        <div className="flex justify-between items-center px-6 py-3 text-[11px] font-semibold"
+          style={{ background: 'var(--torea)', color: '#fff' }}>
+          <span>BookBot</span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            Live Call
+          </span>
+        </div>
+
+        {/* Chat area */}
+        <div className="px-4 py-5 space-y-3 min-h-[340px]" style={{ background: 'var(--bg-secondary)' }}>
+          {mockMessages.slice(0, visible).map((msg, i) => (
+            <motion.div key={i}
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              className={`flex ${msg.from === 'ai' ? 'justify-start' : 'justify-end'}`}>
+              <div className="max-w-[78%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed"
+                style={{
+                  background: msg.from === 'ai' ? '#fff' : 'var(--torea)',
+                  color: msg.from === 'ai' ? 'var(--cocoa)' : '#fff',
+                  borderBottomLeftRadius: msg.from === 'ai' ? 4 : 16,
+                  borderBottomRightRadius: msg.from === 'ai' ? 16 : 4,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                }}>
+                {msg.text}
+              </div>
+            </motion.div>
+          ))}
+          {visible < mockMessages.length && (
+            <div className="flex justify-start">
+              <div className="px-4 py-3 rounded-2xl" style={{ background: '#fff', borderBottomLeftRadius: 4 }}>
+                <div className="flex gap-1">
+                  {[0, 0.2, 0.4].map(d => (
+                    <motion.div key={d} className="w-2 h-2 rounded-full"
+                      style={{ background: 'var(--danube)' }}
+                      animate={{ y: [0, -4, 0] }}
+                      transition={{ duration: 0.8, delay: d, repeat: Infinity }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="flex items-center justify-between px-5 py-3 border-t text-[12px] font-medium"
+          style={{ borderColor: 'var(--border-light)', color: 'var(--text-muted)', background: '#fff' }}>
+          <span>Smith Plumbing</span>
+          <span style={{ color: 'var(--sage-deep, #4A7C59)' }}>● Recording</span>
+        </div>
+      </div>
+
+      {/* Floating badge */}
+      <motion.div
+        className="absolute -top-4 -right-4 rounded-full px-4 py-2 text-xs font-bold shadow-lg"
+        style={{ background: 'var(--torea)', color: '#fff', boxShadow: '0 8px 24px rgba(10,42,146,0.3)' }}
+        animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}>
+        24/7 AI Receptionist
+      </motion.div>
+
+      {/* Floating stat */}
+      <motion.div
+        className="absolute -bottom-4 -left-6 rounded-2xl px-5 py-3 shadow-xl"
+        style={{ background: '#fff', border: '1px solid var(--border-light)', boxShadow: '0 12px 40px rgba(49,36,31,0.1)' }}
+        animate={{ y: [0, 4, 0] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}>
+        <div className="text-xl font-black" style={{ color: 'var(--torea)' }}>1,700+</div>
+        <div className="text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>calls handled</div>
+      </motion.div>
+    </div>
+  );
+}
+
+const products = [
+  { name: 'Chatterbox', tag: 'Website Chat', href: '/chatterbox', line: 'AI chat that answers questions, books appointments, and captures leads — on your website, 24/7.', price: '$49' },
+  { name: 'BookBot', tag: 'Phone Agent', href: '/bookbot', line: 'AI receptionist that answers every call, looks up customers, and books appointments. Never misses.', price: '$99' },
+  { name: 'LinguaReach', tag: 'Multilingual', href: '/linguareach', line: 'Write in English. Your customers read in their language. 12 languages, instant.', price: '$39' },
+  { name: 'VoiceGuard', tag: 'Voice QA', href: '/voiceguard', line: 'Catches what your AI voice agent gets wrong and fixes it before customers complain.', price: '$199' },
+  { name: 'DripForce', tag: 'Service CRM', href: '/dripforce', line: 'Client management, scheduling, and AI follow-ups — built for contractors and service teams.', price: '$49' },
+  { name: 'VoiceTrain', tag: 'AI Training', href: '/voicetrain', line: 'Turn real conversations into training data. Your AI agent improves every week.', price: '$99' },
+];
+
+const pains = [
+  {
+    pain: 'Customer calls at 6 PM. Nobody picks up. They call your competitor.',
+    fix: 'AI answers every call — any hour, any day. No voicemail, no missed revenue.',
+  },
+  {
+    pain: "Your team spends hours answering the same questions every day.",
+    fix: 'AI handles the repetitive questions so your team can focus on real work.',
+  },
+  {
+    pain: 'You tried a chatbot. It felt robotic and embarrassed your brand.',
+    fix: 'Trained on YOUR business. Sounds like YOUR team. Not a script bot.',
+  },
+  {
+    pain: '30% of your customers speak Spanish. Your website speaks only English.',
+    fix: 'Professional outreach in 12 languages — instant, not Google Translate.',
+  },
+];
+
+const demoTabs = [
+  {
+    label: 'Chat Widget',
+    desc: 'Answers customer questions instantly on your website — trained on your business, not generic AI responses.',
+    demo: '> Customer: "What are your hours?"\n\n< BookBot: "We\'re open Mon–Fri 8AM–6PM and Sat 9AM–2PM. Would you like to schedule an appointment?"\n\n> Customer: "Saturday works!"\n\n< BookBot: "I\'ve got 10AM or 1PM open. Which works better for you?"',
+  },
+  {
+    label: 'Phone Agent',
+    desc: 'Picks up calls your team misses — books appointments, looks up history, never puts anyone on hold.',
+    demo: '📞 [Ring...]\n\n< "Hi, this is BookBot for Smith Plumbing. How can I help?\"\n\n> "I need a repair, pipe is leaking"\n\n< "I can get someone out tomorrow. Can I get your address?"\n\n> "123 Main St"\n\n< "Perfect, 9AM tomorrow. You\'ll get a confirmation text."',
+  },
+  {
+    label: 'Translation',
+    desc: 'Your messages auto-translate into 12 languages — professional tone, not Google Translate.',
+    demo: '[ English ]\n"Thank you for your interest! Our team will follow up within 24 hours."\n\n[ Spanish ]\n"¡Gracias por su interés! Nuestro equipo le dará seguimiento en 24 horas."\n\n[ Mandarin ]\n"感谢您的关注！我们的团队将在24小时内跟进。"',
+  },
+];
+
+export default function LandingPage() {
+  return (
+    <main className="min-h-screen overflow-x-hidden" style={{ background: 'var(--bg-primary)' }}>
 
       {/* ── NAV ── */}
-      <header className="rc-section" style={{ borderBottom: `1px solid ${C.border}`, padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: C.green, animation: 'dotPulse 3s ease-in-out infinite' }} />
-          <span style={{ fontWeight: 700, letterSpacing: '-0.01em', fontSize: 16 }}>RISCENT</span>
-        </div>
-        <div className="rc-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <a href="/docs" className="rc-nav-glow" style={{ textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Articles</a>
-          <a href="/case-study" className="rc-nav-glow" style={{ textDecoration: 'none', fontSize: 14, fontWeight: 600, animationDelay: '1.5s' }}>Case Studies &amp; Proof</a>
-          <a href="mailto:ryan@riscent.com" style={{ color: C.text2, textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>ryan@riscent.com</a>
+      <header className="fixed top-0 left-0 right-0 z-50 border-b"
+        style={{ background: '#fff', borderColor: 'var(--border-light)' }}>
+        <div className="max-w-[1200px] mx-auto px-8 h-[60px] flex justify-between items-center">
+          <Link href="/" className="no-underline">
+            <span className="text-xl font-black tracking-[-0.04em]" style={{ color: 'var(--cocoa)' }}>RISCENT</span>
+          </Link>
+          <div className="flex items-center gap-8">
+            <a href="#research" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Research</a>
+            <a href="#build" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Build</a>
+            <a href="#solutions" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Applied</a>
+            <FloatingCTA href="mailto:ryan@riscent.com?subject=Build%20with%20Riscent" className="!py-2.5 !px-6 text-[13px]">
+              Talk to us
+            </FloatingCTA>
+          </div>
         </div>
       </header>
 
       {/* ── HERO ── */}
-      <section ref={hero.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px 64px' }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: C.accent, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 20, ...anim(hero.visible) }}>
-          You don&apos;t need another AI pitch.
-        </p>
-        <h1 className="rc-hero-h1" style={{ fontSize: 'clamp(36px, 5vw, 56px)', lineHeight: 1.08, letterSpacing: '-0.025em', fontWeight: 700, marginBottom: 28, maxWidth: 800, ...anim(hero.visible, 0.1) }}>
-          You need someone who&apos;s <em style={{ fontStyle: 'normal', color: C.green }}>built it</em>,<br />
-          not someone who&apos;s <em style={{ fontStyle: 'normal', color: C.muted }}>selling it</em>.
-        </h1>
-        <p style={{ fontSize: 19, lineHeight: 1.6, color: C.text2, maxWidth: 680, marginBottom: 28, ...anim(hero.visible, 0.2) }}>
-          I&apos;m Ryan. 20 years in sales, engineering, and business development. Last year I went all in — 80-hour weeks — and built a HIPAA-compliant medical platform from scratch. Over a million lines of code. Voice agents in two languages. Patient portal. CRM. Marketing systems. Automations. SIP trunking. Data infrastructure. Everything.
-        </p>
-        <p style={{ fontSize: 19, lineHeight: 1.6, color: C.text, fontWeight: 600, maxWidth: 680, marginBottom: 28, ...anim(hero.visible, 0.3) }}>
-          One client. $1.6 million valuation. $60K seed investment.<br />
-          One thousand clients. $50 million. Same system.
-        </p>
-        <p style={{ fontSize: 17, lineHeight: 1.6, color: C.text2, maxWidth: 680, marginBottom: 40, ...anim(hero.visible, 0.35) }}>
-          That&apos;s not a pitch. That&apos;s what I built last year. If your business needs AI that actually works — not a demo, not a deck, not a 23-year-old with a no-code tool — I&apos;m the person who builds it.
-        </p>
-        <div className="rc-cta-row" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', ...anim(hero.visible, 0.4) }}>
-          <button onClick={() => router.push('/behind-the-curtain')} style={{ background: C.accent, color: C.bg, border: 'none', padding: '16px 28px', borderRadius: 8, fontSize: 16, fontWeight: 700, cursor: 'pointer' }}>
-            Tell me what&apos;s broken →
-          </button>
-          <a href="mailto:ryan@riscent.com?subject=Quick%20question" style={{ background: 'transparent', color: C.text, border: `1px solid ${C.border}`, padding: '16px 28px', borderRadius: 8, fontSize: 16, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-            ryan@riscent.com
-          </a>
-        </div>
-      </section>
+      <section className="relative min-h-screen flex items-center pt-[60px] overflow-hidden"
+        style={{ background: 'linear-gradient(160deg, var(--danube-pale) 0%, var(--shilo-pale) 45%, var(--bg-primary) 100%)' }}>
 
-      {/* ── THE FEAR ── */}
-      <section ref={fear.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px', borderTop: `1px solid ${C.border}` }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: C.warn, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 12, ...anim(fear.visible) }}>
-          Sound familiar?
-        </p>
-        <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', lineHeight: 1.15, letterSpacing: '-0.015em', fontWeight: 700, marginBottom: 36, maxWidth: 700, ...anim(fear.visible, 0.1) }}>
-          You&apos;ve been burned. I get it.
-        </h2>
-        <div className="rc-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {fears.map((f, i) => (
-            <div key={i} className="rc-card" style={{ background: C.bgElev, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.warn}`, borderRadius: 10, padding: '22px 24px', animation: 'borderShift 6s ease-in-out infinite', animationDelay: `${i * 0.5}s`, ...anim(fear.visible, 0.15 + i * 0.1) }}>
-              <p style={{ fontSize: 16, fontWeight: 600, color: C.text, lineHeight: 1.45, marginBottom: 14 }}>
-                {f.pain}
-              </p>
-              <p style={{ fontSize: 15, color: C.text2, lineHeight: 1.5 }}>
-                <span style={{ color: C.green, fontWeight: 600 }}>Instead: </span>{f.fix}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+        {/* Decorative blobs */}
+        <div className="absolute top-10 right-0 w-[700px] h-[700px] rounded-full opacity-25 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--danube) 0%, transparent 65%)', filter: 'blur(100px)' }} />
+        <div className="absolute bottom-20 left-0 w-[500px] h-[500px] rounded-full opacity-20 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--shilo) 0%, transparent 70%)', filter: 'blur(80px)' }} />
 
-      {/* ── PROOF ── */}
-      <section ref={proof.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px', borderTop: `1px solid ${C.border}` }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: C.muted, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 12, ...anim(proof.visible) }}>
-          What it looks like when it works
-        </p>
-        <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', lineHeight: 1.15, letterSpacing: '-0.015em', fontWeight: 700, marginBottom: 36, maxWidth: 800, ...anim(proof.visible, 0.1) }}>
-          Built for one. Architected for a thousand.
-        </h2>
-        <div className="rc-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
-          {outcomes.map((o, i) => (
-            <div key={o.label} className="rc-card" style={{ background: C.bgElev, border: `1px solid ${C.border}`, borderRadius: 10, padding: '24px', animation: 'glowPulse 4s ease-in-out infinite', animationDelay: `${i * 0.8}s`, ...anim(proof.visible, 0.15 + i * 0.1) }}>
-              <div style={{ fontSize: 40, fontWeight: 700, color: o.id === 'proj' ? C.accent : C.green, letterSpacing: '-0.02em', lineHeight: 1, marginBottom: 6 }}>
-                {o.id === 'lines' ? '1M+' : o.id === 'val' ? '$1.6M' : o.id === 'proj' ? '$50M+' : cCalls.toLocaleString()}
-              </div>
-              <div style={{ fontSize: 15, color: C.text, fontWeight: 500, marginBottom: 4 }}>{o.label}</div>
-              <div style={{ fontSize: 14, color: C.muted }}>{o.sub}</div>
-            </div>
-          ))}
-        </div>
-        <p style={{ fontSize: 17, lineHeight: 1.65, color: C.text2, maxWidth: 740, ...anim(proof.visible, 0.5) }}>
-          Advanced Psychiatry had 5 providers, an answering service that missed a third of calls, a patient portal nobody used, and staff burning out from phone duty. I replaced all of it — voice agents in English and Spanish, passwordless patient portal, multi-provider CRM, automated scheduling, telehealth integration, provider status system, HIPAA-compliant infrastructure with BAA. 415 API routes. Built, deployed, and running in production. Their patients book at midnight. Their staff does clinical work. The owner took a Saturday off for the first time in two years.
-        </p>
-      </section>
+        <div className="relative max-w-[1200px] mx-auto px-8 w-full grid lg:grid-cols-2 gap-16 items-center py-20">
 
-      {/* ── HOW I WORK ── */}
-      <section ref={work.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px', borderTop: `1px solid ${C.border}` }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: C.muted, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 12, ...anim(work.visible) }}>
-          Three ways to work together
-        </p>
-        <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', lineHeight: 1.15, letterSpacing: '-0.015em', fontWeight: 700, marginBottom: 36, maxWidth: 700, ...anim(work.visible, 0.1) }}>
-          You know the price before we start.
-        </h2>
-        <div className="rc-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
-          {tiers.map((t, i) => (
-            <div key={t.name} className="rc-card" style={{ background: C.bgElev, border: `1px solid ${C.border}`, borderRadius: 10, padding: '28px 24px', ...anim(work.visible, 0.15 + i * 0.12) }}>
-              <div style={{ fontSize: 13, color: C.muted, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>{t.time}</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 6 }}>{t.name}</div>
-              <div style={{ fontSize: 26, fontWeight: 700, color: C.accent, marginBottom: 16, letterSpacing: '-0.01em' }}>{t.price}</div>
-              <p style={{ fontSize: 15, lineHeight: 1.55, color: C.text2, marginBottom: 16 }}>{t.what}</p>
-              <div style={{ fontSize: 14, color: C.muted, paddingTop: 14, borderTop: `1px solid ${C.border}` }}>
-                <strong style={{ color: C.text2 }}>Best for: </strong>{t.who}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+          {/* Left: copy */}
+          <div>
+            <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: EASE }}>
+              <Label color="var(--danube)" className="mb-6">Agentic AI — research and build</Label>
+            </motion.div>
 
-      {/* ── WHAT I DON'T DO ── */}
-      <section ref={dont.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '64px 24px', borderTop: `1px solid ${C.border}` }}>
-        <h2 style={{ fontSize: 'clamp(24px, 3vw, 32px)', lineHeight: 1.2, letterSpacing: '-0.01em', fontWeight: 700, marginBottom: 24, maxWidth: 700, ...anim(dont.visible) }}>
-          What I don&apos;t do.
-        </h2>
-        <div className="rc-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
-          {donts.map((d, i) => (
-            <div key={d} className="rc-card" style={{ background: C.bgElev, border: `1px solid ${C.border}`, borderRadius: 8, padding: '16px 18px', fontSize: 15, color: C.text2, ...anim(dont.visible, 0.05 + i * 0.06) }}>
-              <span style={{ color: C.warn, marginRight: 10 }}>✗</span>{d}
-            </div>
-          ))}
-        </div>
-        <p style={{ fontSize: 15, color: C.muted, maxWidth: 680, fontStyle: 'italic', ...anim(dont.visible, 0.5) }}>
-          If you need any of those, there are firms that do them well. I&apos;m the person you call when you need something that works.
-        </p>
-      </section>
+            <motion.div initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.1, ease: EASE }}>
+              <Display size="xl" as="h1" className="mb-8 text-left leading-[0.92]">
+                AI systems<br />that learn<br />
+                <span style={{ color: 'var(--danube)' }}>your business</span>
+              </Display>
+            </motion.div>
 
-      {/* ── CLOSE ── */}
-      <section ref={close.ref} className="rc-section" style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 24px', borderTop: `1px solid ${C.border}` }}>
-        <div style={{ maxWidth: 740 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: C.accent, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 12, ...anim(close.visible) }}>
-            The real question
-          </p>
-          <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 36px)', lineHeight: 1.2, letterSpacing: '-0.015em', fontWeight: 700, marginBottom: 24, ...anim(close.visible, 0.1) }}>
-            The question isn&apos;t whether your business gets AI.<br />
-            It&apos;s whether you get it from someone who&apos;s built it — or someone who&apos;s selling it.
-          </h2>
-          <p style={{ fontSize: 17, lineHeight: 1.65, color: C.text2, marginBottom: 36, ...anim(close.visible, 0.2) }}>
-            Twenty years ago, people were afraid to bank online. Now a bank without an app feels broken. The same shift is happening to your industry right now. The businesses that move first don&apos;t just save money — they become the ones everyone else is trying to catch up to.
-          </p>
-          <div className="rc-cta-row" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20, ...anim(close.visible, 0.3) }}>
-            <button onClick={() => router.push('/behind-the-curtain')} style={{ background: C.accent, color: C.bg, border: 'none', padding: '18px 32px', borderRadius: 8, fontSize: 17, fontWeight: 700, cursor: 'pointer' }}>
-              Tell me what you&apos;re building →
-            </button>
-            <a href="mailto:ryan@riscent.com?subject=Quick%20question" style={{ background: 'transparent', color: C.text, border: `1px solid ${C.border}`, padding: '18px 32px', borderRadius: 8, fontSize: 17, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-              ryan@riscent.com
-            </a>
+            <motion.p className="text-lg md:text-xl leading-relaxed mb-10 max-w-[520px]"
+              style={{ color: 'var(--text-secondary)' }}
+              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: EASE }}>
+              We build agentic apps, PWAs, and custom software for businesses that need
+              software with memory. We publish the research behind it — autonomous memory
+              compression, self-directed fine-tuning, real benchmarks against frontier models.
+            </motion.p>
+
+            <motion.div className="flex flex-col sm:flex-row gap-4"
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: EASE }}>
+              <FloatingCTA href="mailto:ryan@riscent.com?subject=Build%20with%20Riscent">
+                Build with us &rarr;
+              </FloatingCTA>
+              <FloatingCTA href="#research" variant="secondary">
+                See the research
+              </FloatingCTA>
+            </motion.div>
           </div>
-          <p style={{ fontSize: 14, color: C.muted, ...anim(close.visible, 0.4) }}>
-            I reply within 24 hours. No pitch deck. No discovery phase. Just whether I can help.
-          </p>
+
+          {/* Right: live product mock */}
+          <motion.div
+            initial={{ opacity: 0, x: 60, rotateY: -8 }} animate={{ opacity: 1, x: 0, rotateY: 0 }}
+            transition={{ duration: 1.1, delay: 0.4, ease: EASE }}
+            style={{ perspective: 800 }}>
+            <HeroMock />
+          </motion.div>
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}>
+          <div className="w-6 h-10 rounded-full border-2 flex justify-center pt-2" style={{ borderColor: 'var(--border-medium)' }}>
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--danube)' }} />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ── STATS ── */}
+      <StatRibbon stats={[
+        { value: 'Agentic', label: 'by default' },
+        { value: 'Open', label: 'methodology' },
+        { value: '1M+', label: 'lines shipped' },
+        { value: 'Apple Silicon', label: 'native' },
+      ]} />
+
+      {/* ── RESEARCH ── */}
+      <section id="research" className="py-28 px-6" style={{ background: 'var(--bg-primary)' }}>
+        <div className="max-w-[1100px] mx-auto">
+          <ScrollReveal className="mb-16">
+            <Label color="var(--danube)" className="mb-3">The research lane</Label>
+            <Display size="md" className="mb-6">
+              We&apos;re training AI<br />to manage its own memory.
+            </Display>
+            <p className="text-lg leading-relaxed max-w-[640px]" style={{ color: 'var(--text-secondary)' }}>
+              Most agents forget. Ours don&apos;t. We publish what we learn building
+              persistent intelligence — the methodology, the datasets, the benchmarks
+              against frontier models. The same architecture goes into every system we ship.
+            </p>
+          </ScrollReveal>
+
+          <div className="grid md:grid-cols-2 gap-px mb-16" style={{ background: 'var(--border-light)' }}>
+            <ScrollReveal>
+              <div className="p-10 h-full" style={{ background: '#fff' }}>
+                <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-3" style={{ color: 'var(--danube)' }}>In progress</div>
+                <div className="text-2xl font-black tracking-[-0.03em] mb-4" style={{ color: 'var(--cocoa)' }}>
+                  Autonomous memory compression
+                </div>
+                <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
+                  Training a small Apple Silicon-native model to classify, compress, and
+                  store conversational memory in real time — replacing frontier API calls
+                  in the persistence layer of every agent we build.
+                </p>
+                <div className="text-[11px] font-medium tracking-[0.06em] uppercase" style={{ color: 'var(--text-whisper)' }}>
+                  Target: match Opus 4.7 accuracy at 1/200th the cost. Open eval coming.
+                </div>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={0.1}>
+              <div className="p-10 h-full" style={{ background: '#fff' }}>
+                <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-3" style={{ color: 'var(--shilo)' }}>In progress</div>
+                <div className="text-2xl font-black tracking-[-0.03em] mb-4" style={{ color: 'var(--cocoa)' }}>
+                  Self-directed fine-tuning
+                </div>
+                <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
+                  An agent that uses its own accumulated decisions as training data,
+                  scaffolds eval pairs from its own corrections, and trains its next
+                  body without a human in the labeling loop.
+                </p>
+                <div className="text-[11px] font-medium tracking-[0.06em] uppercase" style={{ color: 'var(--text-whisper)' }}>
+                  Live training log + eval dashboard publishing here as benchmarks land.
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          <ScrollReveal delay={0.2}>
+            <div className="flex flex-wrap gap-4 items-center">
+              <FloatingCTA href="/research" variant="secondary" className="!py-3 !px-7 text-[13px]">
+                Research notes &rarr;
+              </FloatingCTA>
+              <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                Public dashboard launching as the first benchmarks land.
+              </span>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
+
+      {/* ── BUILD ── */}
+      <section id="build" className="py-28 px-6" style={{ background: 'var(--bg-secondary)' }}>
+        <div className="max-w-[1100px] mx-auto">
+          <ScrollReveal className="mb-14">
+            <Label color="var(--torea)" className="mb-3">The build lane</Label>
+            <Display size="md" className="mb-6">
+              Want this engine<br />working on your problem?
+            </Display>
+            <p className="text-lg leading-relaxed max-w-[640px]" style={{ color: 'var(--text-secondary)' }}>
+              We take on a small number of build engagements every quarter. Same team
+              that&apos;s publishing the research. Same architecture, applied to whatever
+              you&apos;re shipping.
+            </p>
+          </ScrollReveal>
+
+          <div className="grid md:grid-cols-3 gap-px" style={{ background: 'var(--border-light)' }}>
+            {[
+              {
+                tag: 'Custom software',
+                title: 'Full product builds',
+                body: 'Agentic backends, structured-data flows, internal tools, vertical SaaS. We architect, we ship, we hand over what works.',
+              },
+              {
+                tag: 'Web apps',
+                title: 'Modern web platforms',
+                body: 'Next.js, Postgres, auth, payments, dashboards. Production-grade from day one — the stack we use for our own products.',
+              },
+              {
+                tag: 'PWA integration',
+                title: 'Install-anywhere apps',
+                body: 'Progressive Web Apps that ship to iOS, Android, and desktop from one codebase. Offline-first when it matters.',
+              },
+            ].map((item, i) => (
+              <ScrollReveal key={item.tag} delay={i * 0.08}>
+                <div className="p-10 h-full" style={{ background: '#fff' }}>
+                  <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-3" style={{ color: 'var(--torea)' }}>{item.tag}</div>
+                  <div className="text-xl font-black tracking-[-0.03em] mb-4" style={{ color: 'var(--cocoa)' }}>{item.title}</div>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.body}</p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          <ScrollReveal delay={0.3}>
+            <div className="mt-12 flex flex-wrap gap-4 items-center">
+              <FloatingCTA href="mailto:ryan@riscent.com?subject=Build%20engagement%20—%20Riscent" className="!py-3 !px-7 text-[13px]">
+                Start a project &rarr;
+              </FloatingCTA>
+              <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                We&apos;ll show you something working before you sign anything.
+              </span>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ── PAIN POINTS ── */}
+      <section className="py-28 px-6" style={{ background: 'var(--cocoa)' }}>
+        <div className="max-w-[1100px] mx-auto">
+          <ScrollReveal className="mb-16">
+            <Label color="var(--shilo)" className="mb-3">The problem</Label>
+            <Display size="md" color="#fff">Sound familiar?</Display>
+          </ScrollReveal>
+          <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+            {pains.map((item, i) => (
+              <ScrollReveal key={i} delay={i * 0.08}>
+                <div className="grid md:grid-cols-2 gap-10 py-10 border-b" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+                  <p className="text-xl font-semibold leading-snug" style={{ color: 'rgba(255,255,255,0.88)' }}>
+                    {item.pain}
+                  </p>
+                  <p className="text-base leading-relaxed" style={{ color: 'var(--shilo)' }}>
+                    <span className="font-bold">→ </span>{item.fix}
+                  </p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── LIVE DEMO ── */}
+      <section className="py-28 px-6" style={{ background: 'var(--bg-primary)' }}>
+        <div className="max-w-[1100px] mx-auto">
+          <ScrollReveal className="mb-12">
+            <Label color="var(--torea)" className="mb-3">See it in action</Label>
+            <Display size="md">Watch it work.</Display>
+          </ScrollReveal>
+          <TabDemo tabs={demoTabs} />
+        </div>
+      </section>
+
+      {/* ── APPLIED (products) ── */}
+      <section id="solutions" className="py-28 px-6" style={{ background: 'var(--bg-primary)' }}>
+        <div className="max-w-[1100px] mx-auto">
+          <ScrollReveal className="mb-16">
+            <Label color="var(--torea)" className="mb-3">Applied</Label>
+            <Display size="md" className="mb-4">What the engine makes,<br />when we point it at a problem.</Display>
+            <p className="text-base leading-relaxed max-w-[600px] mt-6" style={{ color: 'var(--text-secondary)' }}>
+              Six products we&apos;ve shipped on top of the same agentic stack — each one
+              proof the architecture works in a specific market. Buy them, white-label
+              them, or have us build the next one for you.
+            </p>
+          </ScrollReveal>
+          <div className="border-t" style={{ borderColor: 'var(--border-medium)' }}>
+            {products.map((p, i) => (
+              <ScrollReveal key={p.name} delay={i * 0.06}>
+                <Link href={p.href} className="block no-underline group">
+                  <div className="grid grid-cols-[56px_1fr_1fr_96px] gap-10 py-8 border-b items-baseline" style={{ borderColor: 'var(--border-light)' }}>
+                    <span className="text-[13px] font-bold tracking-[0.04em]" style={{ color: 'var(--text-whisper)' }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <div>
+                      <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-1.5" style={{ color: 'var(--danube)' }}>{p.tag}</div>
+                      <div className="text-2xl font-black tracking-[-0.03em] group-hover:opacity-50 transition-opacity" style={{ color: 'var(--cocoa)' }}>{p.name}</div>
+                    </div>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{p.line}</p>
+                    <div className="text-right">
+                      <div className="text-lg font-black tracking-[-0.02em]" style={{ color: 'var(--cocoa)' }}>From {p.price}</div>
+                      <div className="text-[11px] font-medium" style={{ color: 'var(--text-whisper)' }}>/mo</div>
+                    </div>
+                  </div>
+                </Link>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── WHY US ── */}
+      <section id="proof" className="py-28 px-6">
+        <div className="max-w-[900px] mx-auto text-center">
+          <ScrollReveal>
+            <Label color="var(--danube)" className="mb-4">Why us</Label>
+            <Display size="md" className="mb-6">
+              We build the kind of AI<br />most teams don&apos;t know how to build.
+            </Display>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.1}>
+            <p className="text-lg leading-relaxed max-w-[640px] mx-auto mb-16" style={{ color: 'var(--text-secondary)' }}>
+              Most AI work today is wrapper code around someone else&apos;s API. Ours
+              isn&apos;t. We architect persistence, train our own models, publish the
+              methodology, and run it in production. Healthcare was our first vertical —
+              HIPAA-grade voice agents, midnight calls, two languages — and the same
+              architecture now ships across eight industries.
+            </p>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.2}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px mb-14" style={{ background: 'var(--border-light)' }}>
+              {[
+                { val: '1M+', lbl: 'lines shipped' },
+                { val: 'Agentic', lbl: 'by default' },
+                { val: 'Open', lbl: 'methodology' },
+                { val: 'HIPAA', lbl: 'production-grade' },
+              ].map(s => (
+                <div key={s.lbl} className="p-8" style={{ background: '#fff' }}>
+                  <div className="text-3xl font-black tracking-[-0.03em]" style={{ color: 'var(--torea)' }}>{s.val}</div>
+                  <div className="text-xs font-medium tracking-[0.08em] uppercase mt-2" style={{ color: 'var(--text-whisper)' }}>{s.lbl}</div>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.3}>
+            <p className="text-sm tracking-[0.04em]" style={{ color: 'var(--text-whisper)' }}>
+              Healthcare &nbsp;·&nbsp; Home Services &nbsp;·&nbsp; Legal &nbsp;·&nbsp; Real Estate &nbsp;·&nbsp; Restaurants &nbsp;·&nbsp; Auto &nbsp;·&nbsp; Fitness &nbsp;·&nbsp; E-commerce
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ── */}
+      <GradientSection id="cta" dark from="var(--cocoa)" to="var(--torea)" direction="135deg" className="text-center">
+        <ScrollReveal className="max-w-[760px] mx-auto">
+          <Display color="#fff" className="mb-6">
+            Two ways<br />to work with us.
+          </Display>
+          <p className="text-lg leading-relaxed mb-12" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            Hire us to build the agentic system your business needs, or buy one of the
+            products we&apos;ve already shipped on the same stack. Either way, you&apos;re working
+            with the team publishing the research.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <FloatingCTA href="mailto:ryan@riscent.com?subject=Build%20with%20Riscent" variant="light">
+              Build with us &rarr;
+            </FloatingCTA>
+            <FloatingCTA href="#solutions" variant="secondary">
+              Browse the products
+            </FloatingCTA>
+          </div>
+          <p className="text-sm mt-8" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            Limited build slots each quarter &middot; Response in 24 hours
+          </p>
+        </ScrollReveal>
+      </GradientSection>
 
       {/* ── FOOTER ── */}
-      <footer className="rc-footer rc-section" style={{ borderTop: `1px solid ${C.border}`, padding: '28px 24px', maxWidth: 1100, margin: '0 auto', color: C.muted, fontSize: 13, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-        <div>
-          <div style={{ fontWeight: 700, color: C.text2, marginBottom: 4 }}>RISCENT / Riscen Software Labs</div>
-          <div>$1.6M from one client. $50M+ from a thousand. One person built it.</div>
-        </div>
-        <div style={{ display: 'flex', gap: 24 }}>
-          <a href="/docs" style={{ color: C.muted, textDecoration: 'none' }}>Articles</a>
-          <a href="/case-study" style={{ color: C.muted, textDecoration: 'none' }}>Case Studies</a>
-          <a href="https://ib365.ai" target="_blank" rel="noopener noreferrer" style={{ color: C.muted, textDecoration: 'none' }}>IB365</a>
-          <a href="mailto:ryan@riscent.com" style={{ color: C.muted, textDecoration: 'none' }}>Contact</a>
+      <footer className="py-10 px-6 border-t" style={{ background: '#fff', borderColor: 'var(--border-light)' }}>
+        <div className="max-w-[1100px] mx-auto flex flex-col md:flex-row justify-between items-start gap-8 text-sm">
+          <div>
+            <div className="text-base font-black tracking-[-0.03em] mb-2" style={{ color: 'var(--cocoa)' }}>RISCENT</div>
+            <div style={{ color: 'var(--text-muted)' }}>Agentic AI — research and build.</div>
+          </div>
+          <div className="flex flex-wrap gap-6">
+            <a href="#research" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Research</a>
+            <a href="#build" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Build</a>
+            <a href="#solutions" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Applied</a>
+            {products.map(p => (
+              <Link key={p.name} href={p.href} className="no-underline hover:opacity-60 transition-opacity text-[13px]"
+                style={{ color: 'var(--text-secondary)' }}>
+                {p.name}
+              </Link>
+            ))}
+            <a href="mailto:ryan@riscent.com" className="no-underline hover:opacity-60 transition-opacity text-[13px]"
+              style={{ color: 'var(--text-secondary)' }}>
+              Contact
+            </a>
+          </div>
         </div>
       </footer>
     </main>

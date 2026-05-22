@@ -14,22 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Riscent | AI Consulting by Ryan Bolden",
-  description: "Ryan Bolden built a $1.6M HIPAA-compliant healthcare AI platform solo in 12 months. Over 1M lines of code. Voice agents, patient portals, CRM, automations. Now he builds production AI systems for businesses that need results, not slide decks.",
+  title: "Riscent | AI Products for Business — Chat, Voice, Outreach, QA",
+  description: "Six AI products for businesses: chat agents, voice receptionists, multilingual outreach, voice QA, field service CRM, and training pipelines. Built by the team that engineered HIPAA-compliant healthcare AI. Every industry.",
   icons: {
     icon: "/favicon.ico",
   },
   openGraph: {
-    title: "Riscent — AI Consulting by Ryan Bolden",
-    description: "Production AI systems. Not demos. $1.6M healthcare platform built solo. 1,710 calls handled, zero missed. Fixed price. You own the code.",
+    title: "Riscent — AI Products for Business",
+    description: "Chat agents, voice receptionists, multilingual outreach, and more. Six AI products built for businesses that want to stop losing customers.",
     url: "https://riscent.com",
     siteName: "Riscent",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Riscent — AI Consulting by Ryan Bolden",
-    description: "Production AI systems. Not demos. $1.6M healthcare platform built solo. Fixed price. You own the code.",
+    title: "Riscent — AI Products for Business",
+    description: "Chat agents, voice receptionists, multilingual outreach. Six AI products for businesses that want results.",
   },
   robots: {
     index: true,
@@ -69,27 +69,18 @@ export default function RootLayout({
                 "@type": "ProfessionalService",
                 name: "Riscent",
                 url: "https://riscent.com",
-                description: "AI consulting practice specializing in production healthcare AI systems. Built a $1.6M HIPAA-compliant platform solo. 1,710+ calls handled, zero missed. Fixed price, you own the code.",
+                description: "Six AI products for businesses: Chatterbox (chat), BookBot (voice), LinguaReach (multilingual), VoiceGuard (QA), DripForce (CRM), VoiceTrain (fine-tuning). Built by the team that engineered HIPAA-compliant healthcare AI.",
                 foundingDate: "2025",
-                priceRange: "$$$$",
+                priceRange: "$$-$$$$",
                 founder: {
                   "@type": "Person",
                   name: "Ryan Bolden",
                   jobTitle: "Founder & CEO",
                   url: "https://riscent.com",
-                  knowsAbout: ["Healthcare AI", "Voice Agents", "HIPAA Compliance", "Prompt Engineering", "Agent Architecture", "Patient Portals", "CRM Systems", "Mechanistic Interpretability", "AI Persistence", "SIP Trunking", "Multi-tenant Architecture", "Generative Engine Optimization"],
+                  knowsAbout: ["AI Chat Agents", "Conversational AI", "Voice Agents", "Healthcare AI", "HIPAA Compliance", "Prompt Engineering", "Agent Architecture", "CRM Systems", "Lead Generation", "Customer Engagement", "Multi-tenant Architecture", "SMB Technology"],
                 },
                 areaServed: "US",
-                serviceType: ["AI Consulting", "Healthcare AI Development", "Voice Agent Development", "HIPAA Compliance Engineering", "Production AI Systems", "AI Visibility & GEO", "Agent-Native Web Infrastructure"],
-                hasOfferCatalog: {
-                  "@type": "OfferCatalog",
-                  name: "AI Consulting Services",
-                  itemListElement: [
-                    { "@type": "Offer", name: "Strategic Deep Dive", price: "7500", priceCurrency: "USD", description: "1 week. Diagnosis + working proof-of-concept." },
-                    { "@type": "Offer", name: "Build + Transfer", price: "15000", priceCurrency: "USD", description: "2-12 weeks. Production system, you own the code." },
-                    { "@type": "Offer", name: "Embedded Advisory", price: "5000", priceCurrency: "USD", description: "Ongoing fractional technical leadership." },
-                  ],
-                },
+                serviceType: ["AI Chat Agents", "Conversational AI for Websites", "AI Customer Engagement", "Lead Capture Automation", "Appointment Booking AI", "Healthcare AI", "Voice Agent Development", "Production AI Systems"],
                 contactPoint: {
                   "@type": "ContactPoint",
                   telephone: "+1-888-252-3019",

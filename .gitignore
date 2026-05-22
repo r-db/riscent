@@ -43,3 +43,6 @@ next-env.d.ts
 
 # seq identity (protected - never commit)
 .seq/
+
+# clerk configuration (can include secrets)
+/.clerk/
