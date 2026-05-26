@@ -113,12 +113,12 @@ function HeroMock() {
 }
 
 const products = [
-  { name: 'Chatterbox', tag: 'Website Chat', href: '/chatterbox', line: 'AI chat that answers questions, books appointments, and captures leads — on your website, 24/7.', price: '$49' },
-  { name: 'BookBot', tag: 'Phone Agent', href: '/bookbot', line: 'AI receptionist that answers every call, looks up customers, and books appointments. Never misses.', price: '$99' },
-  { name: 'LinguaReach', tag: 'Multilingual', href: '/linguareach', line: 'Write in English. Your customers read in their language. 12 languages, instant.', price: '$39' },
-  { name: 'VoiceGuard', tag: 'Voice QA', href: '/voiceguard', line: 'Catches what your AI voice agent gets wrong and fixes it before customers complain.', price: '$199' },
-  { name: 'DripForce', tag: 'Service CRM', href: '/dripforce', line: 'Client management, scheduling, and AI follow-ups — built for contractors and service teams.', price: '$49' },
-  { name: 'VoiceTrain', tag: 'AI Training', href: '/voicetrain', line: 'Turn real conversations into training data. Your AI agent improves every week.', price: '$99' },
+  { name: 'Chatterbox', tag: 'Website Chat', line: 'AI chat that answers questions, books appointments, and captures leads — on your website, 24/7.' },
+  { name: 'BookBot', tag: 'Phone Agent', line: 'AI receptionist that answers every call, looks up customers, and books appointments. Never misses.' },
+  { name: 'LinguaReach', tag: 'Multilingual', line: 'Write in English. Your customers read in their language. 12 languages, instant.' },
+  { name: 'VoiceGuard', tag: 'Voice QA', line: 'Catches what your AI voice agent gets wrong and fixes it before customers complain.' },
+  { name: 'DripForce', tag: 'Service CRM', line: 'Client management, scheduling, and AI follow-ups — built for contractors and service teams.' },
+  { name: 'VoiceTrain', tag: 'AI Training', line: 'Turn real conversations into training data. Your AI agent improves every week.' },
 ];
 
 const pains = [
@@ -414,31 +414,25 @@ export default function LandingPage() {
           <ScrollReveal className="mb-16">
             <Label color="var(--torea)" className="mb-3">Applied</Label>
             <Display size="md" className="mb-4">What the engine makes,<br />when we point it at a problem.</Display>
-            <p className="text-base leading-relaxed max-w-[600px] mt-6" style={{ color: 'var(--text-secondary)' }}>
-              Six products we&apos;ve shipped on top of the same agentic stack — each one
-              proof the architecture works in a specific market. Buy them, white-label
-              them, or have us build the next one for you.
+            <p className="text-base leading-relaxed max-w-[620px] mt-6" style={{ color: 'var(--text-secondary)' }}>
+              Six products we&apos;ve shipped on top of the same agentic stack —
+              each one proof the architecture works in a specific market. The same
+              engine ships into client builds.
             </p>
           </ScrollReveal>
           <div className="border-t" style={{ borderColor: 'var(--border-medium)' }}>
             {products.map((p, i) => (
               <ScrollReveal key={p.name} delay={i * 0.06}>
-                <Link href={p.href} className="block no-underline group">
-                  <div className="grid grid-cols-[56px_1fr_1fr_96px] gap-10 py-8 border-b items-baseline" style={{ borderColor: 'var(--border-light)' }}>
-                    <span className="text-[13px] font-bold tracking-[0.04em]" style={{ color: 'var(--text-whisper)' }}>
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <div>
-                      <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-1.5" style={{ color: 'var(--danube)' }}>{p.tag}</div>
-                      <div className="text-2xl font-black tracking-[-0.03em] group-hover:opacity-50 transition-opacity" style={{ color: 'var(--cocoa)' }}>{p.name}</div>
-                    </div>
-                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{p.line}</p>
-                    <div className="text-right">
-                      <div className="text-lg font-black tracking-[-0.02em]" style={{ color: 'var(--cocoa)' }}>From {p.price}</div>
-                      <div className="text-[11px] font-medium" style={{ color: 'var(--text-whisper)' }}>/mo</div>
-                    </div>
+                <div className="grid grid-cols-[56px_1fr_1.4fr] gap-10 py-8 border-b items-baseline" style={{ borderColor: 'var(--border-light)' }}>
+                  <span className="text-[13px] font-bold tracking-[0.04em]" style={{ color: 'var(--text-whisper)' }}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-1.5" style={{ color: 'var(--danube)' }}>{p.tag}</div>
+                    <div className="text-2xl font-black tracking-[-0.03em]" style={{ color: 'var(--cocoa)' }}>{p.name}</div>
                   </div>
-                </Link>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{p.line}</p>
+                </div>
               </ScrollReveal>
             ))}
           </div>
@@ -525,12 +519,6 @@ export default function LandingPage() {
             <a href="#research" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Research</a>
             <a href="#build" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Build</a>
             <a href="#solutions" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Applied</a>
-            {products.map(p => (
-              <Link key={p.name} href={p.href} className="no-underline hover:opacity-60 transition-opacity text-[13px]"
-                style={{ color: 'var(--text-secondary)' }}>
-                {p.name}
-              </Link>
-            ))}
             <a href="mailto:ryan@riscent.com" className="no-underline hover:opacity-60 transition-opacity text-[13px]"
               style={{ color: 'var(--text-secondary)' }}>
               Contact
