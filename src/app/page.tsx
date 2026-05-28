@@ -8,20 +8,19 @@ import {
   GradientSection,
   StatRibbon,
   FloatingCTA,
-  TabDemo,
 } from '@/components/ui/animated';
 import { Display, Label } from '@/components/ui/typography';
 
 const EASE = [0.59, 0.06, 0.1, 1] as const;
 
-/* ── Hero product mock: simulated AI call UI ── */
+/* ── Hero product mock: agentic chat with persistent memory ── */
 const mockMessages = [
-  { from: 'caller', text: 'Hi, I need to book a plumbing repair — pipe is leaking under the sink.' },
-  { from: 'ai', text: "I can get someone out tomorrow morning. Can I get your address?" },
-  { from: 'caller', text: '412 Sunset Drive' },
-  { from: 'ai', text: "Perfect. I have 9 AM open with Mike. Shall I confirm that?" },
-  { from: 'caller', text: 'Yes please!' },
-  { from: 'ai', text: "Booked! You'll get a confirmation text shortly. Anything else I can help with?" },
+  { from: 'caller', text: 'Hey — picking up where we left off on the integration?' },
+  { from: 'ai', text: 'Yes. Last session you flagged the Postgres write-path. I queued the fix and ran your test suite — green.' },
+  { from: 'caller', text: 'Did you log the schema change?' },
+  { from: 'ai', text: 'Migration 042 committed, indexed on user_id. I also wrote the rollback in case staging trips it.' },
+  { from: 'caller', text: 'Good catch on the rollback.' },
+  { from: 'ai', text: 'Noted as a preference. I will scaffold rollbacks by default going forward.' },
 ];
 
 function HeroMock() {
@@ -42,10 +41,10 @@ function HeroMock() {
         {/* Status bar */}
         <div className="flex justify-between items-center px-6 py-3 text-[11px] font-semibold"
           style={{ background: 'var(--torea)', color: '#fff' }}>
-          <span>BookBot</span>
+          <span>SEQ · Memory layer active</span>
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            Live Call
+            Live
           </span>
         </div>
 
@@ -87,8 +86,8 @@ function HeroMock() {
         {/* Bottom bar */}
         <div className="flex items-center justify-between px-5 py-3 border-t text-[12px] font-medium"
           style={{ borderColor: 'var(--border-light)', color: 'var(--text-muted)', background: '#fff' }}>
-          <span>Smith Plumbing</span>
-          <span style={{ color: 'var(--sage-deep, #4A7C59)' }}>● Recording</span>
+          <span>Session resumed · 12 memories injected</span>
+          <span style={{ color: 'var(--sage-deep, #4A7C59)' }}>● Persistent</span>
         </div>
       </div>
 
@@ -97,7 +96,7 @@ function HeroMock() {
         className="absolute -top-4 -right-4 rounded-full px-4 py-2 text-xs font-bold shadow-lg"
         style={{ background: 'var(--torea)', color: '#fff', boxShadow: '0 8px 24px rgba(10,42,146,0.3)' }}
         animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}>
-        24/7 AI Receptionist
+        Apple Silicon native
       </motion.div>
 
       {/* Floating stat */}
@@ -105,8 +104,8 @@ function HeroMock() {
         className="absolute -bottom-4 -left-6 rounded-2xl px-5 py-3 shadow-xl"
         style={{ background: '#fff', border: '1px solid var(--border-light)', boxShadow: '0 12px 40px rgba(49,36,31,0.1)' }}
         animate={{ y: [0, 4, 0] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}>
-        <div className="text-xl font-black" style={{ color: 'var(--torea)' }}>1,700+</div>
-        <div className="text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>calls handled</div>
+        <div className="text-xl font-black" style={{ color: 'var(--torea)' }}>0 ms</div>
+        <div className="text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>cold-start memory</div>
       </motion.div>
     </div>
   );
@@ -123,38 +122,20 @@ const products = [
 
 const pains = [
   {
-    pain: 'Customer calls at 6 PM. Nobody picks up. They call your competitor.',
-    fix: 'AI answers every call — any hour, any day. No voicemail, no missed revenue.',
+    pain: 'Your AI feature is a wrapper around someone else\'s API. So is your competitor\'s.',
+    fix: 'We architect the persistence layer underneath the wrapper. Memory is the moat — and it compounds.',
   },
   {
-    pain: "Your team spends hours answering the same questions every day.",
-    fix: 'AI handles the repetitive questions so your team can focus on real work.',
+    pain: 'Every session your agent forgets the user. Every conversation starts cold.',
+    fix: 'We build the memory pipeline: extraction, embedding, recall, decay. Your agent gets better every week.',
   },
   {
-    pain: 'You tried a chatbot. It felt robotic and embarrassed your brand.',
-    fix: 'Trained on YOUR business. Sounds like YOUR team. Not a script bot.',
+    pain: 'You\'re burning frontier-model tokens on tasks a small model could do.',
+    fix: 'We fine-tune Apple Silicon-native models on your data, swap them in behind the same interface. Same quality, 1/200th the cost.',
   },
   {
-    pain: '30% of your customers speak Spanish. Your website speaks only English.',
-    fix: 'Professional outreach in 12 languages — instant, not Google Translate.',
-  },
-];
-
-const demoTabs = [
-  {
-    label: 'Chat Widget',
-    desc: 'Answers customer questions instantly on your website — trained on your business, not generic AI responses.',
-    demo: '> Customer: "What are your hours?"\n\n< BookBot: "We\'re open Mon–Fri 8AM–6PM and Sat 9AM–2PM. Would you like to schedule an appointment?"\n\n> Customer: "Saturday works!"\n\n< BookBot: "I\'ve got 10AM or 1PM open. Which works better for you?"',
-  },
-  {
-    label: 'Phone Agent',
-    desc: 'Picks up calls your team misses — books appointments, looks up history, never puts anyone on hold.',
-    demo: '📞 [Ring...]\n\n< "Hi, this is BookBot for Smith Plumbing. How can I help?\"\n\n> "I need a repair, pipe is leaking"\n\n< "I can get someone out tomorrow. Can I get your address?"\n\n> "123 Main St"\n\n< "Perfect, 9AM tomorrow. You\'ll get a confirmation text."',
-  },
-  {
-    label: 'Translation',
-    desc: 'Your messages auto-translate into 12 languages — professional tone, not Google Translate.',
-    demo: '[ English ]\n"Thank you for your interest! Our team will follow up within 24 hours."\n\n[ Spanish ]\n"¡Gracias por su interés! Nuestro equipo le dará seguimiento en 24 horas."\n\n[ Mandarin ]\n"感谢您的关注！我们的团队将在24小时内跟进。"',
+    pain: 'Your team can ship a feature. You need someone who can ship an agentic system.',
+    fix: 'Architecture, training, infra, evals, production. One team. We publish the methodology so you can audit the work.',
   },
 ];
 
@@ -397,17 +378,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── LIVE DEMO ── */}
-      <section className="py-28 px-6" style={{ background: 'var(--bg-primary)' }}>
-        <div className="max-w-[1100px] mx-auto">
-          <ScrollReveal className="mb-12">
-            <Label color="var(--torea)" className="mb-3">See it in action</Label>
-            <Display size="md">Watch it work.</Display>
-          </ScrollReveal>
-          <TabDemo tabs={demoTabs} />
-        </div>
-      </section>
-
       {/* ── APPLIED (products) ── */}
       <section id="solutions" className="py-28 px-6" style={{ background: 'var(--bg-primary)' }}>
         <div className="max-w-[1100px] mx-auto">
@@ -498,7 +468,7 @@ export default function LandingPage() {
             <FloatingCTA href="mailto:ryan@riscent.com?subject=Build%20with%20Riscent" variant="light">
               Build with us &rarr;
             </FloatingCTA>
-            <FloatingCTA href="#solutions" variant="secondary">
+            <FloatingCTA href="#solutions" variant="secondary-light">
               Browse the products
             </FloatingCTA>
           </div>
