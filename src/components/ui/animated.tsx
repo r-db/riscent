@@ -193,7 +193,7 @@ export function StatRibbon({ stats }: { stats: StatItem[] }) {
 interface FloatingCTAProps {
   children: ReactNode;
   href?: string;
-  variant?: 'primary' | 'secondary' | 'light';
+  variant?: 'primary' | 'secondary' | 'secondary-light' | 'light';
   className?: string;
 }
 
@@ -201,15 +201,18 @@ export function FloatingCTA({ children, href = '#', variant = 'primary', classNa
   const styles = {
     primary: { bg: 'var(--torea)', color: '#fff', shadow: '0 8px 30px rgba(10,42,146,0.3)' },
     secondary: { bg: 'transparent', color: 'var(--cocoa)', shadow: 'none' },
+    'secondary-light': { bg: 'transparent', color: '#fff', shadow: 'none' },
     light: { bg: 'var(--shilo)', color: 'var(--cocoa)', shadow: '0 8px 30px rgba(0,0,0,0.15)' },
   };
   const s = styles[variant];
+  const isOutline = variant === 'secondary' || variant === 'secondary-light';
+  const borderColor = variant === 'secondary-light' ? 'rgba(255,255,255,0.55)' : 'var(--border-medium)';
 
   return (
     <motion.a
       href={href}
       className={`inline-block text-base font-bold px-10 py-4 rounded-sm no-underline ${className}`}
-      style={{ background: s.bg, color: s.color, boxShadow: s.shadow, border: variant === 'secondary' ? '2px solid var(--border-medium)' : 'none' }}
+      style={{ background: s.bg, color: s.color, boxShadow: s.shadow, border: isOutline ? `2px solid ${borderColor}` : 'none' }}
       whileHover={{ y: -3, boxShadow: variant === 'primary' ? '0 14px 40px rgba(10,42,146,0.4)' : s.shadow }}
       transition={{ duration: 0.25, ease: SHELBY_EASE }}
     >
