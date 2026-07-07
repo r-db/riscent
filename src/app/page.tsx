@@ -10,6 +10,8 @@ import {
   FloatingCTA,
 } from '@/components/ui/animated';
 import { Display, Label } from '@/components/ui/typography';
+import SlmStudy from '@/components/SlmStudy';
+import ProofSection from '@/components/ProofSection';
 
 const EASE = [0.59, 0.06, 0.1, 1] as const;
 
@@ -110,15 +112,6 @@ function HeroMock() {
     </div>
   );
 }
-
-const products = [
-  { name: 'Chatterbox', tag: 'Website Chat', line: 'AI chat that answers questions, books appointments, and captures leads — on your website, 24/7.' },
-  { name: 'BookBot', tag: 'Phone Agent', line: 'AI receptionist that answers every call, looks up customers, and books appointments. Never misses.' },
-  { name: 'LinguaReach', tag: 'Multilingual', line: 'Write in English. Your customers read in their language. 12 languages, instant.' },
-  { name: 'VoiceGuard', tag: 'Voice QA', line: 'Catches what your AI voice agent gets wrong and fixes it before customers complain.' },
-  { name: 'DripForce', tag: 'Service CRM', line: 'Client management, scheduling, and AI follow-ups — built for contractors and service teams.' },
-  { name: 'VoiceTrain', tag: 'AI Training', line: 'Turn real conversations into training data. Your AI agent improves every week.' },
-];
 
 const pains = [
   {
@@ -298,6 +291,9 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── SLM STUDY + FINE-TUNING (real, measured results) ── */}
+      <SlmStudy />
+
       {/* ── BUILD ── */}
       <section id="build" className="py-28 px-6" style={{ background: 'var(--bg-secondary)' }}>
         <div className="max-w-[1100px] mx-auto">
@@ -378,36 +374,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── APPLIED (products) ── */}
-      <section id="solutions" className="py-28 px-6" style={{ background: 'var(--bg-primary)' }}>
-        <div className="max-w-[1100px] mx-auto">
-          <ScrollReveal className="mb-16">
-            <Label color="var(--torea)" className="mb-3">Applied</Label>
-            <Display size="md" className="mb-4">What the engine makes,<br />when we point it at a problem.</Display>
-            <p className="text-base leading-relaxed max-w-[620px] mt-6" style={{ color: 'var(--text-secondary)' }}>
-              Six products we&apos;ve shipped on top of the same agentic stack —
-              each one proof the architecture works in a specific market. The same
-              engine ships into client builds.
-            </p>
-          </ScrollReveal>
-          <div className="border-t" style={{ borderColor: 'var(--border-medium)' }}>
-            {products.map((p, i) => (
-              <ScrollReveal key={p.name} delay={i * 0.06}>
-                <div className="grid grid-cols-[56px_1fr_1.4fr] gap-10 py-8 border-b items-baseline" style={{ borderColor: 'var(--border-light)' }}>
-                  <span className="text-[13px] font-bold tracking-[0.04em]" style={{ color: 'var(--text-whisper)' }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div>
-                    <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-1.5" style={{ color: 'var(--danube)' }}>{p.tag}</div>
-                    <div className="text-2xl font-black tracking-[-0.03em]" style={{ color: 'var(--cocoa)' }}>{p.name}</div>
-                  </div>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{p.line}</p>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ── APPLIED / PROOF — results over idealism (Phantom Vault, synthetic memory, cited ROI reality) ── */}
+      <ProofSection />
 
       {/* ── WHY US ── */}
       <section id="proof" className="py-28 px-6">
