@@ -13,6 +13,7 @@ import { Display, Label } from '@/components/ui/typography';
 import SlmStudy from '@/components/SlmStudy';
 import ProofSection from '@/components/ProofSection';
 import AiVisibility from '@/components/AiVisibility';
+import TrainDeploy from '@/components/TrainDeploy';
 
 const EASE = [0.59, 0.06, 0.1, 1] as const;
 
@@ -296,6 +297,9 @@ export default function LandingPage() {
 
       {/* ── SLM STUDY + FINE-TUNING (real, measured results) ── */}
       <SlmStudy />
+
+      {/* ── TRAIN BIG ONCE, DEPLOY SMALL FOREVER — economics + build/consult CTA ── */}
+      <TrainDeploy />
 
       {/* ── BUILD ── */}
       <section id="build" className="py-28 px-6" style={{ background: 'var(--bg-secondary)' }}>
