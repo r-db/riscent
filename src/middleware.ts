@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/ai-visibility",
   "/book",
   "/api/book/(.*)",
+  "/api/agent/(.*)",
   "/behind-the-curtain",
   "/chatterbox",
   "/bookbot",

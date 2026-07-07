@@ -1,0 +1,79 @@
+{
+  "name": "Riscent Appointment Setter — LLM/Voice tool schema",
+  "description": "Drop-in function-calling tools for a text or voice LLM (e.g. paired with IB365) to read, write, and edit 30-minute appointments. Low-latency JSON over HTTPS. All calls require the header 'Authorization: Bearer <APPT_API_KEY>' (or 'x-api-key: <APPT_API_KEY>'). Times are ISO-8601 instants; slots are 30 minutes, weekdays, morning/afternoon/evening Pacific.",
+  "base_url": "https://riscent.com",
+  "auth": { "type": "bearer", "header": "Authorization", "env": "APPT_API_KEY" },
+  "tools": [
+    {
+      "name": "find_open_slots",
+      "description": "List the real open 30-minute slots for a date. Call this before booking so you offer a time that is actually free.",
+      "http": { "method": "GET", "path": "/api/agent/availability?date={date}" },
+      "input_schema": {
+        "type": "object",
+        "properties": { "date": { "type": "string", "description": "Target date, YYYY-MM-DD (Pacific)." } },
+        "required": ["date"]
+      },
+      "returns": "{ date, open: [{ slot: ISO8601, label }] }"
+    },
+    {
+      "name": "list_appointments",
+      "description": "Look up existing appointments by phone and/or date window. Use to check what a caller already has before creating, rescheduling, or cancelling.",
+      "http": { "method": "GET", "path": "/api/agent/appointments?phone={phone}&from={from}&to={to}&status={status}" },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "phone": { "type": "string", "description": "Caller phone (any format; server normalizes to E.164)." },
+          "from": { "type": "string", "description": "Optional window start, ISO-8601." },
+          "to": { "type": "string", "description": "Optional window end, ISO-8601." },
+          "status": { "type": "string", "enum": ["booked", "cancelled"], "default": "booked" }
+        }
+      },
+      "returns": "{ appointments: [{ id, name, phone, slot_start, slot_end, status }] }"
+    },
+    {
+      "name": "book_appointment",
+      "description": "Create a 30-minute appointment for a caller. The slot must be one returned by find_open_slots. Ryan is texted automatically. Errors: slot_taken, slot_unavailable, invalid_phone, name_required.",
+      "http": { "method": "POST", "path": "/api/agent/appointments" },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "phone": { "type": "string" },
+          "slot": { "type": "string", "description": "ISO-8601 slot start from find_open_slots." }
+        },
+        "required": ["name", "phone", "slot"]
+      },
+      "returns": "{ ok: true, id, label } | { error }"
+    },
+    {
+      "name": "reschedule_appointment",
+      "description": "Move an existing appointment to a new open slot. Get the id from list_appointments and the new slot from find_open_slots.",
+      "http": { "method": "PATCH", "path": "/api/agent/appointments/{id}" },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Appointment id." },
+          "slot": { "type": "string", "description": "New ISO-8601 slot start." }
+        },
+        "required": ["id", "slot"]
+      },
+      "returns": "{ ok: true, label } | { error }"
+    },
+    {
+      "name": "cancel_appointment",
+      "description": "Cancel an appointment by id (frees the slot). Get the id from list_appointments.",
+      "http": { "method": "DELETE", "path": "/api/agent/appointments/{id}" },
+      "input_schema": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } },
+        "required": ["id"]
+      },
+      "returns": "{ ok: true } | { error }"
+    }
+  ],
+  "notes": [
+    "Latency: direct Postgres, no per-turn model calls — safe inside a voice turn.",
+    "This trusted agent surface has no consumer OTP and no scarcity narrowing (that is only the public /book UI).",
+    "Set APPT_API_KEY in the environment to enable; unset = locked (401)."
+  ]
+}
