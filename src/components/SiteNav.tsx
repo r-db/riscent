@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FloatingCTA } from '@/components/ui/animated';
 
 const LINKS = [
   { label: 'Custom AI', href: '/slm' },
@@ -25,7 +24,7 @@ export default function SiteNav() {
           {LINKS.map(l => (
             <Link key={l.href} href={l.href} className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>{l.label}</Link>
           ))}
-          <FloatingCTA href="mailto:ryan@riscent.com?subject=Talk%20to%20Riscent" className="!py-2.5 !px-6 text-[13px]">Talk to us</FloatingCTA>
+          <Link href="/book" className="inline-block text-[13px] font-bold px-6 py-2.5 rounded-sm no-underline transition-transform hover:-translate-y-0.5" style={{ background: 'var(--torea)', color: '#fff', boxShadow: '0 8px 24px rgba(10,42,146,0.25)' }}>Talk to Ryan</Link>
         </div>
 
         {/* mobile hamburger */}
@@ -52,13 +51,13 @@ export default function SiteNav() {
                 {l.label}
               </Link>
             ))}
-            <a href="mailto:ryan@riscent.com?subject=Custom%20build%20%E2%80%94%20Riscent" onClick={() => setOpen(false)}
+            <Link href="/book" onClick={() => setOpen(false)}
               className="mt-4 text-center text-[15px] font-bold no-underline py-3.5 rounded-sm" style={{ background: 'var(--torea)', color: '#fff' }}>
-              Start a custom build &rarr;
-            </a>
-            <a href="mailto:ryan@riscent.com?subject=Consultation%20%E2%80%94%20Riscent" onClick={() => setOpen(false)}
+              Talk to Ryan &rarr;
+            </Link>
+            <a href="mailto:ryan@riscent.com?subject=Custom%20build%20%E2%80%94%20Riscent" onClick={() => setOpen(false)}
               className="mt-2 text-center text-[15px] font-bold no-underline py-3.5 rounded-sm" style={{ background: 'transparent', color: 'var(--cocoa)', border: '1.5px solid var(--border-medium)' }}>
-              Book a consultation
+              Start a custom build
             </a>
           </div>
         </div>
