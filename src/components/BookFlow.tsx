@@ -36,6 +36,7 @@ export default function BookFlow() {
   const [slot, setSlot] = useState<{ iso: string; label: string } | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [consent, setConsent] = useState(false);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -72,6 +73,7 @@ export default function BookFlow() {
     setError('');
     if (name.trim().length < 2) return setError('Enter your name.');
     if (phone.replace(/\D/g, '').length < 10) return setError('Enter a valid mobile number.');
+    if (!consent) return setError('Please check the box to agree before we text you.');
     setLoading(true);
     try {
       const r = await fetch('/api/book/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) });
@@ -189,8 +191,13 @@ export default function BookFlow() {
               <input value={name} onChange={e => setName(e.target.value)} placeholder="First and last" className="w-full mb-4 px-4 py-3 rounded-xl text-[15px] outline-none" style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
               <label className="block text-[13px] font-semibold mb-1.5" style={{ color: 'var(--cocoa)' }}>Mobile number</label>
               <input value={phone} onChange={e => setPhone(e.target.value)} inputMode="tel" placeholder="(555) 555-5555" className="w-full px-4 py-3 rounded-xl text-[15px] outline-none" style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
-              <p className="text-[12px] mt-3 leading-relaxed" style={{ color: 'var(--text-muted)' }}>We&apos;ll text a one-time code to confirm it&apos;s you — no bots, no spam. Msg &amp; data rates may apply; reply STOP to opt out. By continuing you agree to our <a href="/privacy" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Privacy Policy</a> and <a href="/terms" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Terms</a>.</p>
-              <button onClick={sendCode} disabled={loading} className="w-full mt-5 py-4 rounded-sm font-bold text-[15px] disabled:opacity-60" style={{ background: 'var(--torea)', color: '#fff' }}>{loading ? 'Sending…' : 'Text me a code →'}</button>
+              <label className="flex gap-3 mt-4" style={{ alignItems: 'flex-start', cursor: 'pointer' }}>
+                <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} aria-label="Agree to receive text messages" style={{ width: 18, height: 18, flex: 'none', marginTop: 2, accentColor: 'var(--torea)' }} />
+                <span className="text-[12px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                  I agree to receive a one-time verification code and appointment text messages from Riscent at this number. Message frequency varies (about 1–3 messages per booking). Msg &amp; data rates may apply. Reply HELP for help, STOP to opt out. I agree to the <a href="/privacy" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Privacy Policy</a> and <a href="/terms" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Terms</a>.
+                </span>
+              </label>
+              <button onClick={sendCode} disabled={loading || !consent} className="w-full mt-5 py-4 rounded-sm font-bold text-[15px] disabled:opacity-50 disabled:cursor-not-allowed" style={{ background: 'var(--torea)', color: '#fff' }}>{loading ? 'Sending…' : 'Text me a code →'}</button>
             </motion.div>
           )}
 
