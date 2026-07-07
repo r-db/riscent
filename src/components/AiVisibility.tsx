@@ -112,7 +112,7 @@ export default function AiVisibility() {
                   exactly where the gaps are — and then get you into the answers. This is what we do: the same team that
                   measures models and ships fine-tuned ones, pointed at your visibility.
                 </p>
-                <a href="mailto:ryan@riscent.com?subject=AI%20Visibility%20Scan%20%E2%80%94%20Riscent"
+                <a href="/ai-visibility"
                   className="inline-block text-base font-bold px-9 py-3.5 rounded-sm no-underline" style={{ background: '#fff', color: 'var(--torea)' }}>
                   Scan my business &rarr;
                 </a>

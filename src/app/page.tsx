@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   ScrollReveal,
@@ -14,6 +13,7 @@ import SlmStudy from '@/components/SlmStudy';
 import ProofSection from '@/components/ProofSection';
 import AiVisibility from '@/components/AiVisibility';
 import TrainDeploy from '@/components/TrainDeploy';
+import SiteNav from '@/components/SiteNav';
 
 const EASE = [0.59, 0.06, 0.1, 1] as const;
 
@@ -139,24 +139,7 @@ export default function LandingPage() {
     <main className="min-h-screen overflow-x-hidden" style={{ background: 'var(--bg-primary)' }}>
 
       {/* ── NAV ── */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b"
-        style={{ background: '#fff', borderColor: 'var(--border-light)' }}>
-        <div className="max-w-[1200px] mx-auto px-8 h-[60px] flex justify-between items-center">
-          <Link href="/" className="no-underline">
-            <span className="text-xl font-black tracking-[-0.04em]" style={{ color: 'var(--cocoa)' }}>RISCENT</span>
-          </Link>
-          <div className="flex items-center gap-5 md:gap-8">
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#visibility" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>AI Search</a>
-              <a href="#research" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Research</a>
-              <a href="#build" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Build</a>
-            </div>
-            <FloatingCTA href="mailto:ryan@riscent.com?subject=Talk%20to%20Riscent" className="!py-2.5 !px-5 md:!px-6 text-[13px]">
-              Talk to us
-            </FloatingCTA>
-          </div>
-        </div>
-      </header>
+      <SiteNav />
 
       {/* ── HERO ── */}
       <section className="relative min-h-screen flex items-center pt-[60px] overflow-hidden"

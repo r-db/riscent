@@ -123,8 +123,8 @@ export default function TrainDeploy() {
                 Book a consult
               </a>
             </div>
-            <a href="#benchmark" className="inline-block text-sm font-semibold no-underline mt-6" style={{ color: 'var(--shilo)' }}>
-              See the numbers first &rarr;
+            <a href="/slm" className="inline-block text-sm font-semibold no-underline mt-6" style={{ color: 'var(--shilo)' }}>
+              See the full case for SLM &rarr;
             </a>
           </div>
         </ScrollReveal>
