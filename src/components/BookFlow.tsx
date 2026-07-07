@@ -189,7 +189,7 @@ export default function BookFlow() {
               <input value={name} onChange={e => setName(e.target.value)} placeholder="First and last" className="w-full mb-4 px-4 py-3 rounded-xl text-[15px] outline-none" style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
               <label className="block text-[13px] font-semibold mb-1.5" style={{ color: 'var(--cocoa)' }}>Mobile number</label>
               <input value={phone} onChange={e => setPhone(e.target.value)} inputMode="tel" placeholder="(555) 555-5555" className="w-full px-4 py-3 rounded-xl text-[15px] outline-none" style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
-              <p className="text-[12px] mt-3" style={{ color: 'var(--text-muted)' }}>We text a code to confirm it&apos;s really you — no bots, no spam. Standard rates apply.</p>
+              <p className="text-[12px] mt-3 leading-relaxed" style={{ color: 'var(--text-muted)' }}>We&apos;ll text a one-time code to confirm it&apos;s you — no bots, no spam. Msg &amp; data rates may apply; reply STOP to opt out. By continuing you agree to our <a href="/privacy" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Privacy Policy</a> and <a href="/terms" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Terms</a>.</p>
               <button onClick={sendCode} disabled={loading} className="w-full mt-5 py-4 rounded-sm font-bold text-[15px] disabled:opacity-60" style={{ background: 'var(--torea)', color: '#fff' }}>{loading ? 'Sending…' : 'Text me a code →'}</button>
             </motion.div>
           )}
