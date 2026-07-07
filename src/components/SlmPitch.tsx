@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import SiteNav from '@/components/SiteNav';
+import BookCTA from '@/components/BookCTA';
 import { ScrollReveal } from '@/components/ui/animated';
 import { Display, Label } from '@/components/ui/typography';
 
@@ -41,8 +42,8 @@ export default function SlmPitch() {
               Train big once to teach it; deploy small to run it. Lower operating cost, higher close rate.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="mailto:ryan@riscent.com?subject=Custom%20SLM%20build%20%E2%80%94%20Riscent" className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline text-center" style={{ background: 'var(--torea)', color: '#fff', boxShadow: '0 8px 30px rgba(10,42,146,0.3)' }}>Start a build &rarr;</a>
-              <a href="mailto:ryan@riscent.com?subject=SLM%20consultation%20%E2%80%94%20Riscent" className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline text-center" style={{ background: 'transparent', color: 'var(--cocoa)', border: '2px solid var(--border-medium)' }}>Book a consult</a>
+              <BookCTA variant="primary">Book a call &rarr;</BookCTA>
+              <BookCTA variant="outline">See a time</BookCTA>
             </div>
           </ScrollReveal>
         </div>
@@ -169,8 +170,8 @@ export default function SlmPitch() {
             <Display color="#fff" className="mb-5">Own your model.<br />Lower the bill. Close more.</Display>
             <p className="text-lg leading-relaxed mb-10" style={{ color: 'rgba(255,255,255,0.72)' }}>Two ways to move: have us build and ship it, or bring us in to advise. Either way, it&apos;s measured — we show you the numbers before you commit.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="mailto:ryan@riscent.com?subject=Custom%20SLM%20build%20%E2%80%94%20Riscent" className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline" style={{ background: 'var(--shilo)', color: 'var(--cocoa)' }}>Start a build &rarr;</a>
-              <a href="mailto:ryan@riscent.com?subject=SLM%20consultation%20%E2%80%94%20Riscent" className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline" style={{ background: 'transparent', color: '#fff', border: '2px solid rgba(255,255,255,0.55)' }}>Book a consult</a>
+              <BookCTA variant="light">Book a call &rarr;</BookCTA>
+              <BookCTA variant="outline-light">See a time</BookCTA>
             </div>
           </ScrollReveal>
         </div>

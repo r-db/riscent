@@ -55,9 +55,9 @@ export default function SiteNav() {
               className="mt-4 text-center text-[15px] font-bold no-underline py-3.5 rounded-sm" style={{ background: 'var(--torea)', color: '#fff' }}>
               Talk to Ryan &rarr;
             </Link>
-            <a href="mailto:ryan@riscent.com?subject=Custom%20build%20%E2%80%94%20Riscent" onClick={() => setOpen(false)}
-              className="mt-2 text-center text-[15px] font-bold no-underline py-3.5 rounded-sm" style={{ background: 'transparent', color: 'var(--cocoa)', border: '1.5px solid var(--border-medium)' }}>
-              Start a custom build
+            <a href="mailto:ryan@riscent.com" onClick={() => setOpen(false)}
+              className="mt-3 text-center text-[13px] no-underline" style={{ color: 'var(--text-muted)' }}>
+              or email ryan@riscent.com
             </a>
           </div>
         </div>

@@ -16,6 +16,7 @@ import AiVisibility from '@/components/AiVisibility';
 import TrainDeploy from '@/components/TrainDeploy';
 import SiteNav from '@/components/SiteNav';
 import Services from '@/components/Services';
+import BookCTA from '@/components/BookCTA';
 
 const EASE = [0.59, 0.06, 0.1, 1] as const;
 
@@ -182,9 +183,7 @@ export default function LandingPage() {
             <motion.div className="flex flex-col sm:flex-row gap-4"
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5, ease: EASE }}>
-              <FloatingCTA href="mailto:ryan@riscent.com?subject=Build%20with%20Riscent">
-                Build with us &rarr;
-              </FloatingCTA>
+              <BookCTA variant="primary">Book a call &rarr;</BookCTA>
               <FloatingCTA href="#research" variant="secondary">
                 See the research
               </FloatingCTA>
@@ -334,9 +333,7 @@ export default function LandingPage() {
 
           <ScrollReveal delay={0.3}>
             <div className="mt-12 flex flex-wrap gap-4 items-center">
-              <FloatingCTA href="mailto:ryan@riscent.com?subject=Build%20engagement%20—%20Riscent" className="!py-3 !px-7 text-[13px]">
-                Start a project &rarr;
-              </FloatingCTA>
+              <BookCTA variant="primary" className="!py-3 !px-7 !text-[13px]">Book a call &rarr;</BookCTA>
               <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 We&apos;ll show you something working before you sign anything.
               </span>
@@ -432,12 +429,8 @@ export default function LandingPage() {
             business visible inside the models buyers now ask. Either way, you work with the team publishing the research.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <FloatingCTA href="mailto:ryan@riscent.com?subject=Custom%20build%20%E2%80%94%20Riscent" variant="light">
-              Start a custom build &rarr;
-            </FloatingCTA>
-            <FloatingCTA href="mailto:ryan@riscent.com?subject=Consultation%20%E2%80%94%20Riscent" variant="secondary-light">
-              Book a consultation
-            </FloatingCTA>
+            <BookCTA variant="light">Book a call &rarr;</BookCTA>
+            <BookCTA variant="outline-light">See a time</BookCTA>
           </div>
           <p className="text-sm mt-8" style={{ color: 'rgba(255,255,255,0.35)' }}>
             Limited engagements each quarter &middot; Response in 24 hours

@@ -2,6 +2,7 @@
 
 import { ScrollReveal } from '@/components/ui/animated';
 import { Display, Label } from '@/components/ui/typography';
+import BookCTA from '@/components/BookCTA';
 
 /* ══════════════════════════════════════════════════════════════════
    SLM SELECTION STUDY + FINE-TUNING
@@ -363,11 +364,7 @@ export default function SlmStudy() {
                 We scope it, prove it on held-out data, and tell you plainly where the model&apos;s competence ends. That honesty is the product.
               </p>
               <div className="mt-8">
-                <a href="mailto:ryan@riscent.com?subject=Fine-tune%20a%20model%20for%20my%20job%20—%20Riscent"
-                  className="inline-block text-base font-bold px-9 py-3.5 rounded-sm no-underline"
-                  style={{ background: 'var(--shilo)', color: 'var(--cocoa)' }}>
-                  Get a model built for your job &rarr;
-                </a>
+                <BookCTA variant="light">Book a call about it &rarr;</BookCTA>
               </div>
             </div>
           </ScrollReveal>

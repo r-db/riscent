@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import SiteNav from '@/components/SiteNav';
+import BookCTA from '@/components/BookCTA';
 import { ScrollReveal } from '@/components/ui/animated';
 import { Display, Label } from '@/components/ui/typography';
 
@@ -38,8 +39,8 @@ export default function AiVisibilityPitch() {
               business information the special way the models need, so you get named, recommended, and remembered.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="mailto:ryan@riscent.com?subject=AI%20Visibility%20Scan%20%E2%80%94%20Riscent" className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline text-center" style={{ background: 'var(--shilo)', color: 'var(--cocoa)' }}>Scan my business &rarr;</a>
-              <a href="mailto:ryan@riscent.com?subject=AI%20Visibility%20consultation%20%E2%80%94%20Riscent" className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline text-center" style={{ background: 'transparent', color: '#fff', border: '2px solid rgba(255,255,255,0.5)' }}>Book a consult</a>
+              <BookCTA variant="light">Scan my business &rarr;</BookCTA>
+              <BookCTA variant="outline-light">See a time</BookCTA>
             </div>
           </ScrollReveal>
         </div>
@@ -140,8 +141,8 @@ export default function AiVisibilityPitch() {
             <Display color="#fff" className="mb-5">Get found by the AI<br />your buyers already trust.</Display>
             <p className="text-lg leading-relaxed mb-10" style={{ color: 'rgba(255,255,255,0.78)' }}>Start with a scan — see exactly what the models say about you today. Then we get you into the answer.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="mailto:ryan@riscent.com?subject=AI%20Visibility%20Scan%20%E2%80%94%20Riscent" className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline" style={{ background: '#fff', color: 'var(--torea)' }}>Scan my business &rarr;</a>
-              <a href="mailto:ryan@riscent.com?subject=AI%20Visibility%20consultation%20%E2%80%94%20Riscent" className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline" style={{ background: 'transparent', color: '#fff', border: '2px solid rgba(255,255,255,0.55)' }}>Book a consult</a>
+              <BookCTA variant="light-solid">Scan my business &rarr;</BookCTA>
+              <BookCTA variant="outline-light">See a time</BookCTA>
             </div>
           </ScrollReveal>
         </div>

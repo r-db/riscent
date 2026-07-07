@@ -2,6 +2,7 @@
 
 import { ScrollReveal } from '@/components/ui/animated';
 import { Display, Label } from '@/components/ui/typography';
+import BookCTA from '@/components/BookCTA';
 
 /* ══════════════════════════════════════════════════════════════════
    AI VISIBILITY — the scan. Every number is real and cited.
@@ -112,10 +113,7 @@ export default function AiVisibility() {
                   exactly where the gaps are — and then get you into the answers. This is what we do: the same team that
                   measures models and ships fine-tuned ones, pointed at your visibility.
                 </p>
-                <a href="/ai-visibility"
-                  className="inline-block text-base font-bold px-9 py-3.5 rounded-sm no-underline" style={{ background: '#fff', color: 'var(--torea)' }}>
-                  Scan my business &rarr;
-                </a>
+                <BookCTA variant="light-solid">Scan my business &rarr;</BookCTA>
               </div>
               <div className="rounded-xl p-6" style={{ background: 'rgba(0,0,0,0.18)', border: '1px solid rgba(255,255,255,0.15)' }}>
                 <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-3" style={{ color: 'var(--shilo)' }}>Proof of concept</div>

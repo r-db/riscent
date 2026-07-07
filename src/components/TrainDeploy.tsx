@@ -2,6 +2,7 @@
 
 import { ScrollReveal } from '@/components/ui/animated';
 import { Display, Label } from '@/components/ui/typography';
+import BookCTA from '@/components/BookCTA';
 
 /* ══════════════════════════════════════════════════════════════════
    TRAIN BIG ONCE, DEPLOY SMALL FOREVER — the real-world SLM economics.
@@ -114,14 +115,8 @@ export default function TrainDeploy() {
               Two ways to move: have us build and ship it, or bring us in to advise. Either way, it&apos;s measured — we show you the numbers before you commit.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="mailto:ryan@riscent.com?subject=Custom%20build%20%E2%80%94%20train%20big%2C%20deploy%20small"
-                className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline" style={{ background: 'var(--shilo)', color: 'var(--cocoa)' }}>
-                Start a build &rarr;
-              </a>
-              <a href="mailto:ryan@riscent.com?subject=Consultation%20%E2%80%94%20SLM%20deployment"
-                className="inline-block text-base font-bold px-9 py-4 rounded-sm no-underline" style={{ background: 'transparent', color: '#fff', border: '2px solid rgba(255,255,255,0.55)' }}>
-                Book a consult
-              </a>
+              <BookCTA variant="light">Book a call &rarr;</BookCTA>
+              <BookCTA variant="outline-light">See a time</BookCTA>
             </div>
             <a href="/slm" className="inline-block text-sm font-semibold no-underline mt-6" style={{ color: 'var(--shilo)' }}>
               See the full case for SLM &rarr;
