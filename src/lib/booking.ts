@@ -49,7 +49,7 @@ export async function ensureSchema(): Promise<void> {
       ip_hash text NOT NULL,
       date text NOT NULL,
       device_id text NOT NULL DEFAULT '',
-      target int NOT NULL DEFAULT ${START_OFFER},
+      target int NOT NULL DEFAULT 5,
       last_reduced_at timestamptz NOT NULL DEFAULT now(),
       updated_at timestamptz NOT NULL DEFAULT now(),
       PRIMARY KEY (ip_hash, date)
