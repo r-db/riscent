@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import SiteNav from '@/components/SiteNav';
 
 export const metadata: Metadata = {
   title: 'Documentation | Riscent — AI Consulting by Ryan Bolden',
@@ -8,7 +9,10 @@ export const metadata: Metadata = {
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ background: '#0b0e14', color: '#e6e8ed', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif' }}>
-      {children}
+      <SiteNav />
+      <div style={{ paddingTop: 60 }}>
+        {children}
+      </div>
     </div>
   );
 }
