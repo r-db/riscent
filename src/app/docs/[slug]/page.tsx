@@ -136,7 +136,7 @@ export default async function DocPage({ params }: Props) {
             We specialize in healthcare — the hardest vertical for AI, with HIPAA regulation, PHI handling, and zero tolerance for error. If we can ship it in healthcare, we can ship it anywhere. We work across industries.
           </p>
           <div className="rc-doc-cta-row" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <a href={`mailto:ryan@riscent.com?subject=${encodeURIComponent(doc.publicTitle)}`} style={{
+            <Link href="/book" style={{
               display: 'inline-block',
               background: C.accent,
               color: C.bg,
@@ -147,7 +147,7 @@ export default async function DocPage({ params }: Props) {
               textDecoration: 'none',
             }}>
               Talk to Ryan →
-            </a>
+            </Link>
             <a href="tel:+18882523019" style={{
               display: 'inline-block',
               background: 'transparent',
