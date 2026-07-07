@@ -241,12 +241,12 @@ export default function CaseStudyPage() {
               We specialize in healthcare because it is the hardest vertical — strict HIPAA regulation, PHI handling, and zero tolerance for failure. If we can ship it in healthcare, we can ship it anywhere. We work across industries.
             </p>
             <div className="cs-cta-row" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <a href="mailto:ryan@riscent.com?subject=Interested after reading the case study" style={{
+              <Link href="/book" style={{
                 display: 'inline-block', background: C.accent, color: C.bg,
                 padding: '18px 36px', borderRadius: 8, fontSize: 17, fontWeight: 700, textDecoration: 'none',
               }}>
                 Talk to Ryan →
-              </a>
+              </Link>
               <a href="tel:+18882523019" style={{
                 display: 'inline-block', background: 'transparent', color: C.text,
                 border: `1px solid ${C.border}`, padding: '18px 36px', borderRadius: 8, fontSize: 17, fontWeight: 600, textDecoration: 'none',

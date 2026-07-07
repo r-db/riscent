@@ -125,12 +125,12 @@ export default async function SectionArticlePage({ params }: Props) {
             }}>
               See the Playbook →
             </Link>
-            <a href={`mailto:ryan@riscent.com?subject=${encodeURIComponent(section.heading)}`} style={{
+            <Link href="/book" style={{
               display: 'inline-block', background: 'transparent', color: C.text,
               border: `1px solid ${C.border}`, padding: '14px 28px', borderRadius: 8, fontSize: 16, fontWeight: 600, textDecoration: 'none',
             }}>
               Talk to Ryan
-            </a>
+            </Link>
           </div>
         </div>
 

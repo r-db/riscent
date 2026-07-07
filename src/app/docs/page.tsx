@@ -61,7 +61,7 @@ export default function DocsIndex() {
         <p style={{ fontSize: 16, color: C.text2, lineHeight: 1.6, margin: 0, marginBottom: 16 }}>
           Each insight describes a real problem we encountered and solved in production. The public page shows you we understand the problem. The full playbook — with exact solutions — is available to clients and collaborators.
         </p>
-        <a href="mailto:ryan@riscent.com?subject=Interested in working together" style={{
+        <Link href="/book" style={{
           display: 'inline-block',
           background: C.accent,
           color: C.bg,
@@ -71,8 +71,8 @@ export default function DocsIndex() {
           fontWeight: 700,
           textDecoration: 'none',
         }}>
-          Tell me what you are building →
-        </a>
+          Book a call →
+        </Link>
       </div>
     </main>
   );
