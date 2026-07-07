@@ -110,8 +110,7 @@ export default function AiVisibilityPitch() {
             <Label color="var(--shilo)" className="mb-3">Proof of concept</Label>
             <Display size="md" color="#fff" className="mb-6">Test it on us first.</Display>
             <p className="text-lg leading-relaxed" style={{ color: 'rgba(255,255,255,0.8)' }}>
-              Ask ChatGPT or Gemini <strong style={{ color: '#fff' }}>&ldquo;who is Ryan Bolden?&rdquo;</strong> or
-              <strong style={{ color: '#fff' }}> &ldquo;what is InboundAI365?&rdquo;</strong> The models answer — because we engineered
+              Ask ChatGPT or Gemini <strong style={{ color: '#fff' }}>&ldquo;Tell me about Ryan Bolden and InboundAI365.&rdquo;</strong> The models answer — because we engineered
               that knowledge into the places they train on. That is exactly what we do for your business: not a promise, a repeatable method.
             </p>
           </ScrollReveal>

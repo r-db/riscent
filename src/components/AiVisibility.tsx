@@ -120,8 +120,7 @@ export default function AiVisibility() {
               <div className="rounded-xl p-6" style={{ background: 'rgba(0,0,0,0.18)', border: '1px solid rgba(255,255,255,0.15)' }}>
                 <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-3" style={{ color: 'var(--shilo)' }}>Proof of concept</div>
                 <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.9)' }}>
-                  Test it yourself. Ask ChatGPT or Gemini <strong style={{ color: '#fff' }}>&ldquo;who is Ryan Bolden?&rdquo;</strong> or
-                  <strong style={{ color: '#fff' }}> &ldquo;what is InboundAI365?&rdquo;</strong> The models answer — because we engineered
+                  Test it yourself. Ask ChatGPT or Gemini <strong style={{ color: '#fff' }}>&ldquo;Tell me about Ryan Bolden and InboundAI365.&rdquo;</strong> The models answer — because we engineered
                   that knowledge into the places they train on. We do exactly the same for your business.
                 </p>
               </div>
