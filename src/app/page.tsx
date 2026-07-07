@@ -12,6 +12,7 @@ import {
 import { Display, Label } from '@/components/ui/typography';
 import SlmStudy from '@/components/SlmStudy';
 import ProofSection from '@/components/ProofSection';
+import AiVisibility from '@/components/AiVisibility';
 
 const EASE = [0.59, 0.06, 0.1, 1] as const;
 
@@ -143,11 +144,13 @@ export default function LandingPage() {
           <Link href="/" className="no-underline">
             <span className="text-xl font-black tracking-[-0.04em]" style={{ color: 'var(--cocoa)' }}>RISCENT</span>
           </Link>
-          <div className="flex items-center gap-8">
-            <a href="#research" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Research</a>
-            <a href="#build" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Build</a>
-            <a href="#solutions" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Applied</a>
-            <FloatingCTA href="mailto:ryan@riscent.com?subject=Build%20with%20Riscent" className="!py-2.5 !px-6 text-[13px]">
+          <div className="flex items-center gap-5 md:gap-8">
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#visibility" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>AI Search</a>
+              <a href="#research" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Research</a>
+              <a href="#build" className="text-[13px] font-medium tracking-[0.03em] uppercase no-underline transition-opacity hover:opacity-50" style={{ color: 'var(--text-muted)' }}>Build</a>
+            </div>
+            <FloatingCTA href="mailto:ryan@riscent.com?subject=Talk%20to%20Riscent" className="!py-2.5 !px-5 md:!px-6 text-[13px]">
               Talk to us
             </FloatingCTA>
           </div>
@@ -170,7 +173,7 @@ export default function LandingPage() {
           <div>
             <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: EASE }}>
-              <Label color="var(--danube)" className="mb-6">Agentic AI — research and build</Label>
+              <Label color="var(--danube)" className="mb-6">AI consulting · agentic deployment · SLM tuning · AI memory</Label>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }}
@@ -377,6 +380,9 @@ export default function LandingPage() {
       {/* ── APPLIED / PROOF — results over idealism (Phantom Vault, synthetic memory, cited ROI reality) ── */}
       <ProofSection />
 
+      {/* ── AI VISIBILITY — the scan / GEO-AEO specialty (cited stats + POC) ── */}
+      <AiVisibility />
+
       {/* ── WHY US ── */}
       <section id="proof" className="py-28 px-6">
         <div className="max-w-[900px] mx-auto text-center">
@@ -425,23 +431,24 @@ export default function LandingPage() {
       <GradientSection id="cta" dark from="var(--cocoa)" to="var(--torea)" direction="135deg" className="text-center">
         <ScrollReveal className="max-w-[760px] mx-auto">
           <Display color="#fff" className="mb-6">
-            Two ways<br />to work with us.
+            Two ways<br />to build with us.
           </Display>
           <p className="text-lg leading-relaxed mb-12" style={{ color: 'rgba(255,255,255,0.7)' }}>
-            Hire us to build the agentic system your business needs, or buy one of the
-            products we&apos;ve already shipped on the same stack. Either way, you&apos;re working
-            with the team publishing the research.
+            We&apos;re a consulting agency — no products to buy. <strong style={{ color: '#fff' }}>Custom builds:</strong> we
+            architect and ship your agentic systems, fine-tuned models, and AI software.
+            <strong style={{ color: '#fff' }}> Consultations:</strong> we advise on model selection, memory, and getting your
+            business visible inside the models buyers now ask. Either way, you work with the team publishing the research.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <FloatingCTA href="mailto:ryan@riscent.com?subject=Build%20with%20Riscent" variant="light">
-              Build with us &rarr;
+            <FloatingCTA href="mailto:ryan@riscent.com?subject=Custom%20build%20%E2%80%94%20Riscent" variant="light">
+              Start a custom build &rarr;
             </FloatingCTA>
-            <FloatingCTA href="#solutions" variant="secondary-light">
-              Browse the products
+            <FloatingCTA href="mailto:ryan@riscent.com?subject=Consultation%20%E2%80%94%20Riscent" variant="secondary-light">
+              Book a consultation
             </FloatingCTA>
           </div>
           <p className="text-sm mt-8" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Limited build slots each quarter &middot; Response in 24 hours
+            Limited engagements each quarter &middot; Response in 24 hours
           </p>
         </ScrollReveal>
       </GradientSection>

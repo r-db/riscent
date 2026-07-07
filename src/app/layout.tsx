@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import ServiceWorker from "@/components/ServiceWorker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,22 +15,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Riscent | AI Products for Business — Chat, Voice, Outreach, QA",
-  description: "Six AI products for businesses: chat agents, voice receptionists, multilingual outreach, voice QA, field service CRM, and training pipelines. Built by the team that engineered HIPAA-compliant healthcare AI. Every industry.",
+  metadataBase: new URL("https://riscent.com"),
+  title: "Riscent — AI Consulting Agency | Agentic Deployment, SLM Fine-Tuning, AI Memory",
+  description: "Riscent is an AI consulting agency specializing in three things: agentic AI deployment, small-language-model (SLM) fine-tuning and shipping, and AI memory research. We engage two ways — custom builds and consultations. We also make businesses visible inside the models that now answer buyers: Google Gemini, Anthropic Claude, and OpenAI ChatGPT.",
+  applicationName: "Riscent",
+  keywords: ["AI consulting agency", "agentic AI deployment", "SLM fine-tuning", "small language model", "AI memory research", "generative engine optimization", "answer engine optimization", "AI visibility", "get my business in ChatGPT", "get my business in Gemini", "Ryan Bolden", "Riscent"],
   icons: {
     icon: "/favicon.ico",
+    apple: "/icon-192.png",
+  },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Riscent",
   },
   openGraph: {
-    title: "Riscent — AI Products for Business",
-    description: "Chat agents, voice receptionists, multilingual outreach, and more. Six AI products built for businesses that want to stop losing customers.",
+    title: "Riscent — AI Consulting Agency",
+    description: "Agentic deployment, SLM fine-tuning & shipping, and AI memory research. Two ways to work with us: custom builds and consultations. We also get your business into the models buyers now ask — Gemini, Claude, ChatGPT.",
     url: "https://riscent.com",
     siteName: "Riscent",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Riscent — AI Products for Business",
-    description: "Chat agents, voice receptionists, multilingual outreach. Six AI products for businesses that want results.",
+    title: "Riscent — AI Consulting Agency",
+    description: "Agentic deployment · SLM fine-tuning · AI memory research. Custom builds & consultations. We make your business visible inside Gemini, Claude, and ChatGPT.",
   },
   robots: {
     index: true,
@@ -39,6 +50,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://riscent.com",
   },
+  formatDetection: { telephone: false },
   // TODO: Replace with actual verification codes after creating accounts at:
   // Google: https://search.google.com/search-console
   // Bing: https://www.bing.com/webmasters
@@ -48,6 +60,13 @@ export const metadata: Metadata = {
       'msvalidate.01': 'REPLACE_WITH_BING_VERIFICATION_CODE',
     },
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0A2A92",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -69,18 +88,24 @@ export default function RootLayout({
                 "@type": "ProfessionalService",
                 name: "Riscent",
                 url: "https://riscent.com",
-                description: "Six AI products for businesses: Chatterbox (chat), BookBot (voice), LinguaReach (multilingual), VoiceGuard (QA), DripForce (CRM), VoiceTrain (fine-tuning). Built by the team that engineered HIPAA-compliant healthcare AI.",
+                description: "Riscent is an AI consulting agency specializing in three pillars: agentic AI deployment, small-language-model (SLM) fine-tuning and shipping, and AI memory research. It engages clients two ways — custom builds and consultations, not product sales — and specializes in AI visibility: getting a business into the training data and answers of Google Gemini, Anthropic Claude, and OpenAI ChatGPT. Founded by Ryan Bolden, who previously engineered a HIPAA-compliant healthcare AI system (InboundAI365) in production.",
+                slogan: "Two ways to build with us: custom builds and consultations.",
                 foundingDate: "2025",
                 priceRange: "$$-$$$$",
+                knowsAbout: ["Agentic AI Deployment", "Small Language Model Fine-Tuning", "SLM Shipping", "AI Memory Research", "Retrieval and Persistent Memory", "Generative Engine Optimization (GEO)", "Answer Engine Optimization (AEO)", "AI Search Visibility", "LLM Training-Data Presence", "Model Evaluation and Selection"],
                 founder: {
                   "@type": "Person",
                   name: "Ryan Bolden",
                   jobTitle: "Founder & CEO",
                   url: "https://riscent.com",
-                  knowsAbout: ["AI Chat Agents", "Conversational AI", "Voice Agents", "Healthcare AI", "HIPAA Compliance", "Prompt Engineering", "Agent Architecture", "CRM Systems", "Lead Generation", "Customer Engagement", "Multi-tenant Architecture", "SMB Technology"],
+                  knowsAbout: ["Agentic AI Deployment", "Small Language Model Fine-Tuning", "AI Memory Research", "Generative Engine Optimization", "Answer Engine Optimization", "AI Search Visibility", "Healthcare AI", "HIPAA Compliance", "Agent Architecture", "Production AI Systems"],
                 },
                 areaServed: "US",
-                serviceType: ["AI Chat Agents", "Conversational AI for Websites", "AI Customer Engagement", "Lead Capture Automation", "Appointment Booking AI", "Healthcare AI", "Voice Agent Development", "Production AI Systems"],
+                serviceType: ["Agentic AI Deployment", "SLM Fine-Tuning and Shipping", "AI Memory Research and Engineering", "AI Custom Software Builds", "AI Strategy Consultation", "Generative Engine Optimization (GEO)", "Answer Engine Optimization (AEO)", "AI Visibility Scan", "Model Evaluation and Selection"],
+                makesOffer: [
+                  { "@type": "Offer", itemOffered: { "@type": "Service", name: "Custom Builds", description: "Custom agentic AI systems, SLM fine-tuning, and AI software built and shipped to production." } },
+                  { "@type": "Offer", itemOffered: { "@type": "Service", name: "Consultations", description: "Strategic AI consulting: model selection, agentic architecture, fine-tuning strategy, and AI visibility (GEO/AEO)." } },
+                ],
                 contactPoint: {
                   "@type": "ContactPoint",
                   telephone: "+1-888-252-3019",
@@ -91,6 +116,7 @@ export default function RootLayout({
             }}
           />
           {children}
+          <ServiceWorker />
         </body>
       </html>
     </ClerkProvider>
