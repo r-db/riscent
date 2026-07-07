@@ -10,8 +10,13 @@ import { sendSMS, generateVerificationCode, formatPhoneNumber } from '@/lib/twil
 export const TZ = 'America/Los_Angeles';
 const DAYS_AHEAD = 21;          // booking window
 const OPEN_HOUR = 9;            // 9:00 AM PT
-const CLOSE_HOUR = 17;          // last slot ends 5:00 PM PT
+const CLOSE_HOUR = 20;          // last slot ends 8:00 PM PT (morning / afternoon / evening)
 const SLOT_MIN = 30;
+
+// Scarcity: offer few, narrow on each return visit — drive the decision.
+const START_OFFER = 5;          // max slots offered on a first visit
+const FLOOR = 1;                // never below this — the last slot stays open until booked
+const REDUCE_AFTER_MS = 20 * 60 * 1000; // a "come back" = a new visit after this gap
 
 let schemaReady = false;
 
@@ -39,6 +44,16 @@ export async function ensureSchema(): Promise<void> {
       created_at timestamptz NOT NULL DEFAULT now()
     )`;
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS uniq_active_slot ON appointments (slot_start) WHERE status = 'booked'`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS booking_scarcity (
+      ip_hash text NOT NULL,
+      date text NOT NULL,
+      device_id text NOT NULL DEFAULT '',
+      target int NOT NULL DEFAULT ${START_OFFER},
+      last_reduced_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now(),
+      PRIMARY KEY (ip_hash, date)
+    )`;
   schemaReady = true;
 }
 
@@ -99,6 +114,70 @@ export async function getAvailability(dateStr: string): Promise<{ iso: string; l
   );
   const taken = new Set(rows.map(r => new Date(r.slot_start).toISOString()));
   return slots.map(s => ({ ...s, taken: taken.has(new Date(s.iso).toISOString()) }));
+}
+
+/* Period of a slot in Pacific: morning < 12, afternoon < 17, else evening. */
+export function period(iso: string): 'Morning' | 'Afternoon' | 'Evening' {
+  const h = Number(new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', hour12: false }).format(new Date(iso)));
+  return h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
+}
+
+/* Order available slots one-per-period first (Morning, Afternoon, Evening), then
+   the seconds, etc. The prime slot (index 0) is what survives when scarcity narrows. */
+function curate(available: Slot[]): Slot[] {
+  const buckets: Record<string, Slot[]> = { Morning: [], Afternoon: [], Evening: [] };
+  for (const s of available) buckets[period(s.iso)].push(s);
+  const order: Slot[] = [];
+  for (let i = 0; ; i++) {
+    let added = false;
+    for (const p of ['Morning', 'Afternoon', 'Evening']) if (buckets[p][i]) { order.push(buckets[p][i]); added = true; }
+    if (!added) break;
+  }
+  return order;
+}
+
+export interface OfferedSlot { iso: string; label: string; period: string; taken: boolean; offered: boolean; }
+
+/* Real availability + per-visitor scarcity: offer few (one per period), narrow by one
+   on each genuine return visit (same hashed IP + date), never below the floor. */
+export async function getOfferedAvailability(dateStr: string, ipHash: string, deviceId: string): Promise<{ slots: OfferedSlot[]; offeredCount: number }> {
+  await ensureSchema();
+  const all = generateSlots(dateStr);
+  if (!all.length) return { slots: [], offeredCount: 0 };
+  const first = all[0].iso;
+  const last = new Date(new Date(all[all.length - 1].iso).getTime() + SLOT_MIN * 60000).toISOString();
+  const rows = await query<{ slot_start: string }>(
+    `SELECT slot_start FROM appointments WHERE status = 'booked' AND slot_start >= $1::timestamptz AND slot_start < $2::timestamptz`,
+    [first, last]
+  );
+  const taken = new Set(rows.map(r => new Date(r.slot_start).toISOString()));
+  const available = all.filter(s => !taken.has(new Date(s.iso).toISOString()));
+  const curated = curate(available);
+
+  let target = START_OFFER;
+  const existing = await queryOne<{ target: number; last_reduced_at: string }>(
+    `SELECT target, last_reduced_at FROM booking_scarcity WHERE ip_hash = $1 AND date = $2`, [ipHash, dateStr]
+  );
+  if (!existing) {
+    await query(
+      `INSERT INTO booking_scarcity (ip_hash, date, device_id, target, last_reduced_at) VALUES ($1,$2,$3,$4,NOW())
+       ON CONFLICT (ip_hash, date) DO NOTHING`, [ipHash, dateStr, deviceId || '', START_OFFER]
+    );
+  } else if (Date.now() - new Date(existing.last_reduced_at).getTime() > REDUCE_AFTER_MS) {
+    target = Math.max(FLOOR, existing.target - 1);
+    await query(`UPDATE booking_scarcity SET target = $3, device_id = $4, last_reduced_at = NOW(), updated_at = NOW() WHERE ip_hash = $1 AND date = $2`, [ipHash, dateStr, target, deviceId || '']);
+  } else {
+    target = existing.target;
+  }
+
+  const offeredCount = Math.min(Math.max(target, Math.min(FLOOR, curated.length)), curated.length);
+  const offered = new Set(curated.slice(0, offeredCount).map(s => new Date(s.iso).toISOString()));
+  const slots = all.map(s => {
+    const key = new Date(s.iso).toISOString();
+    const isTaken = taken.has(key);
+    return { iso: s.iso, label: s.label, period: period(s.iso), taken: isTaken, offered: !isTaken && offered.has(key) };
+  });
+  return { slots, offeredCount };
 }
 
 /* Confirm a slot ISO is a genuine, still-open slot (regenerated, not client-trusted). */

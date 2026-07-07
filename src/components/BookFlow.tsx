@@ -6,8 +6,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 const EASE = [0.2, 0.7, 0.2, 1] as const;
 const DAYS_AHEAD = 21;
 
-type Slot = { iso: string; label: string; taken: boolean };
+type Slot = { iso: string; label: string; period: string; taken: boolean; offered: boolean };
 type Step = 'day' | 'slot' | 'details' | 'verify' | 'done';
+
+function deviceId(): string {
+  try {
+    let d = localStorage.getItem('riscent_device');
+    if (!d) { d = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2)); localStorage.setItem('riscent_device', d); }
+    return d;
+  } catch { return ''; }
+}
+const timeOf = (label: string) => (label.split(',').pop() || label).replace('PT', '').trim();
 
 const ymd = (y: number, m: number, d: number) => `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -23,6 +32,7 @@ export default function BookFlow() {
   const [step, setStep] = useState<Step>('day');
   const [dayLabel, setDayLabel] = useState('');
   const [slots, setSlots] = useState<Slot[]>([]);
+  const [offeredCount, setOfferedCount] = useState(0);
   const [slot, setSlot] = useState<{ iso: string; label: string } | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -50,9 +60,10 @@ export default function BookFlow() {
     setDayLabel(new Date(view.y, view.m, day).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }));
     setStep('slot');
     try {
-      const r = await fetch(`/api/book/availability?date=${ds}`, { cache: 'no-store' });
+      const r = await fetch(`/api/book/availability?date=${ds}&device=${encodeURIComponent(deviceId())}`, { cache: 'no-store' });
       const d = await r.json();
       setSlots(d.slots || []);
+      setOfferedCount(d.offeredCount || 0);
     } catch { setError('Could not load times. Try again.'); setSlots([]); }
     setLoading(false);
   }
@@ -127,7 +138,7 @@ export default function BookFlow() {
                   </button>
                 ))}
               </div>
-              <p className="text-[12px] mt-5 text-center" style={{ color: 'var(--text-muted)' }}>30-minute call with Ryan · weekdays, 9–5 Pacific</p>
+              <p className="text-[12px] mt-5 text-center" style={{ color: 'var(--text-muted)' }}>30-minute call with Ryan · weekdays · morning, afternoon &amp; evening (Pacific)</p>
             </motion.div>
           )}
 
@@ -136,22 +147,35 @@ export default function BookFlow() {
             <motion.div key="slot" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3, ease: EASE }}>
               <button onClick={() => setStep('day')} className="text-[13px] font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>&larr; Back</button>
               <div className="font-black tracking-[-0.02em] mb-1" style={{ color: 'var(--cocoa)', fontSize: 18 }}>{dayLabel}</div>
-              <p className="text-[13px] mb-5" style={{ color: 'var(--text-muted)' }}>Pick a 30-minute slot (Pacific).</p>
+              <p className="text-[13px] mb-5" style={{ color: 'var(--text-muted)' }}>Times are Pacific. The open ones narrow the longer you wait.</p>
               {loading ? <p className="text-sm py-6 text-center" style={{ color: 'var(--text-muted)' }}>Loading times…</p>
                 : slots.length === 0 ? <p className="text-sm py-6 text-center" style={{ color: 'var(--text-muted)' }}>No open times that day. Try another.</p>
                 : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {slots.map(s => {
-                      const t = s.label.split('·').pop()?.replace(' PT', '').trim() || s.label;
+                  <>
+                    <div className="rounded-xl px-4 py-3 mb-5 text-[13px] font-semibold" style={{ background: 'rgba(245,166,35,.12)', color: '#9A6400', border: '1px solid rgba(245,166,35,.35)' }}>
+                      Only <strong>{offeredCount}</strong> {offeredCount === 1 ? 'time is' : 'times are'} still open to you — they drop each time you leave and come back. Grab one now.
+                    </div>
+                    {(['Morning', 'Afternoon', 'Evening'] as const).map(p => {
+                      const ps = slots.filter(s => s.period === p);
+                      if (!ps.length) return null;
                       return (
-                        <button key={s.iso} disabled={s.taken} onClick={() => { setSlot({ iso: s.iso, label: s.label }); setStep('details'); }}
-                          className="py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-30 disabled:line-through enabled:hover:-translate-y-0.5"
-                          style={{ border: '1px solid var(--border-light)', color: s.taken ? 'var(--text-muted)' : 'var(--torea)', background: '#fff' }}>
-                          {t}
-                        </button>
+                        <div key={p} className="mb-4">
+                          <div className="text-[11px] font-bold tracking-[0.12em] uppercase mb-2" style={{ color: 'var(--text-muted)' }}>{p}</div>
+                          <div className="grid grid-cols-3 gap-2">
+                            {ps.map(s => (
+                              <button key={s.iso} disabled={!s.offered} onClick={() => { setSlot({ iso: s.iso, label: s.label }); setStep('details'); }}
+                                className="py-2.5 rounded-xl text-[13px] font-bold transition-all disabled:cursor-not-allowed enabled:hover:-translate-y-0.5"
+                                style={s.offered
+                                  ? { border: '1px solid var(--torea)', color: 'var(--torea)', background: 'var(--danube-pale)' }
+                                  : { border: '1px solid var(--border-light)', color: 'var(--text-whisper)', background: 'transparent', textDecoration: 'line-through', opacity: 0.5 }}>
+                                {timeOf(s.label)}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       );
                     })}
-                  </div>
+                  </>
                 )}
             </motion.div>
           )}
