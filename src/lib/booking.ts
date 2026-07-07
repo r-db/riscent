@@ -204,7 +204,7 @@ export async function sendBookingCode(phoneRaw: string): Promise<{ ok: boolean; 
   if ((recent?.n ?? 0) >= 3) return { ok: false, error: 'Too many attempts. Try again in a few minutes.' };
   const code = generateVerificationCode();
   await sql`INSERT INTO booking_verifications (phone, code, expires_at) VALUES (${phone}, ${code}, NOW() + INTERVAL '10 minutes')`;
-  const res = await sendSMS(phone, `Your Riscent verification code is ${code}. It expires in 10 minutes. Reply only if you requested a call with Ryan.`);
+  const res = await sendSMS(phone, `Riscent: your verification code is ${code}. Enter it at riscent.com to confirm your call with Ryan. Expires in 10 minutes — do not share it.`);
   if (!res.success) return { ok: false, error: 'Could not send the code. Check the number and try again.' };
   return { ok: true };
 }

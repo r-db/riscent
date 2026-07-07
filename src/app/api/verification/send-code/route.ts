@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     // Send SMS
     const smsResult = await sendSMS(
       formattedPhone,
-      `Your Riscent verification code is: ${code}. This code expires in 10 minutes.`
+      `Your Riscent verification code is ${code}. It expires in 10 minutes. You're receiving this because you requested phone verification at riscent.com. Msg & data rates may apply.`
     );
 
     if (!smsResult.success) {
