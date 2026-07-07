@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   "/book",
   "/api/book/(.*)",
   "/api/agent/(.*)",
+  "/api/twilio/(.*)",
   "/appointment-tools.json",
   "/behind-the-curtain",
   "/groundwork(.*)",

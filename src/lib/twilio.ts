@@ -51,6 +51,8 @@ export async function sendSMS(
         To: to,
         From: config.fromNumber,
         Body: body,
+        // Twilio POSTs delivery status here (see /api/twilio/status).
+        StatusCallback: process.env.TWILIO_STATUS_CALLBACK_URL || 'https://riscent.com/api/twilio/status',
       }),
     });
 
