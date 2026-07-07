@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FloatingCTA } from '@/components/ui/animated';
 
 const LINKS = [
-  { label: 'SLM', href: '/slm' },
+  { label: 'Custom AI', href: '/slm' },
   { label: 'AI Visibility', href: '/ai-visibility' },
   { label: 'Research', href: '/docs' },
 ];

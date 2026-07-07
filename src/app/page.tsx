@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   ScrollReveal,
@@ -14,6 +15,7 @@ import ProofSection from '@/components/ProofSection';
 import AiVisibility from '@/components/AiVisibility';
 import TrainDeploy from '@/components/TrainDeploy';
 import SiteNav from '@/components/SiteNav';
+import Services from '@/components/Services';
 
 const EASE = [0.59, 0.06, 0.1, 1] as const;
 
@@ -214,6 +216,9 @@ export default function LandingPage() {
         { value: '1M+', label: 'lines shipped' },
         { value: 'Apple Silicon', label: 'native' },
       ]} />
+
+      {/* ── SERVICES — clear entry points to the dedicated pages ── */}
+      <Services />
 
       {/* ── RESEARCH ── */}
       <section id="research" className="py-28 px-6" style={{ background: 'var(--bg-primary)' }}>
@@ -448,9 +453,9 @@ export default function LandingPage() {
             <div style={{ color: 'var(--text-muted)' }}>Agentic AI — research and build.</div>
           </div>
           <div className="flex flex-wrap gap-6">
-            <a href="#research" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Research</a>
-            <a href="#build" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Build</a>
-            <a href="#solutions" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Applied</a>
+            <Link href="/slm" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Custom AI</Link>
+            <Link href="/ai-visibility" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>AI Visibility</Link>
+            <Link href="/docs" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Research</Link>
             <a href="mailto:ryan@riscent.com" className="no-underline hover:opacity-60 transition-opacity text-[13px]"
               style={{ color: 'var(--text-secondary)' }}>
               Contact
