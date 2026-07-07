@@ -7,7 +7,7 @@
  * URL: https://riscent.com/api/twilio/status
  */
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { sql } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -15,8 +15,8 @@ export const dynamic = 'force-dynamic';
 // Twilio request signature (HMAC-SHA1 over full URL + sorted params, base64).
 function validSignature(authToken: string, signature: string, url: string, params: Record<string, string>): boolean {
   const data = Object.keys(params).sort().reduce((acc, k) => acc + k + params[k], url);
-  const expected = crypto.createHmac('sha1', authToken).update(Buffer.from(data, 'utf-8')).digest('base64');
-  try { return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature)); } catch { return false; }
+  const expected = createHmac('sha1', authToken).update(Buffer.from(data, 'utf-8')).digest('base64');
+  try { return timingSafeEqual(Buffer.from(expected), Buffer.from(signature)); } catch { return false; }
 }
 
 function mask(phone: string): string {
