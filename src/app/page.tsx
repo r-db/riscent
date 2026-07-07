@@ -283,8 +283,8 @@ export default function LandingPage() {
 
           <ScrollReveal delay={0.2}>
             <div className="flex flex-wrap gap-4 items-center">
-              <FloatingCTA href="/research" variant="secondary" className="!py-3 !px-7 text-[13px]">
-                Research notes &rarr;
+              <FloatingCTA href="/docs" variant="secondary" className="!py-3 !px-7 text-[13px]">
+                Read the research &rarr;
               </FloatingCTA>
               <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 Public dashboard launching as the first benchmarks land.

@@ -1363,4 +1363,144 @@ The philosophy is interesting. The engineering is what pays the bills. And I nev
       },
     ],
   },
+
+  /* ── PILLAR 1: Agentic Deployment ── */
+  {
+    slug: 'agentic-deployment',
+    title: 'Agentic AI Deployment — Making Agents Reliable in Production | Riscent',
+    publicTitle: 'How to Deploy Agentic AI That Survives Production',
+    description: 'Most agentic AI dies between the demo and production. What actually breaks — tool-call reliability, orchestration, memory, and containment — and the deployment discipline that keeps agents working when real users arrive. From Riscent, an AI consulting agency specializing in agentic deployment.',
+    date: '2026-07-07',
+    readTime: '8 min',
+    keywords: ['agentic AI deployment', 'AI agents in production', 'tool calling reliability', 'agent orchestration', 'LLM agent architecture', 'MCP', 'AI consulting agency', 'production AI systems', 'agentic AI'],
+    article: [
+      {
+        heading: 'Agentic deployment is our first pillar — and the demo is the easy part',
+        body: `Riscent is an AI consulting agency with three pillars: agentic deployment, small-language-model fine-tuning and shipping, and AI memory research. This is the first. An "agent" is a model given tools and turned loose to act — call an API, book an appointment, run a command, hand work to another agent. In a demo it looks like magic. In production it is a systems problem, and most teams discover that too late.
+The public numbers are blunt about it. An MIT NANDA study of enterprise generative-AI in 2025 found that roughly 95% of pilots delivered no measurable impact. That is not a statement about model quality. It is a statement about deployment: teams tested the happy path and shipped into a world that does not run on happy paths. Deploying an agent that keeps working when real users arrive is a discipline, not a prompt.`,
+      },
+      {
+        heading: 'An agent that cannot emit a clean tool call is useless — so we measure first',
+        body: `The single most common failure we see is silent: the model reasons beautifully and never produces a parseable tool call. It narrates its plan in prose instead of emitting the JSON that actually triggers the action. The agent looks smart and does nothing.
+We proved this to ourselves rather than trusting a leaderboard. In a head-to-head on modest local hardware, we scored two leading small models on an objective, machine-checked harness — routing, clean tool-call JSON, and complete hand-offs, three trials each. One model followed the tool-call contract every single time (15 out of 15). The "smarter" one, even with reasoning mode off, monologued its logic and never produced parseable JSON (6 out of 15, and 0 for 9 on the tool-call checks). It flipped our own initial preference. The lesson is the discipline: choose the model that works on your production criteria, measured and reproducible — not the one with the better brand or benchmark.`,
+      },
+      {
+        heading: 'How we deploy so it does not break',
+        body: `We do not publish our orchestration internals, but the principles are not secret. Select the base model by measurement, not reputation. Give the agent memory so it stops starting cold every session (that is our third pillar). Put a verification gate between "the agent says it did the thing" and "the thing is done," because models will confidently report actions they never took. Contain what the agent can reach — its network egress, its filesystem, and above all its access to secrets — so a prompt injection or a bad recipe cannot exfiltrate what matters.
+That last piece we have open-sourced, so you can see exactly how we think about it. Phantom Vault lets an agent use your API keys by name and never see the value — encrypted at rest, jailed at runtime, sanitized on the way out. It is free and Apache-licensed; read every line at phantomvault.riscent.com. Everything else we deploy is built to the same standard: every safety claim maps to a check you could run yourself.`,
+      },
+    ],
+    articleClose: `If your AI works in the demo and you are about to ship — or you already shipped and it is breaking in ways you did not expect — that is exactly what we do. We deploy agentic systems that survive contact with real users, and we tell you plainly where the edges are.`,
+    sections: [],
+  },
+
+  /* ── PILLAR 2: SLM Fine-Tuning & Shipping ── */
+  {
+    slug: 'slm-fine-tuning',
+    title: 'Fine-Tuning Small Language Models That Beat Models 30x Larger | Riscent',
+    publicTitle: 'Fine-Tuning Small Models That Beat Models 30x Their Size',
+    description: 'A properly fine-tuned 4B model can match or beat a model 30x larger on your narrow domain — local, offline, and cheap. The real benefit, the traps that quietly fake success, and how we prove a tuned model works before we ship it. From Riscent, an AI consulting agency specializing in SLM fine-tuning.',
+    date: '2026-07-07',
+    readTime: '7 min',
+    keywords: ['SLM fine-tuning', 'small language model', 'fine-tune LLM', 'local AI models', 'on-device AI', 'model distillation', 'catastrophic forgetting', 'AI consulting agency', 'private AI'],
+    article: [
+      {
+        heading: 'Our second pillar: small models, tuned to beat giants on your job',
+        body: `The frontier-model reflex is expensive and usually unnecessary. For a narrow, well-scoped task, a small model that has been properly fine-tuned can match or beat a model thirty times its size — while running local, offline, low-latency, and cheap, on hardware as modest as a six-gigabyte laptop GPU. You own the weights. You own the data. Your proprietary information never leaves your hardware.
+This is not theory for us. We took a 4B classifier in-house and fine-tuned it from 75% to 95% accuracy on its task in a single short run. That is the multiplier: same job, a fraction of the cost and latency, and a model you control instead of rent.`,
+      },
+      {
+        heading: 'The minefield — why most fine-tuning quietly fails',
+        body: `Done wrong, fine-tuning looks like it worked and does not. The failure modes are consistent. Catastrophic forgetting: the model gains your task and loses general ability. Overfitting: it memorizes a tiny dataset and falls apart on anything new. Format regression: tuning silently breaks the model's ability to emit clean tool calls — the exact failure that kills agents in production. Data leakage: secrets or PII get baked into weights you cannot un-bake. And the most seductive one, evaluation on training data — the "97% accuracy" that is really the model reciting answers it already saw. Every one of these produces a confident, wrong result that a casual eval will not catch.`,
+      },
+      {
+        heading: 'How we prove it before we ship',
+        body: `We treat "it works" as a machine-proven claim, never a vibe. We pick the base model by measurement, the same discipline we use across the stack. We fine-tune against a held-out, red-first verification gate: the tuned model must pass objective checks it never trained on, and we confirm the checks fail against an empty model first so a green result actually means something. Coverage and verification are attested, not assumed — every claim maps to a re-runnable test. And we keep it local by default so your data stays yours.
+The one honest trade we always state: fine-tuning is powerful because it is narrow. We scope it, prove it on held-out data, and tell you exactly where the model's competence ends. That honesty is the product.`,
+      },
+    ],
+    articleClose: `If you are burning frontier-model tokens on a task a small model could own — or you tried fine-tuning and could not tell whether it actually worked — that is our specialty. We select the base by measurement, prove the result on held-out data, and hand you a model you own.`,
+    sections: [],
+  },
+
+  /* ── PILLAR 3: AI Memory Research ── */
+  {
+    slug: 'ai-memory',
+    title: 'AI Memory Research — Building Agents That Remember and Compound | Riscent',
+    publicTitle: 'Giving AI Memory That Compounds',
+    description: 'Most agents forget everything between sessions and start every conversation cold. We build the persistence layer — extraction, embedding, recall, decay — so agents remember, improve every week, and turn memory into a moat. What we have learned building AI memory that compounds.',
+    date: '2026-07-07',
+    readTime: '8 min',
+    keywords: ['AI memory', 'agent memory', 'persistent memory AI', 'retrieval augmented generation', 'AI persistence layer', 'long term memory LLM', 'AI memory research', 'AI consulting agency'],
+    article: [
+      {
+        heading: 'Our third pillar: memory is the moat',
+        body: `Most AI features today are a thin wrapper around someone else's API — and so is your competitor's. What compounds underneath the wrapper is memory. An agent with no memory starts every session from zero: it does not remember the user, the last decision, or the correction you gave it yesterday. An agent with a real persistence layer gets better every week, because every interaction makes the next one sharper. That gap is a moat, and it widens over time.`,
+      },
+      {
+        heading: 'The pipeline: extraction, embedding, recall, decay',
+        body: `Persistent memory is not "a bigger context window." A million tokens of undifferentiated history is a library with no catalog — everything is technically there and nothing is findable at the speed of thought. The pipeline that actually works has four moving parts: extraction pulls the durable facts and preferences out of a conversation; embedding stores them so they are retrievable by meaning, not keyword; recall injects the right memories at the right moment without drowning the model in noise; and decay lets stale or superseded information fade so the system does not calcify around old truths. We keep the implementation proprietary, but the shape is the point: smaller, well-organized, reliably indexed memory beats raw storage every time.`,
+      },
+      {
+        heading: 'What we have learned building it',
+        body: `We run this architecture internally — it is part of how a very small team ships and maintains what usually takes five or more people. A few lessons have held up. Indexing beats volume: knowing where the answer is beats re-deriving it every session. Compilation beats repetition: patterns used several times should become automatic, freeing attention for new problems. And triggers beat passivity: a system that notices things and generates its own questions behaves less like a lookup table and more like something that learns. We do not overclaim what happens inside — we claim that the system built today is measurably better than the one from six months ago in ways code changes alone do not explain. The architecture learned.`,
+      },
+    ],
+    articleClose: `If your agent forgets the user every session and starts cold every time, you are leaving the moat on the table. We build the memory pipeline — extraction, embedding, recall, decay — and wire it in behind whatever interface you already ship.`,
+    sections: [],
+  },
+
+  /* ── Vision SLM: Kull1 fishing measurement + cheat detection ── */
+  {
+    slug: 'vision-slm-measurement',
+    title: 'A Vision SLM That Measures Catches and Catches Cheaters | Riscent',
+    publicTitle: 'A Vision Model That Measures Catches and Catches Cheaters',
+    description: 'We are building a small vision model that measures a fish from a tournament photo and flags tampered or fraudulent submissions in real time, on-device. The same measure-and-verify pipeline generalizes to medical imaging. From Riscent, an AI consulting agency.',
+    date: '2026-07-07',
+    readTime: '6 min',
+    keywords: ['vision AI', 'image measurement AI', 'small vision model', 'fraud detection AI', 'tournament fishing technology', 'image tamper detection', 'on-device vision model', 'medical imaging AI', 'AI consulting'],
+    article: [
+      {
+        heading: 'The problem: measure a catch from a photo, and trust it',
+        body: `Competitive fishing runs on measurement and honesty, and both are hard to enforce from a phone photo submitted in the field. Two questions have to be answered at once: how long is this fish, really, and has the image been manipulated to make it look bigger or to reuse an old catch? Human judges cannot scale to thousands of live submissions, and simple rules are easy to game. This is a measurement-and-verification problem, and it is exactly the kind of narrow, high-value task a small, purpose-built model is good at.`,
+      },
+      {
+        heading: 'Our approach: a small model that measures and verifies on-device',
+        body: `We are building a compact vision model — small enough to run on-device and in real time — that estimates the true measurement of a catch from an image and, in the same pass, looks for the signatures of tampering and fraud: edited pixels, inconsistent scale references, and reused or staged submissions. We are deliberately not publishing the model architecture, the training data, or the detection heuristics, because the value of a cheat detector is precisely that cheaters cannot read the manual. What we will say is that it is the same discipline as the rest of our work: a measured base model, a held-out verification gate, and a bias toward small and local so results are fast and private.`,
+      },
+      {
+        heading: 'Why it generalizes to medical imaging',
+        body: `Measure-a-thing-from-an-image and flag-when-the-image-cannot-be-trusted is a general pipeline, and tournament integrity is a forgiving place to harden it before the stakes get higher. The same approach — precise measurement plus tamper and anomaly detection, running small and on-device for privacy — maps directly onto medical imaging, where measurement accuracy and image integrity are matters of patient safety and where data cannot leave the building. Fishing is where we prove the pipeline in the wild. Medicine is where it goes next.`,
+      },
+    ],
+    articleClose: `If you have a measurement-and-verification problem hiding in your images — provenance, tampering, precise sizing — a small purpose-built vision model is often the right tool, and it can run on-device where your data stays private. That is the kind of build we take on.`,
+    sections: [],
+  },
+
+  /* ── Phantom Vault: the one fully-open project ── */
+  {
+    slug: 'phantom-vault',
+    title: 'Phantom Vault — Open-Source Secret Management for AI Agents | Riscent',
+    publicTitle: 'Phantom Vault: Open-Source Secrets for AI Agents',
+    description: 'Our open-source secret vault for the age of AI agents. The model uses your API keys by name and never sees the value — encrypted at rest with AES-256-GCM, jailed at runtime, sanitized on the way out. Free, Apache 2.0. Read every line and use it.',
+    date: '2026-07-07',
+    readTime: '5 min',
+    keywords: ['Phantom Vault', 'AI secret management', 'open source secrets manager', 'AI agent security', 'API key management AI', 'MCP secrets', 'prompt injection defense', 'Riscent open source'],
+    article: [
+      {
+        heading: 'The problem: agents leak secrets',
+        body: `You gave an AI assistant access to your machine so it could actually do things — deploy, call APIs, run commands. The moment you did, every secret it can read became something it can leak: into a conversation, a log, a file it writes, or a network call a prompt injection talked it into making. Traditional secret managers defend against outsiders. They were not built for a trusted-but-powerful agent you invited in. That is the gap Phantom Vault closes.`,
+      },
+      {
+        heading: 'What it does: use by name, never by value',
+        body: `Phantom Vault lets an AI call a secret by name and run commands with it, without ever seeing the raw value — the value comes back as [REDACTED]. Secrets are encrypted at rest with AES-256-GCM and an Argon2id-derived key, with keys zeroized in memory and pinned so they never swap to disk. Commands run inside a fail-closed network egress jail and a Landlock filesystem jail, so a command cannot phone a secret out or write it to a file. Output is sanitized before it is returned, decoy canary secrets flag misuse, and every access is written to an audit log. It ships an MCP server, so Claude Code and other assistants call it directly.`,
+      },
+      {
+        heading: 'It is open — take it',
+        body: `This is the one thing we build that we want you to copy. Phantom Vault is free and open source under Apache 2.0. There is nothing to buy and no account to create. Read every line, audit it, run it, fork it, ship it in your own products. We are honest about maturity: it is early (version 0.1.0), and the end-to-end guarantee that an agent can never exfiltrate a secret is under an independent containment audit — so we label what is verified today versus what is still being proven, rather than overstating a security tool. Install it in one line and see the full, honest security status at phantomvault.riscent.com; the source lives at github.com/r-db/phantom-vault.`,
+      },
+    ],
+    articleClose: `Phantom Vault is our gift to the community and a working example of how we think about AI security: every safety claim maps to a check you can run yourself. If you want that same discipline applied to your own systems, that is what we do.`,
+    sections: [],
+  },
 ];
