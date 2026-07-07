@@ -449,6 +449,8 @@ export default function LandingPage() {
             <Link href="/slm" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Custom AI</Link>
             <Link href="/ai-visibility" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>AI Visibility</Link>
             <Link href="/docs" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Research</Link>
+            <Link href="/privacy" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Privacy</Link>
+            <Link href="/terms" className="no-underline hover:opacity-60 transition-opacity text-[13px]" style={{ color: 'var(--text-secondary)' }}>Terms</Link>
             <a href="mailto:ryan@riscent.com" className="no-underline hover:opacity-60 transition-opacity text-[13px]"
               style={{ color: 'var(--text-secondary)' }}>
               Contact

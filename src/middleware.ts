@@ -7,6 +7,8 @@ const isPublicRoute = createRouteMatcher([
   "/slm",
   "/ai-visibility",
   "/book",
+  "/privacy",
+  "/terms",
   "/api/book/(.*)",
   "/api/agent/(.*)",
   "/api/twilio/(.*)",
