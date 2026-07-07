@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 const H = ({ children }: { children: React.ReactNode }) => (
   <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cocoa)', margin: '32px 0 10px', letterSpacing: '-0.02em' }}>{children}</h2>
 );
-const P = ({ children }: { children: React.ReactNode }) => (
-  <p style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)', margin: '0 0 12px' }}>{children}</p>
+const P = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
+  <p style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)', margin: '0 0 12px', ...style }}>{children}</p>
 );
 
 export default function PrivacyPage() {
