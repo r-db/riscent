@@ -262,6 +262,8 @@ export async function createAppointment(name: string, phoneRaw: string, slotIso:
     return { ok: false, error: 'That time was just booked. Please pick another.' };
   }
   const label = slotLabel(slotIso);
+  // Confirm to the person who booked — best-effort, never blocks the booking.
+  try { await sendSMS(phone, `Riscent: your 30-minute call with Ryan is confirmed for ${label}. Reply STOP to opt out or HELP for help. Questions? ryan@riscent.com`); } catch { /* logged upstream */ }
   // Alert Ryan — best-effort, never blocks the booking.
   const ryan = process.env.RYAN_ALERT_PHONE;
   if (ryan) {

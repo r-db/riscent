@@ -29,8 +29,9 @@ export default function TermsPage() {
           <H>What we provide</H>
           <P>Riscent is an AI consulting agency. Through this site you can read our research and book a call with us. Any engagement (custom build or consultation) is governed by a separate written agreement.</P>
 
-          <H>Booking &amp; text verification</H>
-          <P>To book a call you submit your name and mobile number, and we text you a one-time verification code to confirm the number is yours. By requesting the code you consent to receive that message and appointment-related texts. Message and data rates may apply; reply STOP to opt out. See our <a href="/privacy" style={{ color: 'var(--torea)' }}>Privacy Policy</a>.</P>
+          <H>Text messaging program terms</H>
+          <P><strong>Program:</strong> Riscent Appointment Verification. When you submit your name and mobile number and check the consent box on our booking form at riscent.com/book, we send a one-time verification code (OTP) to confirm the number is yours, followed by messages about your appointment. These are transactional messages, not marketing.</P>
+          <P><strong>Message frequency</strong> varies (typically 1–3 messages per booking). <strong>Message and data rates may apply.</strong> For help, reply <strong>HELP</strong> or email ryan@riscent.com. To stop messages at any time, reply <strong>STOP</strong>. Carriers are not liable for delayed or undelivered messages. See our <a href="/privacy" style={{ color: 'var(--torea)' }}>Privacy Policy</a> for how we handle your data.</P>
 
           <H>Acceptable use</H>
           <P>Don&apos;t misuse the site: no attempts to disrupt or gain unauthorized access, no automated abuse of the booking or verification system, no unlawful or infringing use, and no submitting phone numbers you don&apos;t control.</P>
