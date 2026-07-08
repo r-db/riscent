@@ -38,14 +38,14 @@ export default function PrivacyPage() {
           <P>To verify your phone number, confirm and manage appointments, respond to your requests, secure the service, and comply with the law. We do not sell your personal information.</P>
 
           <H>SMS / text messaging</H>
-          <P>When you enter your mobile number and request a code on our booking form, you consent to receive account-related text messages from Riscent — a one-time verification passcode (OTP) and messages about your appointment. This is transactional, not marketing.</P>
-          <P>Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to opt out at any time, or <strong>HELP</strong> for help. You can also opt out by contacting ryan@riscent.com.</P>
+          <P>When you enter your mobile number and check the consent box on our booking form at riscent.com/book, you consent to receive text messages from Riscent — a one-time verification passcode (OTP) and messages about your appointment. These are transactional messages, not marketing.</P>
+          <P>Message frequency varies (typically 1–3 messages per booking). Message and data rates may apply. Reply <strong>STOP</strong> to opt out at any time, or <strong>HELP</strong> for help. You can also opt out by emailing ryan@riscent.com.</P>
           <P style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', borderRadius: 10, padding: '14px 16px' }}>
-            <strong>No mobile information will be shared with third parties or affiliates for marketing or promotional purposes.</strong> Information may be shared with subcontractors that support the service (for example, our SMS provider to deliver the message). All other use-case categories exclude text-messaging originator opt-in data and consent; this information will not be shared with any third parties.
+            <strong>We do not share, sell, or otherwise provide your mobile phone number or SMS/text-messaging consent information to any third parties or affiliates for marketing or promotional purposes.</strong> No mobile opt-in data or consent information is shared with third parties for marketing under any circumstances.
           </P>
 
           <H>How we share information</H>
-          <P>We share personal information only with service providers who help us operate — such as our SMS delivery provider (Twilio), hosting, and database providers — under agreements that limit their use to providing those services. We may disclose information if required by law. We do not sell your data.</P>
+          <P>We do not sell your personal information, and we do not share it for anyone&apos;s marketing. We use service providers solely to operate the service — for example, Twilio to deliver text messages and our hosting and database providers to run the site — and they process your information only to perform those services for us, never for their own marketing. As stated above, your mobile phone number and SMS consent data are never shared with third parties or affiliates for marketing or promotional purposes. We may disclose information only if the law requires it.</P>
 
           <H>Data retention &amp; security</H>
           <P>We keep information only as long as needed for the purposes above or as the law requires, and we use reasonable technical and organizational measures to protect it. No method of transmission or storage is 100% secure.</P>
