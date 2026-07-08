@@ -4,6 +4,7 @@
  */
 
 import { withCircuitBreaker } from './circuit-breaker';
+import { sendViaSimpleTexting } from './simpletexting';
 
 interface TwilioConfig {
   accountSid: string;
@@ -25,9 +26,25 @@ export function isTwilioConfigured(): boolean {
 }
 
 /**
- * Send SMS via Twilio API
+ * Send an SMS. Dispatches to the provider named by SMS_PROVIDER
+ * ('simpletexting' or default 'twilio'). The number is normalized to E.164 once
+ * here so every provider receives the same format. Booking code calls this and
+ * never needs to know which provider is active.
  */
 export async function sendSMS(
+  to: string,
+  body: string
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const dest = formatPhoneNumber(to);
+  const provider = (process.env.SMS_PROVIDER || 'twilio').toLowerCase();
+  if (provider === 'simpletexting') return sendViaSimpleTexting(dest, body);
+  return sendViaTwilio(dest, body);
+}
+
+/**
+ * Send SMS via Twilio API
+ */
+async function sendViaTwilio(
   to: string,
   body: string
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
