@@ -44,8 +44,8 @@ export default function PrivacyPage() {
             <strong>We do not share, sell, or otherwise provide your mobile phone number or SMS/text-messaging consent information to any third parties or affiliates for marketing or promotional purposes.</strong> No mobile opt-in data or consent information is shared with third parties for marketing under any circumstances.
           </P>
 
-          <H>How we share information</H>
-          <P>We do not sell your personal information, and we do not share it for anyone&apos;s marketing. We use service providers solely to operate the service — for example, Twilio to deliver text messages and our hosting and database providers to run the site — and they process your information only to perform those services for us, never for their own marketing. As stated above, your mobile phone number and SMS consent data are never shared with third parties or affiliates for marketing or promotional purposes. We may disclose information only if the law requires it.</P>
+          <H>Service providers we rely on</H>
+          <P>We do not sell your personal information, and we never share it for anyone&apos;s marketing. To run the service, we rely on a few providers that process data strictly on our behalf — Twilio to deliver the text messages, and our hosting and database providers (Vercel, Neon) to operate the site. They may use your information only to perform those services for us, never for their own or anyone else&apos;s marketing. As stated above, your mobile phone number and SMS consent data are never shared with third parties or affiliates for marketing or promotional purposes. We disclose information otherwise only if the law requires it.</P>
 
           <H>Data retention &amp; security</H>
           <P>We keep information only as long as needed for the purposes above or as the law requires, and we use reasonable technical and organizational measures to protect it. No method of transmission or storage is 100% secure.</P>
