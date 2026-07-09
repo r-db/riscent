@@ -14,7 +14,8 @@
 import { withCircuitBreaker } from './circuit-breaker';
 
 const token = process.env.SIMPLETEXTING_API_TOKEN || '';
-const accountPhone = process.env.SIMPLETEXTING_ACCOUNT_PHONE || '';
+// SimpleTexting rejects E.164 (+1…) for accountPhone — it must be the bare 10-digit number.
+const accountPhone = (process.env.SIMPLETEXTING_ACCOUNT_PHONE || '').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
 
 // SimpleTexting REST API v2 — single outbound SMS.
 const ST_ENDPOINT = process.env.SIMPLETEXTING_API_URL || 'https://api-app2.simpletexting.com/v2/api/messages';
@@ -43,7 +44,9 @@ export async function sendViaSimpleTexting(
       body: JSON.stringify({
         contactPhone: to,
         accountPhone,
-        mode: 'SINGLE_SMS_STANDARD',
+        // 'AUTO' is the only mode the v2 API accepts for plain SMS; 'SINGLE_SMS_STANDARD'
+        // returns 409 INVALID_INPUT_VALUE (verified against the live API 2026-07-09).
+        mode: 'AUTO',
         text: body,
       }),
     });
