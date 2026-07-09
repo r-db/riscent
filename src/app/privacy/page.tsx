@@ -38,7 +38,7 @@ export default function PrivacyPage() {
           <P>To verify your phone number, confirm and manage appointments, respond to your requests, secure the service, and comply with the law. We do not sell your personal information.</P>
 
           <H>SMS / text messaging</H>
-          <P>When you enter your mobile number and check the consent box on our booking form at riscent.com/book, you consent to receive text messages from Riscent — a one-time verification passcode (OTP) and messages about your appointment. These are transactional messages, not marketing.</P>
+          <P>When you enter your mobile number and check the consent box on our booking form at riscent.com/book, you consent to receive text messages from Riscent — a one-time verification passcode (OTP) and messages about your appointment. These are transactional messages, not marketing. Agreement to receive autodialed text messages is not a condition of any purchase.</P>
           <P>Message frequency varies (typically 1–3 messages per booking). Message and data rates may apply. Reply <strong>STOP</strong> to opt out at any time, or <strong>HELP</strong> for help. You can also opt out by emailing ryan@riscent.com.</P>
           <P style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', borderRadius: 10, padding: '14px 16px' }}>
             <strong>We do not share, sell, or otherwise provide your mobile phone number or SMS/text-messaging consent information to any third parties or affiliates for marketing or promotional purposes.</strong> No mobile opt-in data or consent information is shared with third parties for marketing under any circumstances.
