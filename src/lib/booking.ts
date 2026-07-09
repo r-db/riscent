@@ -6,6 +6,7 @@
 
 import { sql, query, queryOne } from '@/lib/db';
 import { sendSMS, generateVerificationCode, formatPhoneNumber } from '@/lib/twilio';
+import { sendEmail, otpEmailHtml } from '@/lib/resend';
 
 export const TZ = 'America/Los_Angeles';
 const DAYS_AHEAD = 21;          // booking window
@@ -54,8 +55,26 @@ export async function ensureSchema(): Promise<void> {
       updated_at timestamptz NOT NULL DEFAULT now(),
       PRIMARY KEY (ip_hash, date)
     )`;
+  // Email verification (parallel to booking_verifications) — powers the Resend OTP path.
+  await sql`
+    CREATE TABLE IF NOT EXISTS email_verifications (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      email text NOT NULL,
+      code text NOT NULL,
+      attempts int NOT NULL DEFAULT 0,
+      status text NOT NULL DEFAULT 'pending',
+      expires_at timestamptz NOT NULL,
+      created_at timestamptz NOT NULL DEFAULT now()
+    )`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_ev_email ON email_verifications (email, created_at DESC)`;
+  // Allow email-only bookings: add an email column and relax the NOT NULL on phone.
+  await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS email text`;
+  await sql`ALTER TABLE appointments ALTER COLUMN phone DROP NOT NULL`;
   schemaReady = true;
 }
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const normEmail = (e: string) => (e || '').trim().toLowerCase();
 
 /* Convert a Pacific wall-clock time to the correct UTC instant, DST-safe. */
 function pacificToUtc(y: number, mo: number, d: number, h: number, mi: number): Date {
@@ -271,5 +290,105 @@ export async function createAppointment(name: string, phoneRaw: string, slotIso:
   } else {
     console.warn('[booking] RYAN_ALERT_PHONE not set — appointment saved, no alert sent.');
   }
+  return { ok: true, label };
+}
+
+// ── Email verification path (Resend) — mirrors the phone path above ───────────
+
+export async function sendBookingEmailCode(emailRaw: string): Promise<{ ok: boolean; error?: string }> {
+  await ensureSchema();
+  const email = normEmail(emailRaw);
+  if (!EMAIL_RE.test(email)) return { ok: false, error: 'Enter a valid email address.' };
+  const recent = await queryOne<{ n: number }>(
+    `SELECT COUNT(*)::int AS n FROM email_verifications WHERE email = $1 AND created_at > NOW() - INTERVAL '10 minutes'`,
+    [email]
+  );
+  if ((recent?.n ?? 0) >= 3) return { ok: false, error: 'Too many attempts. Try again in a few minutes.' };
+  const code = generateVerificationCode();
+  await sql`INSERT INTO email_verifications (email, code, expires_at) VALUES (${email}, ${code}, NOW() + INTERVAL '10 minutes')`;
+  const res = await sendEmail({
+    to: email,
+    subject: `Your Riscent verification code is ${code}`,
+    html: otpEmailHtml(code),
+    text: `Your Riscent verification code is ${code}. It expires in 10 minutes. You're receiving this because you requested verification at riscent.com.`,
+  });
+  if (!res.success) return { ok: false, error: 'Could not send the code. Check the email and try again.' };
+  return { ok: true };
+}
+
+export async function verifyBookingEmailCode(emailRaw: string, code: string): Promise<{ ok: boolean; error?: string }> {
+  await ensureSchema();
+  const email = normEmail(emailRaw);
+  const match = await queryOne<{ id: string }>(
+    `SELECT id FROM email_verifications WHERE email = $1 AND code = $2 AND status = 'pending' AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1`,
+    [email, (code || '').trim()]
+  );
+  if (match) {
+    await sql`UPDATE email_verifications SET status = 'verified' WHERE id = ${match.id}::uuid`;
+    return { ok: true };
+  }
+  const pending = await queryOne<{ id: string; attempts: number }>(
+    `SELECT id, attempts FROM email_verifications WHERE email = $1 AND status = 'pending' AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1`,
+    [email]
+  );
+  if (!pending) return { ok: false, error: 'Code expired. Request a new one.' };
+  const attempts = pending.attempts + 1;
+  if (attempts >= 3) {
+    await sql`UPDATE email_verifications SET status = 'failed', attempts = ${attempts} WHERE id = ${pending.id}::uuid`;
+    return { ok: false, error: 'Too many incorrect codes. Request a new one.' };
+  }
+  await sql`UPDATE email_verifications SET attempts = ${attempts} WHERE id = ${pending.id}::uuid`;
+  return { ok: false, error: `Incorrect code. ${3 - attempts} tries left.` };
+}
+
+export async function isEmailVerified(emailRaw: string): Promise<boolean> {
+  const email = normEmail(emailRaw);
+  const v = await queryOne<{ id: string }>(
+    `SELECT id FROM email_verifications WHERE email = $1 AND status = 'verified' AND created_at > NOW() - INTERVAL '30 minutes' ORDER BY created_at DESC LIMIT 1`,
+    [email]
+  );
+  return Boolean(v);
+}
+
+export async function createAppointmentByEmail(name: string, emailRaw: string, slotIso: string): Promise<{ ok: boolean; error?: string; label?: string }> {
+  await ensureSchema();
+  const email = normEmail(emailRaw);
+  const cleanName = (name || '').trim().slice(0, 120);
+  if (cleanName.length < 2) return { ok: false, error: 'Enter your name.' };
+  if (!EMAIL_RE.test(email)) return { ok: false, error: 'Enter a valid email address.' };
+  if (!isRealSlot(slotIso)) return { ok: false, error: 'That time is no longer available.' };
+  if (!(await isEmailVerified(email))) return { ok: false, error: 'Please verify your email first.' };
+  const start = new Date(slotIso);
+  const end = new Date(start.getTime() + SLOT_MIN * 60000);
+  try {
+    await query(
+      `INSERT INTO appointments (name, email, slot_start, slot_end) VALUES ($1, $2, $3::timestamptz, $4::timestamptz)`,
+      [cleanName, email, start.toISOString(), end.toISOString()]
+    );
+  } catch {
+    return { ok: false, error: 'That time was just booked. Please pick another.' };
+  }
+  const label = slotLabel(slotIso);
+  // Confirm to the person who booked — best-effort, never blocks the booking.
+  try {
+    await sendEmail({
+      to: email,
+      subject: `Your Riscent call is confirmed — ${label}`,
+      html: `<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:480px;margin:0 auto;padding:8px"><div style="font-weight:800;font-size:18px;color:#0A2A92;margin-bottom:16px">Riscent</div><p style="font-size:15px;color:#31241F;line-height:1.5">You're booked. Your 30-minute call with Ryan is confirmed for <strong>${label}</strong>.</p><p style="font-size:13px;color:#6B6560;line-height:1.5">Ryan will call you then. Questions? Reply here or reach ryan@riscent.com.</p></div>`,
+      text: `You're booked. Your 30-minute call with Ryan is confirmed for ${label}. Questions? ryan@riscent.com`,
+      replyTo: 'ryan@riscent.com',
+    });
+  } catch { /* logged upstream */ }
+  // Alert Ryan by email so this path never depends on the SMS provider.
+  const ryanEmail = process.env.RYAN_ALERT_EMAIL || 'ryan@riscent.com';
+  try {
+    await sendEmail({
+      to: ryanEmail,
+      subject: `New Riscent call booked — ${cleanName}`,
+      html: `<p style="font-family:sans-serif">New Riscent call booked: <strong>${cleanName}</strong> (${email}) — ${label}.</p>`,
+      text: `New Riscent call booked: ${cleanName} (${email}) — ${label}.`,
+      replyTo: email,
+    });
+  } catch { /* logged upstream */ }
   return { ok: true, label };
 }

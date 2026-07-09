@@ -36,6 +36,8 @@ export default function BookFlow() {
   const [slot, setSlot] = useState<{ iso: string; label: string } | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [channel, setChannel] = useState<'sms' | 'email'>('sms');
   const [consent, setConsent] = useState(false);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -72,10 +74,13 @@ export default function BookFlow() {
   async function sendCode() {
     setError('');
     if (name.trim().length < 2) return setError('Enter your name.');
-    if (phone.replace(/\D/g, '').length < 10) return setError('Enter a valid mobile number.');
+    if (channel === 'sms' && phone.replace(/\D/g, '').length < 10) return setError('Enter a valid mobile number.');
+    if (channel === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setError('Enter a valid email address.');
     setLoading(true);
     try {
-      const r = await fetch('/api/book/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) });
+      const endpoint = channel === 'email' ? '/api/book/send-email-code' : '/api/book/send-code';
+      const payload = channel === 'email' ? { email } : { phone };
+      const r = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Could not send the code.');
       setStep('verify');
@@ -88,7 +93,7 @@ export default function BookFlow() {
     if (code.trim().length < 6) return setError('Enter the 6-digit code.');
     setLoading(true);
     try {
-      const r = await fetch('/api/book/confirm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, phone, code, slot: slot?.iso }) });
+      const r = await fetch('/api/book/confirm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, ...(channel === 'email' ? { email } : { phone }), code, slot: slot?.iso }) });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Could not confirm.');
       setConfirmed(d.label || slot?.label || '');
@@ -186,20 +191,40 @@ export default function BookFlow() {
             <motion.div key="details" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3, ease: EASE }}>
               <button onClick={() => setStep('slot')} className="text-[13px] font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>&larr; Back</button>
               <div className="rounded-xl px-4 py-3 mb-5 text-sm font-semibold" style={{ background: 'var(--danube-pale)', color: 'var(--torea)' }}>{slot?.label}</div>
+              <div className="flex gap-1.5 mb-5 p-1 rounded-xl" style={{ background: 'var(--danube-pale)' }}>
+                {(['sms', 'email'] as const).map(ch => (
+                  <button key={ch} onClick={() => { setChannel(ch); setError(''); }} className="flex-1 py-2 rounded-lg text-[13px] font-bold transition-all"
+                    style={channel === ch ? { background: '#fff', color: 'var(--torea)', boxShadow: '0 1px 3px rgba(49,36,31,.14)' } : { background: 'transparent', color: 'var(--text-muted)' }}>
+                    {ch === 'sms' ? 'Text me a code' : 'Email me a code'}
+                  </button>
+                ))}
+              </div>
               <label className="block text-[13px] font-semibold mb-1.5" style={{ color: 'var(--cocoa)' }}>Your name</label>
               <input value={name} onChange={e => setName(e.target.value)} placeholder="First and last" className="w-full mb-4 px-4 py-3 rounded-xl text-[15px] outline-none" style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
-              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: 'var(--cocoa)' }}>Mobile number</label>
-              <input value={phone} onChange={e => setPhone(e.target.value)} inputMode="tel" placeholder="(555) 555-5555" className="w-full px-4 py-3 rounded-xl text-[15px] outline-none" style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
-              <p className="text-[12px] leading-relaxed mt-4" style={{ color: 'var(--text-muted)' }}>
-                By tapping “Text me a code,” you’re asking Riscent to text a one-time verification code to this number to confirm it’s you. Msg &amp; data rates may apply. <strong>Agreement to receive autodialed text messages is not a condition of any purchase.</strong> Reply STOP to opt out, HELP for help. See our <a href="/privacy" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Privacy&nbsp;Policy</a> and <a href="/terms" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Terms</a>. Text verification isn’t required — you can also <a href="mailto:ryan@riscent.com?subject=Book%20a%20call" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>email us to book</a>.
-              </p>
-              <label className="flex gap-3 mt-3" style={{ alignItems: 'flex-start', cursor: 'pointer' }}>
-                <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} aria-label="Optional appointment reminders by text" style={{ width: 18, height: 18, flex: 'none', marginTop: 2, accentColor: 'var(--torea)' }} />
-                <span className="text-[12px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                  <strong>Optional:</strong> also text me appointment reminders. Message frequency varies (about 1–3 per booking). Msg &amp; data rates may apply. Agreement to receive these autodialed messages is not a condition of any purchase. Reply STOP to opt out, HELP for help.
-                </span>
-              </label>
-              <button onClick={sendCode} disabled={loading} className="w-full mt-5 py-4 rounded-sm font-bold text-[15px] disabled:opacity-50 disabled:cursor-not-allowed" style={{ background: 'var(--torea)', color: '#fff' }}>{loading ? 'Sending…' : 'Text me a code →'}</button>
+              {channel === 'sms' ? (
+                <>
+                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: 'var(--cocoa)' }}>Mobile number</label>
+                  <input value={phone} onChange={e => setPhone(e.target.value)} inputMode="tel" placeholder="(555) 555-5555" className="w-full px-4 py-3 rounded-xl text-[15px] outline-none" style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
+                  <p className="text-[12px] leading-relaxed mt-4" style={{ color: 'var(--text-muted)' }}>
+                    By tapping “Text me a code,” you’re asking Riscent to text a one-time verification code to this number to confirm it’s you. Msg &amp; data rates may apply. <strong>Agreement to receive autodialed text messages is not a condition of any purchase.</strong> Reply STOP to opt out, HELP for help. See our <a href="/privacy" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Privacy&nbsp;Policy</a> and <a href="/terms" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Terms</a>. Prefer not to text? Use “Email me a code” above.
+                  </p>
+                  <label className="flex gap-3 mt-3" style={{ alignItems: 'flex-start', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} aria-label="Optional appointment reminders by text" style={{ width: 18, height: 18, flex: 'none', marginTop: 2, accentColor: 'var(--torea)' }} />
+                    <span className="text-[12px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                      <strong>Optional:</strong> also text me appointment reminders. Message frequency varies (about 1–3 per booking). Msg &amp; data rates may apply. Agreement to receive these autodialed messages is not a condition of any purchase. Reply STOP to opt out, HELP for help.
+                    </span>
+                  </label>
+                </>
+              ) : (
+                <>
+                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: 'var(--cocoa)' }}>Email address</label>
+                  <input value={email} onChange={e => setEmail(e.target.value)} inputMode="email" type="email" placeholder="you@company.com" className="w-full px-4 py-3 rounded-xl text-[15px] outline-none" style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
+                  <p className="text-[12px] leading-relaxed mt-4" style={{ color: 'var(--text-muted)' }}>
+                    By tapping “Email me a code,” you’re asking Riscent to email a one-time verification code and your booking confirmation to this address. These are transactional messages about your booking, not marketing. See our <a href="/privacy" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Privacy&nbsp;Policy</a> and <a href="/terms" target="_blank" rel="noopener" style={{ color: 'var(--torea)', textDecoration: 'underline' }}>Terms</a>.
+                  </p>
+                </>
+              )}
+              <button onClick={sendCode} disabled={loading} className="w-full mt-5 py-4 rounded-sm font-bold text-[15px] disabled:opacity-50 disabled:cursor-not-allowed" style={{ background: 'var(--torea)', color: '#fff' }}>{loading ? 'Sending…' : (channel === 'email' ? 'Email me a code →' : 'Text me a code →')}</button>
             </motion.div>
           )}
 
@@ -208,7 +233,7 @@ export default function BookFlow() {
             <motion.div key="verify" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3, ease: EASE }}>
               <button onClick={() => setStep('details')} className="text-[13px] font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>&larr; Back</button>
               <div className="font-black tracking-[-0.02em] mb-1" style={{ color: 'var(--cocoa)', fontSize: 18 }}>Enter the code</div>
-              <p className="text-[13px] mb-5" style={{ color: 'var(--text-muted)' }}>We texted a 6-digit code to {phone}.</p>
+              <p className="text-[13px] mb-5" style={{ color: 'var(--text-muted)' }}>{channel === 'email' ? `We emailed a 6-digit code to ${email}.` : `We texted a 6-digit code to ${phone}.`}</p>
               <input value={code} onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" placeholder="••••••" className="w-full px-4 py-4 rounded-xl text-center text-2xl font-black tracking-[0.4em] outline-none" style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
               <button onClick={confirm} disabled={loading} className="w-full mt-5 py-4 rounded-sm font-bold text-[15px] disabled:opacity-60" style={{ background: 'var(--torea)', color: '#fff' }}>{loading ? 'Confirming…' : 'Confirm booking'}</button>
               <button onClick={sendCode} disabled={loading} className="w-full mt-3 text-[13px] font-semibold" style={{ color: 'var(--text-muted)' }}>Resend code</button>
@@ -226,7 +251,7 @@ export default function BookFlow() {
               </motion.div>
               <div className="font-black tracking-[-0.03em] mb-2" style={{ color: 'var(--cocoa)', fontSize: 26 }}>You&apos;re booked.</div>
               <p className="text-base leading-relaxed mb-1" style={{ color: 'var(--text-secondary)' }}><strong style={{ color: 'var(--cocoa)' }}>{confirmed}</strong></p>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>Ryan just got a text and will call you then. A confirmation is on the way to your phone.</p>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>{channel === 'email' ? 'Ryan was just notified and will call you then. A confirmation is on the way to your email.' : 'Ryan just got a text and will call you then. A confirmation is on the way to your phone.'}</p>
             </motion.div>
           )}
         </AnimatePresence>
