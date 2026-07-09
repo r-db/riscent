@@ -51,15 +51,8 @@ export const metadata: Metadata = {
     canonical: "https://riscent.com",
   },
   formatDetection: { telephone: false },
-  // TODO: Replace with actual verification codes after creating accounts at:
-  // Google: https://search.google.com/search-console
-  // Bing: https://www.bing.com/webmasters
-  verification: {
-    google: 'REPLACE_WITH_GOOGLE_VERIFICATION_CODE',
-    other: {
-      'msvalidate.01': 'REPLACE_WITH_BING_VERIFICATION_CODE',
-    },
-  },
+  // Verification: Google via /google402ecdeacca2837e.html (HTML-file method);
+  // Bing via Google Search Console import — no meta tag needed.
 };
 
 export const viewport: Viewport = {
