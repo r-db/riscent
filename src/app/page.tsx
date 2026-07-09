@@ -103,7 +103,7 @@ function HeroMock() {
         className="absolute -top-4 -right-4 rounded-full px-4 py-2 text-xs font-bold shadow-lg"
         style={{ background: 'var(--torea)', color: '#fff', boxShadow: '0 8px 24px rgba(10,42,146,0.3)' }}
         animate={{ y: [0, -6, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}>
-        Apple Silicon native
+        Linux native
       </motion.div>
 
       {/* Floating stat */}
@@ -129,7 +129,7 @@ const pains = [
   },
   {
     pain: 'You\'re burning frontier-model tokens on tasks a small model could do.',
-    fix: 'We fine-tune Apple Silicon-native models on your data, swap them in behind the same interface. Same quality, 1/200th the cost.',
+    fix: 'We fine-tune Linux-native models on your data, swap them in behind the same interface. Same quality, 1/200th the cost.',
   },
   {
     pain: 'Your team can ship a feature. You need someone who can ship an agentic system.',
@@ -154,7 +154,7 @@ export default function LandingPage() {
         <div className="absolute bottom-20 left-0 w-[500px] h-[500px] rounded-full opacity-20 pointer-events-none"
           style={{ background: 'radial-gradient(circle, var(--shilo) 0%, transparent 70%)', filter: 'blur(80px)' }} />
 
-        <div className="relative max-w-[1200px] mx-auto px-8 w-full grid lg:grid-cols-2 gap-16 items-center py-20">
+        <div className="relative max-w-[1200px] mx-auto px-8 w-full grid lg:grid-cols-2 gap-16 items-center py-10">
 
           {/* Left: copy */}
           <div>
@@ -165,19 +165,19 @@ export default function LandingPage() {
 
             <motion.div initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.1, ease: EASE }}>
-              <Display size="xl" as="h1" className="mb-8 text-left leading-[0.92]">
-                AI systems<br />that learn<br />
-                <span style={{ color: 'var(--danube)' }}>your business</span>
+              <Display size="md" as="h1" className="mb-6 text-left leading-[0.95]">
+                Train big once.<br />
+                Deploy <span style={{ color: 'var(--danube)' }}>small forever</span>.
               </Display>
             </motion.div>
 
-            <motion.p className="text-lg md:text-xl leading-relaxed mb-10 max-w-[520px]"
+            <motion.p className="text-lg md:text-xl leading-relaxed mb-8 max-w-[540px]"
               style={{ color: 'var(--text-secondary)' }}
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3, ease: EASE }}>
-              We build agentic apps, PWAs, and custom software for businesses that need
-              software with memory. We publish the research behind it — autonomous memory
-              compression, self-directed fine-tuning, real benchmarks against frontier models.
+              AI that learns your business: small models tuned to your work, with memory that
+              compounds. Move off pay-per-token frontier APIs onto software you own — same-or-better
+              results at a fraction of the cost, every claim backed by published benchmarks.
             </motion.p>
 
             <motion.div className="flex flex-col sm:flex-row gap-4"
@@ -187,6 +187,22 @@ export default function LandingPage() {
               <FloatingCTA href="#research" variant="secondary">
                 See the research
               </FloatingCTA>
+            </motion.div>
+
+            <motion.div className="mt-9 grid grid-cols-3 gap-x-5 gap-y-3 max-w-[540px] border-t pt-6"
+              style={{ borderColor: 'var(--border-light)' }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.65, ease: EASE }}>
+              {[
+                { k: 'Token costs ↓', v: 'tuned SLMs · ~$0/token' },
+                { k: 'OPEX ↓', v: 'agents do the repeat work, once' },
+                { k: 'Revenue ↑', v: 'software that learns your business' },
+              ].map(o => (
+                <div key={o.k}>
+                  <div className="text-[15px] font-extrabold leading-tight" style={{ color: 'var(--danube)' }}>{o.k}</div>
+                  <div className="text-[12px] leading-snug mt-1" style={{ color: 'var(--text-muted)' }}>{o.v}</div>
+                </div>
+              ))}
             </motion.div>
           </div>
 
@@ -208,12 +224,44 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
+      {/* ── WHAT WE WORK ON DAILY ── */}
+      <section className="px-6 pt-16 pb-12" style={{ background: 'var(--bg-primary)' }}>
+        <div className="max-w-[1200px] mx-auto">
+          <ScrollReveal className="mb-8">
+            <Label color="var(--danube)" className="mb-3">What we work on daily</Label>
+            <h2 className="text-2xl md:text-[32px] font-black tracking-tight leading-tight max-w-[760px]" style={{ color: 'var(--cocoa)' }}>
+              High-volume, per-item work &mdash; where a tuned small model pays for itself.
+            </h2>
+          </ScrollReveal>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { t: 'Document & record extraction', s: 'Legal · medical · financial' },
+              { t: 'Customer support automation', s: 'Contact-center, tier-1 deflection' },
+              { t: 'Transcription → summarization', s: 'Scribe · meetings · calls' },
+              { t: 'Batch classification', s: 'Moderation & routing' },
+              { t: 'Content generation at scale', s: 'SEO · product · e-comm' },
+              { t: 'Compliance & security scanning', s: 'Per-line review' },
+              { t: 'Outreach personalization', s: 'SDR / leads' },
+              { t: 'Translation & localization', s: 'Any language pair' },
+            ].map((b, i) => (
+              <div key={b.t}
+                className="rounded-2xl border p-5 transition-transform duration-200 hover:-translate-y-1"
+                style={{ background: '#fff', borderColor: 'var(--border-light)', boxShadow: '0 1px 2px rgba(49,36,31,0.04)' }}>
+                <div className="text-[12px] font-black mb-3" style={{ color: 'var(--danube)' }}>{String(i + 1).padStart(2, '0')}</div>
+                <h3 className="text-[15px] font-bold leading-snug mb-1" style={{ color: 'var(--cocoa)' }}>{b.t}</h3>
+                <p className="text-[12.5px] leading-snug" style={{ color: 'var(--text-muted)' }}>{b.s}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── STATS ── */}
       <StatRibbon stats={[
         { value: 'Agentic', label: 'by default' },
-        { value: 'Open', label: 'methodology' },
-        { value: '1M+', label: 'lines shipped' },
-        { value: 'Apple Silicon', label: 'native' },
+        { value: 'Open source', label: 'one product' },
+        { value: '2M+', label: 'lines shipped' },
+        { value: 'Linux', label: 'native' },
       ]} />
 
       {/* ── SERVICES — clear entry points to the dedicated pages ── */}
@@ -242,7 +290,7 @@ export default function LandingPage() {
                   Autonomous memory compression
                 </div>
                 <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
-                  Training a small Apple Silicon-native model to classify, compress, and
+                  Training a small Linux-native model to classify, compress, and
                   store conversational memory in real time — replacing frontier API calls
                   in the persistence layer of every agent we build.
                 </p>
@@ -395,9 +443,9 @@ export default function LandingPage() {
           <ScrollReveal delay={0.2}>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-px mb-14" style={{ background: 'var(--border-light)' }}>
               {[
-                { val: '1M+', lbl: 'lines shipped' },
+                { val: '2M+', lbl: 'lines shipped' },
                 { val: 'Agentic', lbl: 'by default' },
-                { val: 'Open', lbl: 'methodology' },
+                { val: 'Open source', lbl: 'one product' },
                 { val: 'HIPAA', lbl: 'production-grade' },
               ].map(s => (
                 <div key={s.lbl} className="p-8" style={{ background: '#fff' }}>
