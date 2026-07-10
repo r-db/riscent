@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import ServiceWorker from "@/components/ServiceWorker";
@@ -73,6 +74,12 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          <Script
+            defer
+            data-domain="riscent.com"
+            src="https://plausible.io/js/script.outbound-links.js"
+            strategy="afterInteractive"
+          />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{

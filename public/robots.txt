@@ -31,4 +31,10 @@ Allow: /
 User-agent: Googlebot
 Allow: /
 
+User-agent: CCBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
 Sitemap: https://riscent.com/sitemap.xml
