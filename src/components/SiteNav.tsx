@@ -6,6 +6,7 @@ import Link from 'next/link';
 const LINKS = [
   { label: 'Custom AI', href: '/slm' },
   { label: 'AI Visibility', href: '/ai-visibility' },
+  { label: 'GEO', href: '/geo' },
   { label: 'Research', href: '/docs' },
 ];
 
