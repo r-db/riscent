@@ -44,6 +44,33 @@ export default function BookFlow() {
   const [error, setError] = useState('');
   const [confirmed, setConfirmed] = useState('');
 
+  // Post-booking intake chat (SMS bookings; gate = verified phone)
+  type ChatMsg = { role: 'user' | 'assistant'; content: string };
+  const [chat, setChat] = useState<ChatMsg[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatBusy, setChatBusy] = useState(false);
+  const [chatDone, setChatDone] = useState(false);
+
+  async function sendChat() {
+    const text = chatInput.trim();
+    if (!text || chatBusy || chatDone) return;
+    const next: ChatMsg[] = [...chat, { role: 'user', content: text }];
+    setChat(next); setChatInput(''); setChatBusy(true);
+    try {
+      const r = await fetch('/api/book/intake', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, messages: next }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'The assistant hit a snag.');
+      setChat([...next, { role: 'assistant', content: d.reply }]);
+      if (d.complete) setChatDone(true);
+    } catch {
+      setChat([...next, { role: 'assistant', content: 'Sorry — I hit a snag. Mind trying that again?' }]);
+    }
+    setChatBusy(false);
+  }
+
   const canPrev = `${view.y}-${String(view.m + 1).padStart(2, '0')}` > `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
   const canNext = `${view.y}-${String(view.m + 1).padStart(2, '0')}` < maxStr.slice(0, 7);
 
@@ -97,6 +124,9 @@ export default function BookFlow() {
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Could not confirm.');
       setConfirmed(d.label || slot?.label || '');
+      if (channel === 'sms') {
+        setChat([{ role: 'assistant', content: `You're all set, ${name.trim().split(' ')[0]}! I'm Riscent's assistant — mind if I ask a couple of quick questions so Ryan comes to the call prepared? What's prompting the conversation?` }]);
+      }
       setStep('done');
     } catch (e) { setError((e as Error).message); }
     setLoading(false);
@@ -252,6 +282,40 @@ export default function BookFlow() {
               <div className="font-black tracking-[-0.03em] mb-2" style={{ color: 'var(--cocoa)', fontSize: 26 }}>You&apos;re booked.</div>
               <p className="text-base leading-relaxed mb-1" style={{ color: 'var(--text-secondary)' }}><strong style={{ color: 'var(--cocoa)' }}>{confirmed}</strong></p>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>{channel === 'email' ? 'Ryan was just notified and will call you then. A confirmation is on the way to your email.' : 'Ryan just got a text and will call you then. A confirmation is on the way to your phone.'}</p>
+
+              {/* Intake chat — the agent gathers what they want to talk about */}
+              {channel === 'sms' && chat.length > 0 && (
+                <div className="mt-8 text-left rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border-light)' }}>
+                  <div className="px-4 py-3 flex items-center gap-2" style={{ background: 'var(--torea)', color: '#fff' }}>
+                    <span className="w-2 h-2 rounded-full" style={{ background: '#5EEAD4' }} />
+                    <span className="text-[13px] font-bold">Riscent assistant</span>
+                    <span className="text-[11px] opacity-70 ml-auto">helps Ryan come prepared</span>
+                  </div>
+                  <div className="px-4 py-4 max-h-72 overflow-y-auto flex flex-col gap-2">
+                    {chat.map((m, i) => (
+                      <div key={i} className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-[14px] leading-relaxed ${m.role === 'user' ? 'self-end rounded-br-md' : 'self-start rounded-bl-md'}`}
+                        style={m.role === 'user' ? { background: 'var(--torea)', color: '#fff' } : { background: 'var(--danube-pale)', color: 'var(--cocoa)' }}>
+                        {m.content}
+                      </div>
+                    ))}
+                    {chatBusy && <div className="self-start px-3.5 py-2.5 rounded-2xl rounded-bl-md text-[14px]" style={{ background: 'var(--danube-pale)', color: 'var(--text-muted)' }}>…</div>}
+                  </div>
+                  {!chatDone ? (
+                    <div className="flex gap-2 px-3 py-3" style={{ borderTop: '1px solid var(--border-light)' }}>
+                      <input value={chatInput} onChange={e => setChatInput(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); sendChat(); } }}
+                        placeholder="Type your reply…" className="flex-1 px-3.5 py-2.5 rounded-xl text-[14px] outline-none"
+                        style={{ border: '1px solid var(--border-medium)', color: 'var(--cocoa)' }} />
+                      <button onClick={sendChat} disabled={chatBusy || !chatInput.trim()}
+                        className="px-4 rounded-xl font-bold text-[14px] disabled:opacity-50" style={{ background: 'var(--torea)', color: '#fff' }}>Send</button>
+                    </div>
+                  ) : (
+                    <div className="px-4 py-3 text-[13px] font-semibold text-center" style={{ borderTop: '1px solid var(--border-light)', color: 'var(--text-muted)' }}>
+                      All set — Ryan will come prepared. Talk soon.
+                    </div>
+                  )}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

@@ -70,7 +70,36 @@ export async function ensureSchema(): Promise<void> {
   // Allow email-only bookings: add an email column and relax the NOT NULL on phone.
   await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS email text`;
   await sql`ALTER TABLE appointments ALTER COLUMN phone DROP NOT NULL`;
+  // Intake chat: what the visitor wants to talk about, gathered by the agent post-booking.
+  await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS intake_summary text`;
+  await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS intake_topics text`;
+  await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS intake_transcript jsonb`;
   schemaReady = true;
+}
+
+/* The upcoming appointment the verified caller just booked (newest booked, future slot). */
+export async function findUpcomingAppointmentByPhone(phoneRaw: string): Promise<{ id: string; name: string } | null> {
+  await ensureSchema();
+  const phone = formatPhoneNumber(phoneRaw);
+  return queryOne<{ id: string; name: string }>(
+    `SELECT id, name FROM appointments WHERE phone = $1 AND status = 'booked' AND slot_start > NOW() ORDER BY created_at DESC LIMIT 1`,
+    [phone]
+  );
+}
+
+export async function saveIntake(
+  appointmentId: string,
+  transcript: { role: string; content: string }[],
+  summary: string,
+  topics: string
+): Promise<void> {
+  await sql`
+    UPDATE appointments
+    SET intake_transcript = ${JSON.stringify(transcript)}::jsonb,
+        intake_summary = ${summary},
+        intake_topics = ${topics}
+    WHERE id = ${appointmentId}::uuid
+  `;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
