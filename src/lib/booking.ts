@@ -292,6 +292,26 @@ export async function isPhoneVerified(phoneRaw: string): Promise<boolean> {
   return Boolean(v);
 }
 
+/* Push a confirmed booking into FrontDesk's riscent tenant. Fire-and-forget. */
+async function mirrorToFrontDesk(name: string, phone: string, slotStart: string, slotEnd: string): Promise<void> {
+  const base = process.env.FRONTDESK_URL;
+  const key = process.env.FRONTDESK_RISCENT_KEY;
+  if (!base || !key) return; // not configured → skip silently
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 4000);
+    await fetch(`${base.replace(/\/$/, '')}/api/agent/appointments`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` },
+      body: JSON.stringify({ name, phone, slot: slotStart.slice(0, 19), slotEnd: slotEnd.slice(0, 19), source: 'riscent.com' }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(t);
+  } catch (e) {
+    console.warn('[frontdesk] mirror failed (booking still saved):', (e as Error).message);
+  }
+}
+
 export async function createAppointment(name: string, phoneRaw: string, slotIso: string): Promise<{ ok: boolean; error?: string; label?: string }> {
   await ensureSchema();
   const phone = formatPhoneNumber(phoneRaw);
@@ -310,6 +330,9 @@ export async function createAppointment(name: string, phoneRaw: string, slotIso:
     return { ok: false, error: 'That time was just booked. Please pick another.' };
   }
   const label = slotLabel(slotIso);
+  // Mirror into FrontDesk (fd.riscent.com) — Ryan's own front-desk calendar.
+  // Best-effort; a FrontDesk outage must never fail a real booking.
+  void mirrorToFrontDesk(cleanName, phone, start.toISOString(), end.toISOString());
   // Confirm to the person who booked — best-effort, never blocks the booking.
   try { await sendSMS(phone, `Riscent: your 30-minute call with Ryan is confirmed for ${label}. Reply STOP to opt out or HELP for help. Questions? ryan@riscent.com`); } catch { /* logged upstream */ }
   // Alert Ryan — best-effort, never blocks the booking.
