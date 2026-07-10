@@ -74,12 +74,15 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          {/* Privacy-friendly analytics by Plausible */}
           <Script
             defer
-            data-domain="riscent.com"
-            src="https://plausible.io/js/script.outbound-links.js"
+            src="https://plausible.io/js/pa-b65y_gU3IpvukW1Jm8VBV.js"
             strategy="afterInteractive"
           />
+          <Script id="plausible-init" strategy="afterInteractive">
+            {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()`}
+          </Script>
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
