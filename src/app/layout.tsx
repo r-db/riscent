@@ -118,6 +118,24 @@ export default function RootLayout({
               }),
             }}
           />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Person",
+                "@id": "https://riscent.com/#ryan-bolden",
+                name: "Ryan Bolden",
+                jobTitle: "Founder & CEO",
+                worksFor: { "@type": "Organization", name: "Riscent", url: "https://riscent.com" },
+                url: "https://riscent.com",
+                // TODO(ryan): add LinkedIn / X / Crunchbase profile URLs to strengthen the entity.
+                sameAs: ["https://github.com/r-db"],
+                knowsAbout: ["Agentic AI Deployment", "Small Language Model Fine-Tuning", "AI Memory Research", "Generative Engine Optimization", "Answer Engine Optimization", "AI Search Visibility", "Healthcare AI", "HIPAA Compliance", "Voice AI Agents", "Agent Architecture", "Production AI Systems"],
+                description: "Ryan Bolden is the founder and CEO of Riscent, an AI consulting agency. He engineered a HIPAA-compliant healthcare AI platform (InboundAI365) in production — over one million lines of code, bilingual voice agents, a patient portal with 80% adoption, and a CRM replacing four to six separate tools — and specializes in agentic AI deployment, small-language-model fine-tuning, AI memory, and generative engine optimization (GEO).",
+              }),
+            }}
+          />
           {children}
           <ServiceWorker />
         </body>
