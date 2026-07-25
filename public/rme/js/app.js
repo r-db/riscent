@@ -515,7 +515,7 @@
   /* ================= PWA ================= */
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").catch((e) =>
+      navigator.serviceWorker.register("/rme/sw.js").catch((e) =>
         console.warn("[RME] SW registration failed", e));
     });
   }

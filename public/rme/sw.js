@@ -1,14 +1,14 @@
 /* RME Innovations — simple offline-first service worker */
-const CACHE = "rme-v4";
+const CACHE = "rme-v5";
 const ASSETS = [
-  "./index.html",
-  "./css/styles.css",
-  "./js/app.js",
-  "./manifest.webmanifest",
-  "./icons/icon.svg",
-  "./img/hero-rooftop.jpg",
-  "./img/home-dusk.jpg",
-  "./img/valley-day.jpg"
+  "/rme/index.html",
+  "/rme/css/styles.css",
+  "/rme/js/app.js",
+  "/rme/manifest.webmanifest",
+  "/rme/icons/icon.svg",
+  "/rme/img/hero-rooftop.jpg",
+  "/rme/img/home-dusk.jpg",
+  "/rme/img/valley-day.jpg"
 ];
 
 self.addEventListener("install", (e) => {
@@ -36,7 +36,7 @@ self.addEventListener("fetch", (e) => {
             caches.open(CACHE).then((c) => c.put(e.request, copy));
           }
           return res;
-        }).catch(() => caches.match("./index.html"))
+        }).catch(() => caches.match("/rme/index.html"))
     )
   );
 });

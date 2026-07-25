@@ -2,14 +2,14 @@
   "name": "RME Innovations — Northern California Solar",
   "short_name": "RME Solar",
   "description": "Commercial and residential solar across Northern California. Licensed C-10 + C-46, CSLB #1077450.",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/rme/",
+  "scope": "/rme/",
   "display": "standalone",
   "background_color": "#FDFCF8",
   "theme_color": "#0B3B33",
   "icons": [
-    { "src": "./icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/rme/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/rme/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/rme/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
