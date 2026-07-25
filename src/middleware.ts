@@ -16,6 +16,7 @@ const isPublicRoute = createRouteMatcher([
   "/appointment-tools.json",
   "/behind-the-curtain",
   "/groundwork(.*)",
+  "/rme(.*)",
   "/api/groundwork/(.*)",
   "/test",
   "/docs(.*)",
