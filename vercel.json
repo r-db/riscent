@@ -12,10 +12,6 @@
       "source": "/:path*",
       "has": [{ "type": "host", "value": "cms.riscent.com" }],
       "destination": "/cms/:path*"
-    },
-    {
-      "source": "/rme",
-      "destination": "/rme/index.html"
     }
   ],
   "headers": [

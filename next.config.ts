@@ -25,6 +25,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
+  async rewrites() {
+    return {
+      // beforeFiles so the static RME demo (public/rme/) wins the bare /rme path.
+      beforeFiles: [{ source: "/rme", destination: "/rme/index.html" }],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
 };
 
 export default nextConfig;
