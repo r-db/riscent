@@ -713,8 +713,14 @@ input[type="range"]::-moz-range-thumb {
   overflow: hidden;
 }
 
-/* --- header: contact-style --- */
-.chat-top { background: var(--sequoia); }
+/* --- header: contact-style — pinned; only the log scrolls --- */
+.chat-top {
+  background: var(--sequoia);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex: none;
+}
 .chat-header {
   color: #fff;
   padding: 12px 14px 10px;
@@ -783,6 +789,8 @@ input[type="range"]::-moz-range-thumb {
   flex: 1; overflow-y: auto; padding: 16px 14px 10px;
   display: flex; flex-direction: column; gap: 3px;
   background: var(--paper);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .time-divider {
   align-self: center;
@@ -969,8 +977,10 @@ input[type="range"]::-moz-range-thumb {
     width: 100%; height: 100dvh; max-height: none;
     border-radius: 0; border: none;
     bottom: auto;
+    overflow: hidden;
   }
   .chat-header { padding-top: calc(12px + env(safe-area-inset-top, 0px)); }
+  .chat-quick, .chat-input-row { flex: none; }
   body.chat-open .chat-fab { display: none; }
   body.chat-open { overflow: hidden; }
   .msg { max-width: 84%; }

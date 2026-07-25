@@ -1,5 +1,5 @@
 /* RME Innovations — simple offline-first service worker */
-const CACHE = "rme-v5";
+const CACHE = "rme-v6";
 const ASSETS = [
   "/rme/index.html",
   "/rme/css/styles.css",
