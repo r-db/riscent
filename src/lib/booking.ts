@@ -7,6 +7,7 @@
 import { sql, query, queryOne } from '@/lib/db';
 import { sendSMS, generateVerificationCode, formatPhoneNumber } from '@/lib/twilio';
 import { sendEmail, otpEmailHtml } from '@/lib/resend';
+import { toZonedLocal } from './tzlocal';
 
 export const TZ = 'America/Los_Angeles';
 const DAYS_AHEAD = 21;          // booking window
@@ -303,7 +304,8 @@ async function mirrorToFrontDesk(name: string, phone: string, slotStart: string,
     await fetch(`${base.replace(/\/$/, '')}/api/agent/appointments`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` },
-      body: JSON.stringify({ name, phone, slot: slotStart.slice(0, 19), slotEnd: slotEnd.slice(0, 19), source: 'riscent.com' }),
+      // FrontDesk reads slots as Pacific wall-clock time; the ISO strings here are UTC (fixed 2026-09-13).
+      body: JSON.stringify({ name, phone, slot: toZonedLocal(slotStart, TZ), slotEnd: toZonedLocal(slotEnd, TZ), source: 'riscent.com' }),
       signal: ctrl.signal,
     });
     clearTimeout(t);
